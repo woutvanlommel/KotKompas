@@ -16,10 +16,13 @@ bash:
 	docker compose exec app bash
 
 composer:
-	docker compose exec app composer $(cmd)
+	docker compose exec app composer $(filter-out $@,$(MAKECMDGOALS))
 
 npm:
-	docker compose exec app npm $(cmd)
+	docker compose exec app npm $(filter-out $@,$(MAKECMDGOALS))
 
 artisan:
-	docker compose exec app php artisan $(cmd)
+	docker compose exec app php artisan $(filter-out $@,$(MAKECMDGOALS))
+
+%:
+	@:
