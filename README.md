@@ -45,7 +45,7 @@ Voor bestandsnamen gebruiken we de laravel standaard conventies:
 - **variabelen**: `$userProfile`
 - **database tabellen**: `users`
 
-### 3. Git Branches (Aanwijzingen)
+### 2. Git Branches (Aanwijzingen)
 
 Werk nooit direct op de main branch. Gebruik de volgende prefixen:
 
