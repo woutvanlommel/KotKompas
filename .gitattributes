@@ -1,11 +1,18 @@
-* text=auto eol=lf
+# Auto-normalize line endings for all files
+* text=auto
 
-*.blade.php diff=html
-*.css diff=css
-*.html diff=html
-*.md diff=markdown
-*.php diff=php
+# Unix line endings
+*.php eol=lf
+*.js eol=lf
+*.json eol=lf
+*.yml eol=lf
+*.yaml eol=lf
+*.env eol=lf
+Dockerfile eol=lf
+.gitignore eol=lf
+*.md eol=lf
+*.sh eol=lf
 
-/.github export-ignore
-CHANGELOG.md export-ignore
-.styleci.yml export-ignore
+# Windows line endings for batch files
+*.bat eol=crlf
+*.cmd eol=crlf
