@@ -1,3 +1,64 @@
+> **"De redding voor de 'huisjesmelker' die alles nog in Excel doet."**
+
+## 📖 Het Project: KotCompass
+
+Veel verhuurders van studentenkamers (kotbazen) werken nog met rommelige Excel-lijsten en WhatsApp. Contracten raken kwijt en eindafrekeningen zijn een rekenkundige nachtmerrie.
+
+> **Scrummaster**: Wout Vanlommel
+
+**De Oplossing:**
+Een centraal portaal voor verhuurder én student.
+
+- **Student:** Ziet huurstatus, meldt problemen (bv. lekkage) met foto's.
+- **Kotbaas:** Beheert meldingen en ziet via een interactieve plattegrond (Livewire) direct wie er huurt en of er betaald is.
+
+---
+
+## 🛠️ Tech Stack
+
+Wij bouwen deze applicatie met de volgende technologieën:
+
+| Categorie        | Technologie                                                                                                          | Details                             |
+| :--------------- | :------------------------------------------------------------------------------------------------------------------- | :---------------------------------- |
+| **Backend**      | ![Laravel](https://img.shields.io/badge/Laravel-FF2D20?style=flat-square&logo=laravel&logoColor=white)               | Framework voor API & Logica         |
+| **Dashboard**    | ![Filament](https://img.shields.io/badge/Filament-DD0031?style=flat-square&logo=filament&logoColor=white)            | Standaard dashboarding voor Laravel |
+| **Taal**         | ![PHP](https://img.shields.io/badge/PHP-007ACC?style=flat-square&logo=php&logoColor=white)                           | Standaard in Laravel                |
+| **Styling**      | ![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=flat-square&logo=tailwind-css&logoColor=white) | Plain CSS / Tailwind                |
+| **Versiebeheer** | ![Git](https://img.shields.io/badge/GIT-E44C30?style=flat-square&logo=git&logoColor=white)                           | Source Control                      |
+
+---
+
+## 📏 Naming Conventions & Regels
+
+Om de code netjes te houden, volgt iedereen de volgende strikte regels:
+
+### 1. Laravel conventies
+
+Voor bestandsnamen gebruiken we de laravel standaard conventies:
+
+- **Models**: `User.php`
+- **Controllers**: `UserController.php`
+- **Migrations**: `2024_01_01_000000_create_users_table.php`
+- **Views**: `user-profile.blade.php`
+- **classes**: `UserProfile.php`
+- **functions**: `getUserProfile()`
+- **variabelen**: `$userProfile`
+- **database tabellen**: `users`
+
+### 3. Git Branches (Aanwijzingen)
+
+Werk nooit direct op de main branch. Gebruik de volgende prefixen:
+
+- `feat-` (Nieuwe functionaliteit)
+- `bugfix-` (Fouten oplossen)
+- `update-` (Bijwerken bestaande code/docs)
+- `fix-` (Kleine fixes, zoals typos)
+
+**Voorbeeld branchnaam:**
+`feat-micro-excercise-readme`
+
+---
+
 # Scope & MoSCoW — Laravel/Filament rebuild
 
 Volledige herbouw van KotCompass met Laravel + Filament. Deze scope mapt alle 65 backlog-items (#1–#75) naar modules en MoSCoW-prioriteiten.
