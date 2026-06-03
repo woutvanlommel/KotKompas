@@ -8,11 +8,13 @@ RUN apt-get update && apt-get install -y \
     libpng-dev \
     libonig-dev \
     libxml2-dev \
+    libzip-dev \
+    libicu-dev \
     zip \
     unzip \
     && rm -rf /var/lib/apt/lists/*
 
-RUN docker-php-ext-install pdo pdo_mysql bcmath gd sockets xml mbstring exif pcntl
+RUN docker-php-ext-install pdo pdo_mysql bcmath gd sockets xml mbstring exif pcntl intl zip
 
 RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
     apt-get install -y nodejs && \
