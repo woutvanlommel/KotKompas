@@ -1,58 +1,221 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+> **"De redding voor de 'huisjesmelker' die alles nog in Excel doet."**
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## 📖 Het Project: KotCompass
 
-## About Laravel
+Veel verhuurders van studentenkamers (kotbazen) werken nog met rommelige Excel-lijsten en WhatsApp. Contracten raken kwijt en eindafrekeningen zijn een rekenkundige nachtmerrie.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+> **Scrummaster**: Wout Vanlommel
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+**De Oplossing:**
+Een centraal portaal voor verhuurder én student.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- **Student:** Ziet huurstatus, meldt problemen (bv. lekkage) met foto's.
+- **Kotbaas:** Beheert meldingen en ziet via een interactieve plattegrond (Livewire) direct wie er huurt en of er betaald is.
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## 🛠️ Tech Stack
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Wij bouwen deze applicatie met de volgende technologieën:
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+| Categorie        | Technologie                                                                                                          | Details                             |
+| :--------------- | :------------------------------------------------------------------------------------------------------------------- | :---------------------------------- |
+| **Backend**      | ![Laravel](https://img.shields.io/badge/Laravel-FF2D20?style=flat-square&logo=laravel&logoColor=white)               | Framework voor API & Logica         |
+| **Dashboard**    | ![Filament](https://img.shields.io/badge/Filament-DD0031?style=flat-square&logo=filament&logoColor=white)            | Standaard dashboarding voor Laravel |
+| **Taal**         | ![PHP](https://img.shields.io/badge/PHP-007ACC?style=flat-square&logo=php&logoColor=white)                           | Standaard in Laravel                |
+| **Styling**      | ![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=flat-square&logo=tailwind-css&logoColor=white) | Plain CSS / Tailwind                |
+| **Versiebeheer** | ![Git](https://img.shields.io/badge/GIT-E44C30?style=flat-square&logo=git&logoColor=white)                           | Source Control                      |
 
-## Agentic Development
+---
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+## 📏 Naming Conventions & Regels
 
-```bash
-composer require laravel/boost --dev
+Om de code netjes te houden, volgt iedereen de volgende strikte regels:
 
-php artisan boost:install
-```
+### 1. Laravel conventies
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+Voor bestandsnamen gebruiken we de laravel standaard conventies:
 
-## Contributing
+- **Models**: `User.php`
+- **Controllers**: `UserController.php`
+- **Migrations**: `2024_01_01_000000_create_users_table.php`
+- **Views**: `user-profile.blade.php`
+- **classes**: `UserProfile.php`
+- **functions**: `getUserProfile()`
+- **variabelen**: `$userProfile`
+- **database tabellen**: `users`
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### 2. Git Branches (Aanwijzingen)
 
-## Code of Conduct
+Werk nooit direct op de main branch. Gebruik de volgende prefixen:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+- `feat-` (Nieuwe functionaliteit)
+- `bugfix-` (Fouten oplossen)
+- `update-` (Bijwerken bestaande code/docs)
+- `fix-` (Kleine fixes, zoals typos)
 
-## Security Vulnerabilities
+**Voorbeeld branchnaam:**
+`feat-micro-excercise-readme`
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+---
 
-## License
+# Scope & MoSCoW — Laravel/Filament rebuild
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Volledige herbouw van KotCompass met Laravel + Filament. Deze scope mapt alle 65 backlog-items (#1–#75) naar modules en MoSCoW-prioriteiten.
+
+## Scope statement
+
+**In scope:** de end-to-end loop die niemand in de markt heeft: zoeken → contact → contract → opvolging, plus het Filament-beheerdashboard, chat en GDPR-compliance. Dit is de wig uit het marktonderzoek (§4.5): geen enkele BE/NL-speler combineert zoekplatform + volledig beheer.
+
+**Out of scope:** monetisatie-uitvoering (gefaseerd, zie onder), itsme/MyRent/bankkoppelingen (fase 3, Kotmaster-niveau), eigen betaalafhandeling van huur, native app.
+
+**Leidende principes uit het marktonderzoek:**
+
+1. Vertrouwen is de positionering, security, GDPR en transparantie zijn must, niet nice-to-have.
+2. Monetisatie is fase 2 (gratis instap eerst, zie marktonderzoek §8.4), Stripe/Cashier bouwen mag, maar mag de launch niet blokkeren.
+3. De Kotscore heeft data nodig, een leeg scoresysteem is waardeloos op dag één (cold start), dus Should i.p.v. Must.
+
+## Prioriteiten-overzicht
+
+| Prioriteit | Aantal | Wat het betekent                              |
+| ---------- | ------ | --------------------------------------------- |
+| Must       | 41     | Zonder dit geen werkende end-to-end loop      |
+| Should     | 20     | Differentiators & fase 2 — direct na de Musts |
+| Could      | 4      | Pas waardevol met schaal/data                 |
+| Won't      | /      | Expliciet uitgesteld, zie onderaan            |
+
+---
+
+## 1. Fundament & infra
+
+| #   | Item                      | MoSCoW   | Motivatie                                                                         |
+| --- | ------------------------- | -------- | --------------------------------------------------------------------------------- |
+| #8  | Laravel Sanctum           | **Must** | Auth-basis van alles                                                              |
+| #75 | Rollensysteem             | **Must** | Huurder / verhuurder / admin — kern van het domeinmodel; in Filament via policies |
+| #42 | Laravel Pint installatie  | **Must** | Goedkoop, vanaf dag één — voorkomt stijldiscussies                                |
+| #43 | Security checks (CI/CD)   | **Must** | Vertrouwen = positionering; security niet achteraf                                |
+| #74 | Security checks           | **Must** | Idem — audit vóór release                                                         |
+| #44 | Backend & frontend checks | **Must** | CI-poort op elke PR                                                               |
+| #45 | Deploy.yml                | **Must** | Reproduceerbare deploys vanaf het begin                                           |
+| #73 | Toast component           | **Must** | Klein, maar basis van alle UI-feedback                                            |
+| #68 | Webp conversie functie    | Should   | Performance + lost de oude Base64-fotoschuld op; koppel aan #53                   |
+
+## 2. Authenticatie & profiel
+
+| #   | Item                           | MoSCoW   | Motivatie                                                |
+| --- | ------------------------------ | -------- | -------------------------------------------------------- |
+| #5  | Custom login/registration page | **Must** | Eigen huisstijl, geen Filament-default voor publiek      |
+| #6  | Registrate form                | **Must** | Instappunt beide doelgroepen                             |
+| #7  | Login form                     | **Must** | -                                                        |
+| #2  | Password change                | **Must** | Basis accountbeheer                                      |
+| #3  | Profilepage form               | **Must** | Profieldata voedt contractgeneratie (#66)                |
+| #1  | Profile picture                | Should   | Niet blokkerend, triviaal met Filament/media library     |
+| #4  | 2FA authentication             | Should   | Vertrouwen en security stijgen, maar geen launch-blocker |
+
+## 3. Zoekplatform (publiek — kern)
+
+| #   | Item                 | MoSCoW   | Motivatie                                                          |
+| --- | -------------------- | -------- | ------------------------------------------------------------------ |
+| #26 | Search function      | **Must** | Hart van de zoekkant                                               |
+| #27 | Filters              | **Must** | Was Must in originele scope; verwacht door markt                   |
+| #21 | Lijst + grid view    | **Must** | Basis-UX overzichtspagina                                          |
+| #22 | Leaflet kaart        | **Must** | Kaart is standaard bij alle concurrenten (iKot, Kamernet)          |
+| #15 | Afbeelding gallerij  | **Must** | Duidelijke foto's = Must in originele scope                        |
+| #18 | Faciliteitenlijst    | **Must** | Kerninfo per kot                                                   |
+| #19 | Prijs overzicht      | **Must** | All-in prijstransparantie, verplicht in Vlaanderen + marktpijnpunt |
+| #16 | Verhuurder info card | **Must** | Vertrouwen: wie is de verhuurder                                   |
+| #69 | Favorieten           | **Must** | Was Must in originele scope                                        |
+| #70 | Contact              | **Must** | Contact opnemen = de conversie van de zoekkant                     |
+| #20 | Close-by kaart       | Should   | POI's (school, station, winkels), was Should in originele scope    |
+| #25 | Uitgelichte koten    | Should   | Spotlight = fase 2-monetisatie; UI kan eerder                      |
+| #9  | Interactive FAQ form | Should   | Wetgeving/info-sectie; verhoogt vertrouwen                         |
+
+## 4. Beheerdashboard (Filament — de wig)
+
+| #   | Item                                          | MoSCoW   | Motivatie                                                                              |
+| --- | --------------------------------------------- | -------- | -------------------------------------------------------------------------------------- |
+| #47 | Gebouwen aanmaken                             | **Must** | Kern beheermodel: gebouw → kot → huurder                                               |
+| #49 | Koten aanmaken in het gebouw                  | **Must** | —                                                                                      |
+| #51 | Detailpagina kot aanmaken/bewerken            | **Must** | —                                                                                      |
+| #52 | Faciliteiten toevoegen en bewerken            | **Must** | Voedt zoekfilters                                                                      |
+| #53 | Foto's uploaden per kot                       | **Must** | Combineer met webp (#68) — geen Base64 meer                                            |
+| #50 | Link huurder–kot + document                   | **Must** | Dé kern van de loop: contract koppelt kamer aan huurder                                |
+| #46 | Overzicht studenten per kot                   | **Must** | Portfolio-overzicht verhuurder                                                         |
+| #55 | Huurder upload document, auto-gelinkt aan kot | **Must** | Documenten centraliseren = kernmotivatie van het project                               |
+| #66 | Contractgeneratie                             | **Must** | Grootste differentiator t.o.v. alle zoeksites (alleen MyKot heeft iets vergelijkbaars) |
+| #67 | Algemene CSV export modal                     | Should   | Handig voor verhuurders, niet blokkerend                                               |
+| #62 | Statspage                                     | Should   | Bezettingsgraad/overzicht — basis kan in Filament-widgets                              |
+| #54 | Kaart beheer met plaatsen in de buurt         | Could    | Admin-POI-beheer; pas nuttig met meerdere steden                                       |
+
+## 5. Communicatie
+
+| #   | Item                  | MoSCoW   | Motivatie                                                     |
+| --- | --------------------- | -------- | ------------------------------------------------------------- |
+| #56 | Chatpage              | **Must** | Centraliseren van communicatie = bestaansreden van KotCompass |
+| #28 | Template mail         | **Must** | Transactionele mails (registratie, koppeling, melding)        |
+| #29 | Mailpit               | **Must** | Mail lokaal testen vanaf dag één                              |
+| #32 | Mailscore controleren | **Must** | Deliverability-tuning; pas relevant bij volume                |
+
+## 6. Kotscore-systeem (nieuw — differentiator)
+
+> Vertrouwen is de positionering en de score ondersteunt dat, maar zonder reviews is het systeem leeg (cold start). Bouw de basis als Should; release pas zichtbaar mét enquête-data.
+
+| #   | Item                                             | MoSCoW | Motivatie                                                                                                   |
+| --- | ------------------------------------------------ | ------ | ----------------------------------------------------------------------------------------------------------- |
+| #17 | Kotscore (overkoepelend)                         | Should | —                                                                                                           |
+| #35 | Algemene scores berekenen                        | Should | Rekenkern eerst                                                                                             |
+| #36 | Aparte score verhuurder + gebouw                 | Should | Granulariteit verhuurder/gebouw                                                                             |
+| #39 | Enquête na stopzetten huurperiode (anoniem)      | Should | Dé databron — zonder dit geen scores                                                                        |
+| #38 | Badge voor de score                              | Should | Zichtbaarheid in zoekresultaten                                                                             |
+| #40 | Verhuurder kan totale scores bekijken            | Should | Feedback-loop verhuurder                                                                                    |
+| #41 | Huurders zien geen score-details op detailpagina | Should | Privacy-regel, hoort bij score-release, verhuurder ziet enkel de opbouw van de score in verband met het kot |
+| #23 | Filtering kotscore + uitgelicht                  | Could  | Filteren op score pas zinvol met genoeg data                                                                |
+| #37 | Verwerking score in uitgelichte koten            | Could  | Idem                                                                                                        |
+
+## 7. Monetisatie (fase 2 — zie marktonderzoek §8.4)
+
+> Gratis instap eerst (cold start oplossen), daarna pas betaald. Alles Should: bouwen mag, launch-blocker is het niet.
+
+| #   | Item                             | MoSCoW | Motivatie                                             |
+| --- | -------------------------------- | ------ | ----------------------------------------------------- |
+| #10 | Stripe koppeling                 | Should | Herbruikbare kennis uit MVP                           |
+| #11 | Laravel Cashier                  | Should | Abonnementen netjes via Cashier i.p.v. handwerk       |
+| #12 | Abonnement koppeling             | Should | Beheer-abonnement = fase 3-omzetmodel                 |
+| #13 | Overzicht abonnementen / credits | Should | —                                                     |
+| #14 | Checkout page                    | Should | Transparante facturatie (anti-Rentola, zie onderzoek) |
+
+## 8. Design & branding
+
+| #   | Item                             | MoSCoW   | Motivatie                                       |
+| --- | -------------------------------- | -------- | ----------------------------------------------- |
+| #33 | Responsive / mobile-first design | **Must** | Studenten zoeken mobiel                         |
+| #48 | Kleurenpalette                   | **Must** | Huisstijl bestaat al — design tokens overzetten |
+| #34 | Fonts                            | **Must** | Area via Typekit, zelfde als MVP                |
+
+## 9. Legal & compliance
+
+| #   | Item           | MoSCoW   | Motivatie                                                          |
+| --- | -------------- | -------- | ------------------------------------------------------------------ |
+| #63 | Privacy policy | **Must** | GDPR: platform = verwerkingsverantwoordelijke (zie onderzoek §5.3) |
+| #64 | Cookie policy  | **Must** | —                                                                  |
+| #65 | General policy | **Must** | Algemene voorwaarden vóór eerste echte gebruiker                   |
+
+## Won't haves (v1)
+
+- Eigen betaalafhandeling van huurgeld (was ook Won't in originele scope)
+- itsme-verificatie, MyRent-registratie, bankkoppelingen — fase 3, pas als we Kotmaster frontaal aanvallen met een volledig geïntegreerd platform + monetisatie
+- Kotmatcher / Kotswiper
+- Native app
+- Plattegronden van koten
+
+## Aanbevolen bouwvolgorde
+
+1. **Sprint 1**
+    1. fundament: #8, #75, #42, #43, #44, #45, #48, #34, #73
+    2. beheer (Filament): module 4 volledig, dit is ons datamodel en onze wig
+2. **Sprint 2**
+    1. zoekplatform: module 3 + auth/profiel (module 2)
+    2. communicatie + legal: #56, #28, #29, #63–65, responsive pass (#33)
+3. **Sprint 3 (finalisatie):** kotscore-basis + enquête, monetisatie, spotlight, 2FA
+
+> Logica: beheer eerst, want het datamodel (gebouw → kot → contract → huurder) bepaalt alles wat de zoekkant toont. Zo bouwen we nooit twee keer.
