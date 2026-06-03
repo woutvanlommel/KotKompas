@@ -1,6 +1,6 @@
 # Scope & MoSCoW — Laravel/Filament rebuild
 
-Volledige herbouw van KotCompass met Laravel + Filament. Deze scope mapt alle 65 backlog-items (#1–#75) naar modules en MoSCoW-prioriteiten, onderbouwd vanuit het [[School/KotCompass/KotCompass-Marktonderzoek.docx|marktonderzoek]].
+Volledige herbouw van KotCompass met Laravel + Filament. Deze scope mapt alle 65 backlog-items (#1–#75) naar modules en MoSCoW-prioriteiten.
 
 ## Scope statement
 
@@ -21,7 +21,7 @@ Volledige herbouw van KotCompass met Laravel + Filament. Deze scope mapt alle 65
 | Must       | 41     | Zonder dit geen werkende end-to-end loop      |
 | Should     | 20     | Differentiators & fase 2 — direct na de Musts |
 | Could      | 4      | Pas waardevol met schaal/data                 |
-| Won't      | —      | Expliciet uitgesteld, zie onderaan            |
+| Won't      | /      | Expliciet uitgesteld, zie onderaan            |
 
 ---
 
@@ -45,7 +45,7 @@ Volledige herbouw van KotCompass met Laravel + Filament. Deze scope mapt alle 65
 | --- | ------------------------------ | -------- | -------------------------------------------------------- |
 | #5  | Custom login/registration page | **Must** | Eigen huisstijl, geen Filament-default voor publiek      |
 | #6  | Registrate form                | **Must** | Instappunt beide doelgroepen                             |
-| #7  | Login form                     | **Must** | —                                                        |
+| #7  | Login form                     | **Must** | -                                                        |
 | #2  | Password change                | **Must** | Basis accountbeheer                                      |
 | #3  | Profilepage form               | **Must** | Profieldata voedt contractgeneratie (#66)                |
 | #1  | Profile picture                | Should   | Niet blokkerend, triviaal met Filament/media library     |
@@ -149,9 +149,14 @@ Volledige herbouw van KotCompass met Laravel + Filament. Deze scope mapt alle 65
 
 ## Aanbevolen bouwvolgorde
 
-1. **Sprint 1** — fundament: #8, #75, #42, #43, #44, #45, #48, #34, #73 - beheer (Filament):\*\* module 4 volledig — dit is ons datamodel en onze wig
-2. **Sprint 2** — zoekplatform:** module 3 + auth/profiel (module 2)
+1. **Sprint 1**
+   — fundament: #8, #75, #42, #43, #44, #45, #48, #34, #73 - beheer (Filament):\*\* module 4 volledig
+   — dit is ons datamodel en onze wig
+2. **Sprint 2**
+   — zoekplatform:** module 3 + auth/profiel (module 2)
    — communicatie + legal:** #56, #28, #29, #63–65, responsive pass (#33)
-3. **Sprint 3 (finalisatie)** kotscore-basis + enquête, monetisatie, spotlight, 2FA
+3. **Sprint 3 (finalisatie)**
+
+- kotscore-basis + enquête, monetisatie, spotlight, 2FA
 
 > Logica: beheer eerst, want het datamodel (gebouw → kot → contract → huurder) bepaalt alles wat de zoekkant toont. Zo bouwen we nooit twee keer.
