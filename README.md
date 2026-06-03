@@ -150,8 +150,8 @@ Volledige herbouw van KotCompass met Laravel + Filament. Deze scope mapt alle 65
 ## Aanbevolen bouwvolgorde
 
 1. **Sprint 1**
-    1. fundament: #8, #75, #42, #43, #44, #45, #48, #34, #73 - beheer (Filament): module 4 volledig
-    2. dit is ons datamodel en onze wig
+    1. fundament: #8, #75, #42, #43, #44, #45, #48, #34, #73
+    2. beheer (Filament): module 4 volledig, dit is ons datamodel en onze wig
 2. **Sprint 2**
     1. zoekplatform: module 3 + auth/profiel (module 2)
     2. communicatie + legal: #56, #28, #29, #63–65, responsive pass (#33)
