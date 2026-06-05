@@ -6,6 +6,7 @@ use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Filament\FontProviders\LocalFontProvider;
 use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
@@ -29,8 +30,16 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->brandName('KotKompas Admin')
             ->login()
+            ->font(
+                'area-normal',
+                url: 'https://use.typekit.net/ztn2kjh.css',
+                provider: LocalFontProvider::class,
+            )
             ->colors([
-                'primary' => Color::Amber,
+                'primary' => Color::hex('#004e98'),
+                'info' => Color::hex('#3a6ea5'),
+                'warning' => Color::hex('#ff6700'),
+                'gray' => Color::hex('#c0c0c0'),
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
