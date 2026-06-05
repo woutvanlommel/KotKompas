@@ -31,7 +31,7 @@ class Room extends Model
             get: function () {
                 $total = $this->price_per_month;
                 if ($this->extra_costs) {
-                    $total += array_sum($this->extra_costs);
+                    $total += array_sum((array) $this->extra_costs);
                 }
 
                 return $total;
