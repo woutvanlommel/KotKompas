@@ -1,0 +1,255 @@
+@import '../../../../vendor/filament/filament/resources/css/theme.css';
+
+@source '../../../../app/Filament/Dashboard/**/*';
+@source '../../../../resources/views/filament/dashboard/**/*';
+@source '../../../../resources/views/vendor/filament-panels/**/*';
+
+/* Single source of truth for brand colours: the project Tailwind config. */
+@config '../../../../tailwind.config.ts';
+
+/*
+ * KotKompas — auth (per the user's sketch)
+ * White canvas, black type. Brand top-left, 3-line meta top-right, underline
+ * fields left-of-centre, a small submit by the fields, and the OTHER page's
+ * name set huge bottom-left as the switch link: outlined at rest, fills solid
+ * with an arrow on hover. Locked to one viewport — no scroll.
+ * Colours via theme(); only #fff/#000 are literal.
+ */
+.kk-auth {
+    --kk-ink: theme('colors.base-twee.900');
+    --kk-ink-soft: theme('colors.base-twee.700');
+    --kk-line: theme('colors.base-twee.400');
+    --kk-canvas: #fff;
+    --kk-accent: theme('colors.accent.DEFAULT');
+
+    height: 100dvh;
+    width: 100%;
+    overflow: hidden;
+    display: block;
+    background-color: var(--kk-canvas);
+    color: var(--kk-ink);
+    font-family: 'area-normal', ui-sans-serif, system-ui, sans-serif;
+}
+
+/* ---- Fixed header: brand left, 3-line meta right ---- */
+.kk-head {
+    position: fixed;
+    inset: 0 0 auto 0;
+    z-index: 10;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: clamp(1.25rem, 2.5vw, 2rem) clamp(1.5rem, 4vw, 3.5rem);
+}
+.kk-brand { font-size: 1.0625rem; font-weight: 500; letter-spacing: -0.02em; color: var(--kk-ink); }
+.kk-dot { color: var(--kk-accent); font-style: normal; }
+.kk-head-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    text-align: right;
+    gap: 0.1rem;
+    font-size: 0.6875rem;
+    line-height: 1.5;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--kk-ink-soft);
+}
+
+/* ---- Stage: fields left-of-centre ---- */
+.kk-stage {
+    position: relative;
+    height: 100dvh;
+    overflow: hidden;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
+    padding: clamp(6rem, 13vh, 9rem) clamp(1.5rem, 4vw, 3.5rem) clamp(8rem, 22vh, 13rem);
+}
+
+/* right-hand note, level with the form */
+.kk-aside {
+    align-self: center;
+    flex-shrink: 0;
+    max-width: 22rem;
+    text-align: left;
+}
+.kk-aside-label {
+    display: block;
+    margin-bottom: 1rem;
+    font-size: 0.6875rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--kk-ink-soft);
+}
+.kk-aside-text {
+    font-size: 0.9375rem;
+    line-height: 1.55;
+    letter-spacing: -0.01em;
+    color: var(--kk-ink);
+}
+.kk-aside-text + .kk-aside-text { margin-top: 0.9rem; }
+
+.kk-stage .fi-simple-main {
+    width: min(38rem, 58vw);
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+}
+.kk-stage .fi-logo { display: none; }
+
+/* heading hidden — brand + giant switch carry identity */
+.kk-stage .fi-simple-header-heading { display: none; }
+.kk-stage .fi-simple-header { margin: 0; text-align: left; }
+/* the subheading holds the giant switch link, pulled out of flow below */
+.kk-stage .fi-simple-header-subheading { margin: 0; }
+
+/* labels */
+.kk-stage .fi-fo-field-label-content {
+    color: var(--kk-ink-soft);
+    font-size: 0.625rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+.kk-stage .fi-fo-field-label-required-mark { color: var(--kk-accent); }
+
+/* inputs: underline */
+.kk-stage .fi-input-wrp {
+    border: 0;
+    border-radius: 0;
+    background-color: transparent;
+    box-shadow: inset 0 -1px 0 0 var(--kk-line);
+    transition: box-shadow 180ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.kk-stage .fi-input-wrp:focus-within { box-shadow: inset 0 -2px 0 0 var(--kk-accent); }
+.kk-stage .fi-input {
+    padding-inline-start: 0;
+    padding-block: 0.5rem;
+    background-color: transparent;
+    color: var(--kk-ink);
+    font-size: 1rem;
+}
+.kk-stage form { gap: 0.85rem; }
+
+/* eye toggle */
+.kk-stage .fi-input-wrp-suffix .fi-icon-btn {
+    color: var(--kk-ink-soft); opacity: 0.6; margin: 0; border-radius: 0;
+    transition: color 160ms ease, opacity 160ms ease;
+}
+.kk-stage .fi-input-wrp-suffix .fi-icon-btn:hover { color: var(--kk-accent); opacity: 1; }
+
+/* checkbox */
+.kk-stage .fi-checkbox-input {
+    appearance: none; -webkit-appearance: none;
+    width: 0.95rem; height: 0.95rem;
+    border: 1.5px solid var(--kk-line); border-radius: 0;
+    background-color: transparent; cursor: pointer; flex-shrink: 0; position: relative;
+    transition: border-color 140ms ease, background-color 140ms ease;
+}
+.kk-stage .fi-checkbox-input:hover { border-color: var(--kk-accent); }
+.kk-stage .fi-checkbox-input:checked { background-color: var(--kk-ink); border-color: var(--kk-ink); }
+.kk-stage .fi-checkbox-input:checked::after {
+    content: ""; position: absolute; inset: 2px; background-color: #fff;
+    clip-path: polygon(14% 46%, 0 60%, 40% 100%, 100% 22%, 86% 8%, 38% 70%);
+}
+
+/* radios */
+.kk-stage input[type="radio"] {
+    appearance: none; -webkit-appearance: none;
+    width: 1rem; height: 1rem;
+    border: 1.5px solid var(--kk-line); border-radius: 50%;
+    background-color: transparent; cursor: pointer; flex-shrink: 0; position: relative;
+    transition: border-color 140ms ease;
+}
+.kk-stage input[type="radio"]:hover,
+.kk-stage input[type="radio"]:checked { border-color: var(--kk-accent); }
+.kk-stage input[type="radio"]:checked::after {
+    content: ""; position: absolute; inset: 3px; border-radius: 50%; background-color: var(--kk-accent);
+}
+.kk-stage .fi-fo-radio-label-text { color: var(--kk-ink); }
+
+/* ---- Small submit (Inloggen / Registreren) — by the fields ---- */
+.kk-stage .fi-sc-actions { position: static; margin-top: 1.5rem; width: auto; }
+.kk-stage .fi-sc-actions .fi-ac { width: auto; }
+.kk-stage .fi-btn.fi-color-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45em;
+    padding: 0 0 0.35rem 0;
+    border: 0;
+    border-bottom: 1.5px solid var(--kk-ink);
+    border-radius: 0;
+    background: transparent !important;
+    box-shadow: none;
+    color: var(--kk-ink);
+    font-weight: 600;
+    font-size: 0.8125rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    transition: color 160ms ease, border-color 160ms ease;
+}
+.kk-stage .fi-btn.fi-color-primary::after {
+    content: "→";
+    color: var(--kk-accent);
+    transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.kk-stage .fi-btn.fi-color-primary:hover { color: var(--kk-accent); border-color: var(--kk-accent); }
+.kk-stage .fi-btn.fi-color-primary:hover::after { transform: translateX(0.25em); }
+
+/* ---- Giant switch word, bottom-left: outline → fill + arrow on hover ---- */
+.kk-switch {
+    position: fixed;
+    left: clamp(1.5rem, 4vw, 3.5rem);
+    bottom: clamp(1.25rem, 4vh, 3rem);
+    z-index: 6;
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.08em;
+    font-weight: 600;
+    font-size: clamp(2.5rem, 8vw, 7rem);
+    line-height: 0.9;
+    letter-spacing: -0.03em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: transparent;
+    -webkit-text-stroke: 1.5px var(--kk-ink);
+    transition: color 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.kk-switch:hover,
+.kk-switch:focus-visible { color: var(--kk-ink); }
+.kk-switch::after {
+    content: "→";
+    -webkit-text-stroke: 0;
+    color: var(--kk-accent);
+    font-size: 0.5em;
+    align-self: center;
+    opacity: 0;
+    transform: translateX(-0.4em);
+    transition: opacity 0.4s cubic-bezier(0.22, 1, 0.36, 1), transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.kk-switch:hover::after,
+.kk-switch:focus-visible::after { opacity: 1; transform: translateX(0.15em); }
+
+/* forgot-password (below password) */
+.kk-stage .fi-link {
+    color: var(--kk-ink-soft);
+    font-weight: 500;
+    font-size: 0.8125rem;
+    text-underline-offset: 3px;
+}
+.kk-stage .fi-link:hover { color: var(--kk-accent); text-decoration-line: underline; }
+
+/* ---- Mobile: stack, allow height ---- */
+@media (max-width: 48rem) {
+    .kk-auth, .kk-stage { height: auto; min-height: 100dvh; overflow: visible; }
+    .kk-head-meta { display: none; }
+    .kk-aside { display: none; }
+    .kk-stage { align-items: flex-start; padding-top: 5rem; padding-bottom: 8rem; }
+    .kk-stage .fi-simple-main { width: 100%; }
+    .kk-switch { font-size: clamp(2.25rem, 13vw, 3.5rem); }
+}
