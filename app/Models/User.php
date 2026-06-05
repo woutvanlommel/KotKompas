@@ -37,7 +37,7 @@ class User extends Authenticatable
     protected function fullName(): Attribute
     {
         return Attribute::make(
-            get: fn () => "{$this->nane} {$this->lastname}",
+            get: fn () => "{$this->name} {$this->lastname}",
         );
     }
 }
