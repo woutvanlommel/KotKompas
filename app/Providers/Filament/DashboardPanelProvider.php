@@ -26,8 +26,8 @@ class DashboardPanelProvider extends PanelProvider
     {
         return $panel
             ->id('dashboard')
-            ->path('admin')
-            ->brandName('KotKompas Admin')
+            ->path('dashboard')
+            ->brandName('KotKompas')
             ->login()
             ->font(
                 'area-normal',
