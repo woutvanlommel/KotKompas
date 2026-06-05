@@ -6,8 +6,6 @@
 
         <title>{{ config('app.name', 'Laravel') }}</title>
 
-        @fonts
-
         <link rel="preconnect" href="https://use.typekit.net" crossorigin>
         <link rel="stylesheet" href="https://use.typekit.net/ztn2kjh.css">
 
