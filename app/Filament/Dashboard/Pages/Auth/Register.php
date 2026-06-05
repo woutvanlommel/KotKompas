@@ -8,6 +8,7 @@ use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Component;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Illuminate\Database\Eloquent\Model;
 use SensitiveParameter;
@@ -56,7 +57,8 @@ class Register extends BaseRegister
     {
         return DatePicker::make('date_of_birth')
             ->label('Geboortedatum')
-            ->required()
+            ->visible(fn (Get $get): bool => $get('role') === 'huurder')
+            ->required(fn (Get $get): bool => $get('role') === 'huurder')
             ->maxDate(now()->subYears(16)->toDateString());
     }
 
@@ -68,6 +70,7 @@ class Register extends BaseRegister
                 'huurder' => 'Huurder (student/ketter)',
                 'verhuurder' => 'Verhuurder (eigenaar/agent)',
             ])
+            ->live()
             ->required();
     }
 
