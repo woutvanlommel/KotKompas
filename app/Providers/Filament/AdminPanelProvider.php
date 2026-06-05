@@ -67,7 +67,7 @@ class AdminPanelProvider extends PanelProvider
                 Authenticate::class,
             ])
             ->renderHook(
-                PanelsRenderHook::SIDEBAR_NAV_END,
+                PanelsRenderHook::SIDEBAR_FOOTER,
                 fn () => view('components.filament.profile-nav-item'),
             );
     }
