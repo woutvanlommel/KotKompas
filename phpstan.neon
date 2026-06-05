@@ -1,0 +1,13 @@
+includes:
+    # Uncomment once you install Larastan:
+     - vendor/larastan/larastan/extension.neon
+
+parameters:
+    paths:
+        - app
+
+    level: 5
+
+    ignoreErrors:
+
+    excludePaths:
