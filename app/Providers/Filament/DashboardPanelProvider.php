@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Dashboard\Pages\Auth\Register;
 use Filament\FontProviders\LocalFontProvider;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -29,6 +30,8 @@ class DashboardPanelProvider extends PanelProvider
             ->path('dashboard')
             ->brandName('KotKompas')
             ->login()
+            ->registration(Register::class)
+            ->passwordReset()
             ->font(
                 'area-normal',
                 url: 'https://use.typekit.net/ztn2kjh.css',
