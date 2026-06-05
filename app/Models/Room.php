@@ -33,6 +33,7 @@ class Room extends Model
                 if ($this->extra_costs) {
                     $total += array_sum($this->extra_costs);
                 }
+
                 return $total;
             },
         );

@@ -27,6 +27,7 @@ class Building extends Model
         return Attribute::make(
             get: function () {
                 $box = $this->box ? " bus {$this->box}" : '';
+
                 return "{$this->street} {$this->house_number}{$box}, {$this->postal_code} {$this->city}, {$this->country}";
             },
         );
