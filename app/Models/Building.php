@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 #[Fillable(['landlord_id', 'name', 'description', 'street', 'house_number', 'box', 'postal_code', 'city', 'country', 'longitude', 'latitude'])]
 class Building extends Model
 {
-    /** @use HasFactory<\Database\Factories\BuildingFactory> */
+    /** @use HasFactory<BuildingFactory> */
     use HasFactory;
 
     protected function casts(): array
