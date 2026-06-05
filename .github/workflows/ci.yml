@@ -95,7 +95,7 @@ jobs:
         run: php artisan key:generate
 
       - name: Run tests
-        run: php artisan test --parallel
+        run: php artisan test
 
 
   backend-static-analysis:
