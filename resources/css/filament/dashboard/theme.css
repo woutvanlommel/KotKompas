@@ -21,6 +21,7 @@
     --kk-line: theme('colors.base-twee.400');
     --kk-canvas: #fff;
     --kk-accent: theme('colors.accent.DEFAULT');
+    --kk-azure: theme('colors.secondary.DEFAULT');   /* mid steel — white & black both read */
 
     height: 100dvh;
     width: 100%;
@@ -66,7 +67,7 @@
     justify-content: space-between;
     align-items: center;
     gap: 2rem;
-    padding: clamp(6rem, 13vh, 9rem) clamp(1.5rem, 4vw, 3.5rem) clamp(8rem, 22vh, 13rem);
+    padding: clamp(5.5rem, 11vh, 8rem) clamp(1.5rem, 4vw, 3.5rem) clamp(9rem, 26vh, 14rem);
 }
 
 /* right-hand note, level with the form */
@@ -143,19 +144,25 @@
 }
 .kk-stage .fi-input-wrp-suffix .fi-icon-btn:hover { color: var(--kk-accent); opacity: 1; }
 
-/* checkbox */
+/* checkbox (remember me) — OFF = circle, ON = square with a dash */
 .kk-stage .fi-checkbox-input {
     appearance: none; -webkit-appearance: none;
-    width: 0.95rem; height: 0.95rem;
-    border: 1.5px solid var(--kk-line); border-radius: 0;
+    width: 1.05rem; height: 1.05rem;
+    border: 1.5px solid var(--kk-line); border-radius: 50%;   /* off = circle */
     background-color: transparent; cursor: pointer; flex-shrink: 0; position: relative;
-    transition: border-color 140ms ease, background-color 140ms ease;
+    transition: border-radius 200ms cubic-bezier(0.22, 1, 0.36, 1), border-color 140ms ease, background-color 140ms ease;
 }
 .kk-stage .fi-checkbox-input:hover { border-color: var(--kk-accent); }
-.kk-stage .fi-checkbox-input:checked { background-color: var(--kk-ink); border-color: var(--kk-ink); }
-.kk-stage .fi-checkbox-input:checked::after {
-    content: ""; position: absolute; inset: 2px; background-color: #fff;
-    clip-path: polygon(14% 46%, 0 60%, 40% 100%, 100% 22%, 86% 8%, 38% 70%);
+.kk-stage .fi-checkbox-input:checked {
+    border-radius: 3px;                                       /* on = square */
+    background-color: var(--kk-ink);
+    border-color: var(--kk-ink);
+}
+.kk-stage .fi-checkbox-input:checked::after {                 /* the dash */
+    content: ""; position: absolute;
+    left: 24%; right: 24%; top: 50%;
+    height: 1.5px; transform: translateY(-50%);
+    background-color: #fff;
 }
 
 /* radios */
@@ -173,67 +180,119 @@
 }
 .kk-stage .fi-fo-radio-label-text { color: var(--kk-ink); }
 
-/* ---- Small submit (Inloggen / Registreren) — by the fields ---- */
-.kk-stage .fi-sc-actions { position: static; margin-top: 1.5rem; width: auto; }
+/* ---- Submit (Inloggen / Registreren) — Ynarchive "Start a project" pill ---- */
+.kk-stage .fi-sc-actions { position: static; margin-top: 1.75rem; width: auto; }
 .kk-stage .fi-sc-actions .fi-ac { width: auto; }
-.kk-stage .fi-btn.fi-color-primary {
+
+.kk-stage .fi-btn.kk-cta {
     display: inline-flex;
     align-items: center;
-    gap: 0.45em;
-    padding: 0 0 0.35rem 0;
+    gap: 0.5rem;
+    width: auto;
+    height: 2.5rem;
+    padding: 0 0.3rem 0 1rem;
     border: 0;
-    border-bottom: 1.5px solid var(--kk-ink);
-    border-radius: 0;
-    background: transparent !important;
+    border-radius: 3px;
+    background-color: var(--kk-ink) !important;
+    color: #fff;
+    font-family: 'area-normal', sans-serif;
+    font-weight: 500;
+    font-size: 0.75rem;
+    letter-spacing: 0.01em;
+    text-transform: none;
     box-shadow: none;
-    color: var(--kk-ink);
-    font-weight: 600;
-    font-size: 0.8125rem;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    transition: color 160ms ease, border-color 160ms ease;
 }
-.kk-stage .fi-btn.fi-color-primary::after {
-    content: "→";
-    color: var(--kk-accent);
-    transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
-}
-.kk-stage .fi-btn.fi-color-primary:hover { color: var(--kk-accent); border-color: var(--kk-accent); }
-.kk-stage .fi-btn.fi-color-primary:hover::after { transform: translateX(0.25em); }
+.kk-stage .fi-btn.kk-cta .kk-cta-label { line-height: 1; vertical-align: middle; }
 
-/* ---- Giant switch word, bottom-left: outline → fill + arrow on hover ---- */
+/* light chip on the right holding the arrow */
+.kk-stage .kk-cta-chip {
+    display: inline-flex;
+    vertical-align: middle;
+    margin-left: 0.6rem;
+    position: relative;
+    height: 1.75rem;
+    width: 1.75rem;
+    flex-shrink: 0;
+    overflow: hidden;
+    border-radius: 2px;
+    background-color: #fff;
+    color: var(--kk-ink);
+}
+.kk-stage .kk-cta-arrow {
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    width: 0.75rem;
+    height: auto;
+    transition: transform 0.5s cubic-bezier(0.65, 0, 0.35, 1);
+}
+.kk-stage .kk-cta-arrow--in { transform: translate(-220%, 220%); }
+.kk-stage .fi-btn.kk-cta:hover .kk-cta-arrow--out { transform: translate(220%, -220%); }
+.kk-stage .fi-btn.kk-cta:hover .kk-cta-arrow--in { transform: translate(0, 0); }
+
+/* ---- Floor band: solid steel-azure (the backdrop the giant word fills against) ---- */
+.kk-floor {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: clamp(8.5rem, 26vh, 14rem);
+    z-index: 4;
+    background-color: var(--kk-azure);
+}
+
+/* ---- Giant switch word, bottom-left ----
+   White on the azure floor; on hover a black fill rises bottom→top through the
+   letters (border included), and the ep1 arrow rotates + darkens in lock-step. */
 .kk-switch {
     position: fixed;
     left: clamp(1.5rem, 4vw, 3.5rem);
     bottom: clamp(1.25rem, 4vh, 3rem);
     z-index: 6;
     display: inline-flex;
-    align-items: baseline;
-    gap: 0.08em;
-    font-weight: 600;
-    font-size: clamp(2.5rem, 8vw, 7rem);
+    align-items: center;
+    gap: 0.32em;
+    font-weight: 500;
+    font-size: clamp(3rem, 9.5vw, 8.5rem);
     line-height: 0.9;
-    letter-spacing: -0.03em;
+    letter-spacing: -0.045em;
     text-transform: uppercase;
     text-decoration: none;
-    color: transparent;
-    -webkit-text-stroke: 1.5px var(--kk-ink);
-    transition: color 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+    color: #fff;
 }
-.kk-switch:hover,
-.kk-switch:focus-visible { color: var(--kk-ink); }
-.kk-switch::after {
-    content: "→";
-    -webkit-text-stroke: 0;
-    color: var(--kk-accent);
-    font-size: 0.5em;
-    align-self: center;
-    opacity: 0;
-    transform: translateX(-0.4em);
-    transition: opacity 0.4s cubic-bezier(0.22, 1, 0.36, 1), transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+
+.kk-switch-word {
+    -webkit-text-stroke: 1px #fff;
+    background-image: linear-gradient(#fff 50%, #000 50%);
+    background-size: 100% 200%;
+    background-position: 0 0;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    transition: background-position 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+                -webkit-text-stroke-color 0.6s cubic-bezier(0.22, 1, 0.36, 1);
 }
-.kk-switch:hover::after,
-.kk-switch:focus-visible::after { opacity: 1; transform: translateX(0.15em); }
+.kk-switch:hover .kk-switch-word,
+.kk-switch:focus-visible .kk-switch-word {
+    background-position: 0 100%;        /* black rises up */
+    -webkit-text-stroke-color: #000;    /* border goes white → black too */
+}
+
+/* ep1 footer arrow — up-arrow, rotates 45° → 90°, darkens with the text */
+.kk-arrow {
+    width: 0.62em;
+    height: auto;
+    flex-shrink: 0;
+    color: #fff;
+    transform: rotate(45deg);
+    transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+                color 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.kk-switch:hover .kk-arrow,
+.kk-switch:focus-visible .kk-arrow {
+    transform: rotate(90deg);
+    color: #000;
+}
 
 /* forgot-password (below password) */
 .kk-stage .fi-link {

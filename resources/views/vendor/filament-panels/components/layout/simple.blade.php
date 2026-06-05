@@ -21,6 +21,9 @@
     <div class="fi-simple-layout kk-auth">
         {{ \Filament\Support\Facades\FilamentView::renderHook(\Filament\View\PanelsRenderHook::SIMPLE_LAYOUT_START, scopes: $renderHookScopes) }}
 
+        {{-- Steel-azure floor: the non-white backdrop the giant word fills against --}}
+        <div class="kk-floor" aria-hidden="true"></div>
+
         {{-- Fixed editorial header — brand left, context right, hairline rule under --}}
         <header class="kk-head">
             <span class="kk-brand">KotKompas<i class="kk-dot">.</i></span>
