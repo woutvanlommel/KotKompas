@@ -3,8 +3,8 @@
 namespace App\Models;
 
 use Database\Factories\BuildingFactory;
-use Illuminate\Database\Eloquent\Attributes\Attribute;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -22,10 +22,13 @@ class Building extends Model
         ];
     }
 
-    #[Attribute]
-    public function fullAddress(): string
+    protected function fullAddress(): Attribute
     {
-        $box = $this->box ? " bus {$this->box}" : '';
-        return "{$this->street} {$this->house_number}{$box}, {$this->postal_code} {$this->city}, {$this->country}";
+        return Attribute::make(
+            get: function () {
+                $box = $this->box ? " bus {$this->box}" : '';
+                return "{$this->street} {$this->house_number}{$box}, {$this->postal_code} {$this->city}, {$this->country}";
+            },
+        );
     }
 }
