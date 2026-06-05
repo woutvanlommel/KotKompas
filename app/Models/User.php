@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['firstname', 'lastname', 'email', 'phone', 'date_of_birth', 'password'])]
+#[Fillable(['name', 'lastname', 'email', 'phone', 'date_of_birth', 'password'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -36,7 +36,7 @@ class User extends Authenticatable
     protected function fullName(): Attribute
     {
         return Attribute::make(
-            get: fn () => "{$this->firstname} {$this->lastname}",
+            get: fn() => "{$this->nane} {$this->lastname}",
         );
     }
 }
