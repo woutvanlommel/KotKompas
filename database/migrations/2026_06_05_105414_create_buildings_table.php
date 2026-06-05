@@ -21,7 +21,6 @@ return new class extends Migration
             $table->bigInteger('postal_code');
             $table->string('box')->nullable();
             $table->string('city');
-            $table->string('city');
             $table->string('country');
             $table->decimal('longitude', 11, 8)->nullable();
             $table->decimal('latitude', 10, 8)->nullable();
