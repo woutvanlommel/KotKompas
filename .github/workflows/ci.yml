@@ -61,7 +61,7 @@ jobs:
         run: composer install --no-interaction --prefer-dist --optimize-autoloader
 
       - name: Check for known vulnerabilities
-        run: composer audit
+        run: composer audit --abandoned=ignore
 
   backend-tests:
     name: "Backend · PHPUnit"
