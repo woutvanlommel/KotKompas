@@ -2,7 +2,10 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Dashboard\Pages\Auth\Login;
 use App\Filament\Dashboard\Pages\Auth\Register;
+use App\Filament\Dashboard\Pages\Auth\RequestPasswordReset;
+use App\Filament\Dashboard\Pages\Auth\ResetPassword;
 use Filament\FontProviders\LocalFontProvider;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -12,8 +15,10 @@ use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
+use Filament\View\PanelsRenderHook;
 use Filament\Widgets\AccountWidget;
 use Filament\Widgets\FilamentInfoWidget;
+use Illuminate\Contracts\View\View;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
@@ -28,10 +33,21 @@ class DashboardPanelProvider extends PanelProvider
         return $panel
             ->id('dashboard')
             ->path('dashboard')
+            ->viteTheme('resources/css/filament/dashboard/theme.css')
             ->brandName('KotKompas')
-            ->login()
+            ->favicon(asset('img/favicon-256.png'))
+            ->darkMode(false)
+            ->login(Login::class)
             ->registration(Register::class)
-            ->passwordReset()
+            ->passwordReset(RequestPasswordReset::class, ResetPassword::class)
+            ->renderHook(
+                PanelsRenderHook::AUTH_LOGIN_FORM_AFTER,
+                fn (): View => view('filament.dashboard.auth.social'),
+            )
+            ->renderHook(
+                PanelsRenderHook::AUTH_REGISTER_FORM_AFTER,
+                fn (): View => view('filament.dashboard.auth.social'),
+            )
             ->font(
                 'area-normal',
                 url: 'https://use.typekit.net/ztn2kjh.css',
