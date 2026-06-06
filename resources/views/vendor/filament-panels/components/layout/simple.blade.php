@@ -21,12 +21,10 @@
     <div class="fi-simple-layout kk-auth">
         {{ \Filament\Support\Facades\FilamentView::renderHook(\Filament\View\PanelsRenderHook::SIMPLE_LAYOUT_START, scopes: $renderHookScopes) }}
 
-        {{-- Steel-azure floor: the non-white backdrop the giant word fills against --}}
-        <div class="kk-floor" aria-hidden="true"></div>
 
-        {{-- Fixed editorial header — brand left, context right, hairline rule under --}}
-        <header class="kk-head">
-            <span class="kk-brand">KotKompas<i class="kk-dot">.</i></span>
+        {{-- Fixed editorial header — brand left --}}
+        <header class="fixed inset-x-0 top-0 z-10 flex items-start justify-between gap-4 px-[clamp(1.5rem,4vw,3.5rem)] py-[clamp(1.25rem,2.5vw,2rem)]">
+            <span class="font-sans text-[1.0625rem] font-medium tracking-[-0.02em] text-base-twee-900">KotKompas<i class="not-italic text-accent">.</i></span>
         </header>
 
         <div class="fi-simple-main-ctn kk-stage">
@@ -49,10 +47,10 @@
                 {{ $slot }}
             </main>
 
-            <aside class="kk-aside" aria-hidden="true">
-                <span class="kk-aside-label">(01) &mdash; Welkom</span>
-                <p class="kk-aside-text">Het kompas voor studentenkamers in Leuven. Log in om je kot te beheren, je aanvragen op te volgen en rechtstreeks met verhuurders te schakelen.</p>
-                <p class="kk-aside-text">Nog geen account? Maak er een en vind in een paar klikken jouw plek &mdash; of zet als verhuurder je kamers online en bereik duizenden studenten.</p>
+            <aside class="max-md:hidden shrink-0 self-start max-w-[22rem] pt-[0.4rem] text-left font-sans" aria-hidden="true">
+                <span class="mb-4 block text-[0.6875rem] uppercase tracking-[0.14em] text-base-twee-700">(01) &mdash; Welkom</span>
+                <p class="text-[0.9375rem] leading-[1.55] tracking-[-0.01em] text-base-twee-900">Het kompas voor studentenkamers in Leuven. Log in om je kot te beheren, je aanvragen op te volgen en rechtstreeks met verhuurders te schakelen.</p>
+                <p class="mt-[0.9rem] text-[0.9375rem] leading-[1.55] tracking-[-0.01em] text-base-twee-900">Nog geen account? Maak er een en vind in een paar klikken jouw plek &mdash; of zet als verhuurder je kamers online en bereik duizenden studenten.</p>
             </aside>
         </div>
 

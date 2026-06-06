@@ -32,66 +32,34 @@
     font-family: 'area-normal', ui-sans-serif, system-ui, sans-serif;
 }
 
-/* ---- Fixed header: brand left, 3-line meta right ---- */
-.kk-head {
+/* faint Leuven street-map behind everything — the navigation/kompas theme, abstract */
+.kk-auth::before {
+    content: "";
     position: fixed;
-    inset: 0 0 auto 0;
-    z-index: 10;
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 1rem;
-    padding: clamp(1.25rem, 2.5vw, 2rem) clamp(1.5rem, 4vw, 3.5rem);
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background-image: url('./auth-map.webp');
+    background-size: cover;
+    background-position: center;
+    opacity: 0.07;
 }
-.kk-brand { font-size: 1.0625rem; font-weight: 500; letter-spacing: -0.02em; color: var(--kk-ink); }
-.kk-dot { color: var(--kk-accent); font-style: normal; }
-.kk-head-meta {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    text-align: right;
-    gap: 0.1rem;
-    font-size: 0.6875rem;
-    line-height: 1.5;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--kk-ink-soft);
-}
+
+/* header + aside are Tailwind-utility classes in the blade (simple.blade.php) */
 
 /* ---- Stage: fields left-of-centre ---- */
 .kk-stage {
     position: relative;
+    z-index: 1;
     height: 100dvh;
     overflow: hidden;
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
     gap: 2rem;
-    padding: clamp(5.5rem, 11vh, 8rem) clamp(1.5rem, 4vw, 3.5rem) clamp(9rem, 26vh, 14rem);
+    padding: clamp(6rem, 13vh, 9rem) clamp(1.5rem, 4vw, 3.5rem) clamp(12rem, 32vh, 17rem);
 }
 
-/* right-hand note, level with the form */
-.kk-aside {
-    align-self: center;
-    flex-shrink: 0;
-    max-width: 22rem;
-    text-align: left;
-}
-.kk-aside-label {
-    display: block;
-    margin-bottom: 1rem;
-    font-size: 0.6875rem;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--kk-ink-soft);
-}
-.kk-aside-text {
-    font-size: 0.9375rem;
-    line-height: 1.55;
-    letter-spacing: -0.01em;
-    color: var(--kk-ink);
-}
-.kk-aside-text + .kk-aside-text { margin-top: 0.9rem; }
 
 .kk-stage .fi-simple-main {
     width: min(38rem, 58vw);
@@ -109,7 +77,7 @@
 /* the subheading holds the giant switch link, pulled out of flow below */
 .kk-stage .fi-simple-header-subheading { margin: 0; }
 
-/* labels */
+/* labels — mini, understated; the big input carries the type */
 .kk-stage .fi-fo-field-label-content {
     color: var(--kk-ink-soft);
     font-size: 0.625rem;
@@ -119,7 +87,7 @@
 }
 .kk-stage .fi-fo-field-label-required-mark { color: var(--kk-accent); }
 
-/* inputs: underline */
+/* inputs: big, type-forward — echoes the display word */
 .kk-stage .fi-input-wrp {
     border: 0;
     border-radius: 0;
@@ -130,53 +98,79 @@
 .kk-stage .fi-input-wrp:focus-within { box-shadow: inset 0 -2px 0 0 var(--kk-accent); }
 .kk-stage .fi-input {
     padding-inline-start: 0;
-    padding-block: 0.5rem;
+    padding-block: 0.35rem;
     background-color: transparent;
     color: var(--kk-ink);
-    font-size: 1rem;
+    font-size: clamp(1.2rem, 1.4vw, 1.45rem);
+    font-weight: 400;
+    letter-spacing: -0.015em;
 }
-.kk-stage form { gap: 0.85rem; }
+.kk-stage .fi-input::placeholder { color: var(--kk-line); letter-spacing: -0.01em; }
+.kk-stage form { gap: 0.55rem; }
 
-/* eye toggle */
+/* eye toggle — no default divider/box; sits inline on the same underline */
+.kk-stage .fi-input-wrp-suffix {
+    border-left: 0;
+    background-color: transparent;
+    padding-inline: 0;
+}
 .kk-stage .fi-input-wrp-suffix .fi-icon-btn {
     color: var(--kk-ink-soft); opacity: 0.6; margin: 0; border-radius: 0;
     transition: color 160ms ease, opacity 160ms ease;
 }
 .kk-stage .fi-input-wrp-suffix .fi-icon-btn:hover { color: var(--kk-accent); opacity: 1; }
 
-/* checkbox (remember me) — OFF = circle, ON = square with a dash */
+/* checkbox (remember me) — always a SQUARE box; the mark inside morphs dash → circle */
 .kk-stage .fi-checkbox-input {
     appearance: none; -webkit-appearance: none;
-    width: 1.05rem; height: 1.05rem;
-    border: 1.5px solid var(--kk-line); border-radius: 50%;   /* off = circle */
-    background-color: transparent; cursor: pointer; flex-shrink: 0; position: relative;
-    transition: border-radius 200ms cubic-bezier(0.22, 1, 0.36, 1), border-color 140ms ease, background-color 140ms ease;
+    width: 1.1rem; height: 1.1rem;
+    border: 1.5px solid var(--kk-ink); border-radius: 3px;   /* square, always */
+    background-color: var(--kk-ink);                          /* black box */
+    cursor: pointer; flex-shrink: 0; position: relative;
+    transition: border-color 160ms ease;
 }
-.kk-stage .fi-checkbox-input:hover { border-color: var(--kk-accent); }
-.kk-stage .fi-checkbox-input:checked {
-    border-radius: 3px;                                       /* on = square */
-    background-color: var(--kk-ink);
-    border-color: var(--kk-ink);
+
+/* inner mark (white): a vertical dash when off, morphs into a circle when on */
+.kk-stage .fi-checkbox-input::after {
+    content: "";
+    position: absolute; left: 50%; top: 50%;
+    width: 2px; height: 58%;
+    transform: translate(-50%, -50%);
+    border-radius: 1px;
+    background-color: #fff;
+    transition: width 280ms cubic-bezier(0.22, 1, 0.36, 1),
+                height 280ms cubic-bezier(0.22, 1, 0.36, 1),
+                border-radius 280ms cubic-bezier(0.22, 1, 0.36, 1);
 }
-.kk-stage .fi-checkbox-input:checked::after {                 /* the dash */
-    content: ""; position: absolute;
-    left: 24%; right: 24%; top: 50%;
-    height: 1.5px; transform: translateY(-50%);
+.kk-stage .fi-checkbox-input:checked::after {
+    width: 0.55rem; height: 0.55rem;
+    border-radius: 50%;
     background-color: #fff;
 }
 
-/* radios */
+/* radios (huurder / verhuurder) — same control language as the checkbox:
+   black square box, white vertical dash when off, morphs to a white circle when on */
 .kk-stage input[type="radio"] {
     appearance: none; -webkit-appearance: none;
-    width: 1rem; height: 1rem;
-    border: 1.5px solid var(--kk-line); border-radius: 50%;
-    background-color: transparent; cursor: pointer; flex-shrink: 0; position: relative;
-    transition: border-color 140ms ease;
+    width: 1.1rem; height: 1.1rem;
+    border: 1.5px solid var(--kk-ink); border-radius: 3px;
+    background-color: var(--kk-ink);
+    cursor: pointer; flex-shrink: 0; position: relative;
 }
-.kk-stage input[type="radio"]:hover,
-.kk-stage input[type="radio"]:checked { border-color: var(--kk-accent); }
+.kk-stage input[type="radio"]::after {
+    content: "";
+    position: absolute; left: 50%; top: 50%;
+    width: 2px; height: 58%;
+    transform: translate(-50%, -50%);
+    border-radius: 1px;
+    background-color: #fff;
+    transition: width 280ms cubic-bezier(0.22, 1, 0.36, 1),
+                height 280ms cubic-bezier(0.22, 1, 0.36, 1),
+                border-radius 280ms cubic-bezier(0.22, 1, 0.36, 1);
+}
 .kk-stage input[type="radio"]:checked::after {
-    content: ""; position: absolute; inset: 3px; border-radius: 50%; background-color: var(--kk-accent);
+    width: 0.55rem; height: 0.55rem;
+    border-radius: 50%;
 }
 .kk-stage .fi-fo-radio-label-text { color: var(--kk-ink); }
 
@@ -184,7 +178,7 @@
 .kk-stage .fi-sc-actions { position: static; margin-top: 1.75rem; width: auto; }
 .kk-stage .fi-sc-actions .fi-ac { width: auto; }
 
-.kk-stage .fi-btn.kk-cta {
+.kk-stage .kk-cta {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
@@ -200,9 +194,11 @@
     font-size: 0.75rem;
     letter-spacing: 0.01em;
     text-transform: none;
+    text-decoration: none;
     box-shadow: none;
+    cursor: pointer;
 }
-.kk-stage .fi-btn.kk-cta .kk-cta-label { line-height: 1; vertical-align: middle; }
+.kk-stage .kk-cta .kk-cta-label { line-height: 1; vertical-align: middle; }
 
 /* light chip on the right holding the arrow */
 .kk-stage .kk-cta-chip {
@@ -227,43 +223,49 @@
     transition: transform 0.5s cubic-bezier(0.65, 0, 0.35, 1);
 }
 .kk-stage .kk-cta-arrow--in { transform: translate(-220%, 220%); }
-.kk-stage .fi-btn.kk-cta:hover .kk-cta-arrow--out { transform: translate(220%, -220%); }
-.kk-stage .fi-btn.kk-cta:hover .kk-cta-arrow--in { transform: translate(0, 0); }
+.kk-stage .kk-cta:hover .kk-cta-arrow--out { transform: translate(220%, -220%); }
+.kk-stage .kk-cta:hover .kk-cta-arrow--in { transform: translate(0, 0); }
 
-/* ---- Floor band: solid steel-azure (the backdrop the giant word fills against) ---- */
-.kk-floor {
-    position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: clamp(8.5rem, 26vh, 14rem);
-    z-index: 4;
-    background-color: var(--kk-azure);
+/* ghost variant — secondary (wachtwoord vergeten): outlined, ink chip */
+.kk-stage a.kk-cta--ghost {
+    background-color: transparent !important;
+    color: var(--kk-ink);
+    border: 1.5px solid var(--kk-ink);
+    padding: 0 0.3rem 0 0.9rem;
 }
+.kk-stage a.kk-cta--ghost .kk-cta-chip {
+    background-color: var(--kk-ink);
+    color: #fff;
+}
+.kk-stage a.kk-cta--ghost:hover { background-color: var(--kk-ink) !important; color: #fff; }
+.kk-stage a.kk-cta--ghost:hover .kk-cta-chip { background-color: #fff; color: var(--kk-ink); }
 
 /* ---- Giant switch word, bottom-left ----
-   White on the azure floor; on hover a black fill rises bottom→top through the
-   letters (border included), and the ep1 arrow rotates + darkens in lock-step. */
+   Ink on the white canvas; on hover a pumpkin fill rises bottom→top through the
+   letters (border included), and the ep1 arrow rotates + turns accent in lock-step. */
 .kk-switch {
     position: fixed;
-    left: clamp(1.5rem, 4vw, 3.5rem);
-    bottom: clamp(1.25rem, 4vh, 3rem);
+    left: clamp(1rem, 3vw, 2.25rem);
+    bottom: clamp(0rem, 1.5vh, 1.25rem);
     z-index: 6;
     display: inline-flex;
-    align-items: center;
-    gap: 0.32em;
+    align-items: flex-end;
+    gap: 0.24em;
     font-weight: 500;
-    font-size: clamp(3rem, 9.5vw, 8.5rem);
-    line-height: 0.9;
-    letter-spacing: -0.045em;
+    font-size: clamp(4.5rem, 15vw, 15rem);   /* monumental — bleeds past the edges */
+    line-height: 0.78;
+    letter-spacing: -0.06em;
     text-transform: uppercase;
     text-decoration: none;
-    color: #fff;
+    white-space: nowrap;
+    color: var(--kk-ink);
 }
 
 .kk-switch-word {
-    -webkit-text-stroke: 1px #fff;
-    background-image: linear-gradient(#fff 50%, #000 50%);
+    line-height: 1.06;            /* contain the glyphs so the clipped fill covers them fully */
+    padding-bottom: 0.04em;
+    -webkit-text-stroke: 1px var(--kk-ink);
+    background-image: linear-gradient(var(--kk-ink) 50%, var(--kk-accent) 50%);
     background-size: 100% 200%;
     background-position: 0 0;
     -webkit-background-clip: text;
@@ -274,16 +276,16 @@
 }
 .kk-switch:hover .kk-switch-word,
 .kk-switch:focus-visible .kk-switch-word {
-    background-position: 0 100%;        /* black rises up */
-    -webkit-text-stroke-color: #000;    /* border goes white → black too */
+    background-position: 0 100%;                 /* pumpkin rises up */
+    -webkit-text-stroke-color: var(--kk-accent); /* border turns accent too */
 }
 
-/* ep1 footer arrow — up-arrow, rotates 45° → 90°, darkens with the text */
+/* ep1 footer arrow — up-arrow, rotates 45° → 90°, turns accent with the text */
 .kk-arrow {
     width: 0.62em;
     height: auto;
     flex-shrink: 0;
-    color: #fff;
+    color: var(--kk-ink);
     transform: rotate(45deg);
     transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1),
                 color 0.6s cubic-bezier(0.22, 1, 0.36, 1);
@@ -291,7 +293,7 @@
 .kk-switch:hover .kk-arrow,
 .kk-switch:focus-visible .kk-arrow {
     transform: rotate(90deg);
-    color: #000;
+    color: var(--kk-accent);
 }
 
 /* forgot-password (below password) */
@@ -306,9 +308,15 @@
 /* ---- Mobile: stack, allow height ---- */
 @media (max-width: 48rem) {
     .kk-auth, .kk-stage { height: auto; min-height: 100dvh; overflow: visible; }
-    .kk-head-meta { display: none; }
-    .kk-aside { display: none; }
-    .kk-stage { align-items: flex-start; padding-top: 5rem; padding-bottom: 8rem; }
-    .kk-stage .fi-simple-main { width: 100%; }
-    .kk-switch { font-size: clamp(2.25rem, 13vw, 3.5rem); }
+    .kk-stage { align-items: flex-start; padding: 5rem clamp(1.25rem, 5vw, 2rem) 3rem; }
+
+    /* form column stacks; the switch word flows to the bottom (no longer fixed) */
+    .kk-stage .fi-simple-main { width: 100%; display: flex; flex-direction: column; }
+    .kk-stage .fi-simple-header { order: 10; margin-top: 3rem; }
+
+    .kk-switch {
+        position: static;
+        font-size: clamp(2.5rem, 13vw, 4rem);
+        line-height: 0.85;
+    }
 }
