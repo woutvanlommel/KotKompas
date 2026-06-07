@@ -25,7 +25,7 @@
              under deep navy (opacity + overlay blend) with a gradient that anchors the bottom
              so the giant switch word + form panel stay legible. Static — no canvas/JS. --}}
         <div class="kk-bg" aria-hidden="true">
-            <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('{{ asset('img/hero-bg.jpg') }}');"></div>
+            <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('{{ asset('img/hero-test.jpg') }}');"></div>
             {{-- scrim: deep navy anchors the bottom-left (giant word + panel), eases toward the
                  bright top-right so the photo keeps its warm daylight instead of going flat-blue --}}
             <div class="absolute inset-0 bg-gradient-to-tr from-primary-900 via-primary-900/75 to-primary-900/20"></div>
