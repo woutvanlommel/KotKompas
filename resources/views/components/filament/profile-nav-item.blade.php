@@ -2,7 +2,7 @@
 
 <div class="px-3 pb-4 pt-2 border-t border-gray-200 dark:border-white/10">
     <a
-        href="{{ \App\Filament\Dashboard\Pages\Profile::getUrl() }}"
+        href="{{ route('filament.dashboard.pages.profile') }}"
         class="flex flex-row items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium cursor-pointer transition-colors duration-150 hover:bg-gray-100 dark:hover:bg-white/5"
     >
         <x-filament::avatar

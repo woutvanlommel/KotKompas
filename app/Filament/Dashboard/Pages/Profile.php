@@ -2,7 +2,7 @@
 
 namespace App\Filament\Dashboard\Pages;
 
-use Filament\Forms\Components\FileUpload;
+use Filament\Actions\Action;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
@@ -19,6 +19,15 @@ class Profile extends Page implements HasForms
     protected static bool $shouldRegisterNavigation = false;
 
     public ?array $data = [];
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            Action::make('edit')
+                ->label('Edit profile')
+                ->url(EditProfile::getUrl()),
+        ];
+    }
 
     public function mount(): void
     {
@@ -37,10 +46,6 @@ class Profile extends Page implements HasForms
         return $form
             ->schema([
                 Section::make()->schema([
-                    FileUpload::make('avatar')
-                        ->label('Profile picture')
-                        ->image()
-                        ->disabled(),
                     TextInput::make('name')
                         ->label('First name')
                         ->disabled(),
