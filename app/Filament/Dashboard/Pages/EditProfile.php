@@ -3,7 +3,6 @@
 namespace App\Filament\Dashboard\Pages;
 
 use Filament\Actions\Action;
-use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
@@ -39,9 +38,6 @@ class EditProfile extends Page implements HasForms
         return $form
             ->schema([
                 Section::make()->schema([
-                    FileUpload::make('avatar')
-                        ->label('Profile picture')
-                        ->image(),
                     TextInput::make('name')
                         ->label('First name')
                         ->disabled()
@@ -53,7 +49,8 @@ class EditProfile extends Page implements HasForms
                     TextInput::make('email')
                         ->label('Email')
                         ->email()
-                        ->required(),
+                        ->required()
+                        ->rules(['unique:users,email,' . auth()->id()]),
                     TextInput::make('phone')
                         ->label('Phone number')
                         ->tel(),
