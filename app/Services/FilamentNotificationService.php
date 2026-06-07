@@ -108,7 +108,7 @@ class FilamentNotificationService
      * Build the notification title: prepend emoji when given, fall back to a
      * sensible Dutch default when no custom title is provided.
      */
-    private static function buildTitle(?string $title, ?string $emoji, string $status): string
+    protected static function buildTitle(?string $title, ?string $emoji, string $status): string
     {
         $text = $title ?? static::defaultTitle($status);
 
@@ -120,7 +120,7 @@ class FilamentNotificationService
     /**
      * Dutch default titles per status — used when the caller provides no title.
      */
-    private static function defaultTitle(string $status): string
+    protected static function defaultTitle(string $status): string
     {
         return match ($status) {
             'success' => 'Gelukt',
