@@ -9,5 +9,8 @@ parameters:
     level: 5
 
     ignoreErrors:
+        -
+            identifier: property.notFound
+            path: app/Filament
 
     excludePaths:
