@@ -34,7 +34,7 @@ class Profile extends Page implements HasForms
         $user = auth()->user();
 
         $this->form->fill([
-            'name'  => $user->name,
+            'name' => $user->name,
             'lastname' => $user->lastname,
             'email' => $user->email,
             'phone' => $user->phone,

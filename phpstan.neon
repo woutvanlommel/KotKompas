@@ -8,6 +8,8 @@ parameters:
 
     level: 5
 
+    memory_limit: 512M
+
     ignoreErrors:
 
     excludePaths:
