@@ -1,0 +1,454 @@
+@import '../../../../vendor/filament/filament/resources/css/theme.css';
+
+@source '../../../../app/Filament/Dashboard/**/*';
+@source '../../../../resources/views/filament/dashboard/**/*';
+@source '../../../../resources/views/vendor/filament-panels/**/*';
+
+/* Single source of truth for brand colours: the project Tailwind config. */
+@config '../../../../tailwind.config.ts';
+
+/*
+ * KotKompas — auth (per the user's sketch)
+ * White canvas, black type. Brand top-left, 3-line meta top-right, underline
+ * fields left-of-centre, a small submit by the fields, and the OTHER page's
+ * name set huge bottom-left as the switch link: outlined at rest, fills solid
+ * with an arrow on hover. Locked to one viewport — no scroll.
+ * Colours via theme(); only #fff/#000 are literal.
+ */
+.kk-auth {
+    --kk-ink: #fff;                              /* text is white on the dark canvas */
+    --kk-ink-soft: rgba(255, 255, 255, 0.82);   /* labels — bumped for the lighter frosted panel */
+    --kk-line: rgba(255, 255, 255, 0.45);
+    --kk-accent: theme('colors.accent.DEFAULT');
+    --kk-hover: theme('colors.secondary.300');   /* hover highlight — cool cerulean, never the orange */
+    --kk-navy: theme('colors.primary.900');      /* near-black navy for inverted chips */
+
+    min-height: 100dvh;          /* fits in one viewport when content is short (login);
+                                    grows + lets the page scroll when it can't (register on
+                                    short screens) — never clips the form */
+    width: 100%;
+    overflow-x: hidden;
+    display: block;
+    background-color: theme('colors.primary.900');   /* fallback under the hero background */
+    color: var(--kk-ink);
+    font-family: 'area-normal', ui-sans-serif, system-ui, sans-serif;
+}
+
+.fi-body { overflow-x: hidden; }
+
+/* photographic hero background (ep1) sits behind everything; navy base is what the
+   overlay-blended photo layer mixes against */
+.kk-bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    display: block;
+    background-color: theme('colors.primary.900');   /* #00101e — ep1's auth base */
+}
+
+/* header + aside are Tailwind-utility classes in the blade (simple.blade.php) */
+
+/* ---- Stage: fields left-of-centre ---- */
+.kk-stage {
+    position: relative;
+    z-index: 1;
+    min-height: 100dvh;
+    overflow-x: hidden;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 2rem;
+    padding: clamp(4.5rem, 10vh, 7rem) clamp(1.5rem, 4vw, 3.5rem) clamp(10rem, 26vh, 13rem);
+}
+
+
+.kk-stage .fi-simple-main {
+    position: relative;
+    z-index: 2;                              /* sits ABOVE the giant switch word */
+    width: min(34rem, 58vw);
+    margin: 0;
+    padding: clamp(1.5rem, 2.4vw, 2.25rem);
+    background: rgba(255, 255, 255, 0.12);   /* frosted WHITE veil — lifts the panel off the dark
+                                                hero; text stays white (panel sits in the darkest
+                                                bottom-left scrim corner so contrast holds) */
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    border-radius: 10px;
+    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.32);
+    backdrop-filter: blur(14px);
+}
+.kk-stage .fi-logo { display: none; }
+
+/* heading = the editorial anchor above the form (gives the form a title + scale to
+   justify the monumental switch word below) */
+.kk-stage .fi-simple-header-heading {
+    font-weight: 500;
+    font-size: clamp(3.5rem, 6vw, 5.5rem);   /* display scale — the heading carries real authority */
+    line-height: 0.85;
+    letter-spacing: -0.05em;
+    color: var(--kk-ink);
+    margin-bottom: 0.8rem;
+}
+/* register is field-dense — drop the heading anchor + trim the reserve so the panelled
+   form fits one viewport. The switch word stays the SAME size as login (it sits BEHIND
+   the translucent panel, so the big type can overlap without colliding with the submit). */
+.kk-stage:has(input[type="radio"]) .fi-simple-header-heading { display: none; }
+.kk-stage:has(input[type="radio"]) { padding-bottom: clamp(7.5rem, 19vh, 10.5rem); }
+.kk-stage .fi-simple-header { margin: 0; text-align: left; }
+/* the subheading holds the giant switch link, pulled out of flow below */
+.kk-stage .fi-simple-header-subheading { margin: 0; }
+
+/* login only (no role radios, no reset back-link) is short — nudge its panel down a
+   touch so it sits less top-heavy; aside stays on the top rail. Desktop only. */
+@media (min-width: 48.0625rem) {
+    .kk-stage:not(:has(input[type="radio"])):not(:has(.fi-ac-link-action)) .fi-simple-main {
+        margin-top: clamp(2rem, 7vh, 5.5rem);
+    }
+}
+
+/* password-reset pages: heading + "terug naar inloggen" back link are in normal flow
+   (no giant switch word). Give the back link room under the heading and breathing space
+   before the fields — keyed on the back-action class so login/register stay untouched. */
+.kk-stage .fi-simple-header:has(.fi-ac-link-action) { margin-bottom: 2.25rem; align-items: flex-start; }
+.kk-stage .fi-simple-header-subheading:has(.fi-ac-link-action) { margin-top: 1.5rem; justify-content: flex-start; text-align: left; }
+/* reset heading is long ("Wachtwoord vergeten") — shrink it so it stays inside the panel */
+.kk-stage .fi-simple-header:has(.fi-ac-link-action) .fi-simple-header-heading { font-size: clamp(2.5rem, 5vw, 4rem); }
+
+/* labels — mini, understated; the big input carries the type */
+.kk-stage .fi-fo-field-label-content {
+    color: var(--kk-ink-soft);
+    font-size: 0.625rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+.kk-stage .fi-fo-field-label-required-mark { color: var(--kk-accent); }
+
+/* inputs: big, type-forward — echoes the display word */
+.kk-stage .fi-input-wrp {
+    border: 0;
+    border-radius: 0;
+    background-color: transparent;
+    box-shadow: inset 0 -1px 0 0 var(--kk-line);
+    transition: box-shadow 180ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.kk-stage .fi-input-wrp:focus-within { box-shadow: inset 0 -2px 0 0 var(--kk-ink); }
+.kk-stage .fi-input {
+    padding-inline-start: 0;
+    padding-block: 0.3rem;
+    background-color: transparent;
+    color: var(--kk-ink);
+    font-size: clamp(1.15rem, 1.3vw, 1.4rem);
+    font-weight: 400;
+    letter-spacing: -0.015em;
+}
+.kk-stage .fi-input::placeholder { color: var(--kk-line); letter-spacing: -0.01em; }
+.kk-stage form { gap: 0.45rem; }
+
+/* native date picker icon (geboortedatum) — invert the black browser glyph to white */
+.kk-stage input::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    opacity: 0.65;
+    cursor: pointer;
+    transition: opacity 160ms ease;
+}
+.kk-stage input::-webkit-calendar-picker-indicator:hover { opacity: 1; }
+
+/* eye toggle — no default divider/box; sits inline on the same underline */
+.kk-stage .fi-input-wrp-suffix {
+    border-left: 0;
+    background-color: transparent;
+    padding-inline: 0;
+}
+.kk-stage .fi-input-wrp-suffix .fi-icon-btn {
+    color: var(--kk-ink-soft); opacity: 0.6; margin: 0; border-radius: 0;
+    transition: color 160ms ease, opacity 160ms ease;
+}
+.kk-stage .fi-input-wrp-suffix .fi-icon-btn:hover { color: var(--kk-hover); opacity: 1; }
+
+/* checkbox (remember me) — square outline matching the radios; the white mark morphs dash → circle.
+   (transparent box + white mark — a filled white box would hide the white mark on the dark canvas) */
+.kk-stage .fi-checkbox-input {
+    appearance: none; -webkit-appearance: none;
+    width: 1rem; height: 1rem;
+    border: 1.5px solid var(--kk-line); border-radius: 3px;
+    background-color: transparent;
+    cursor: pointer; flex-shrink: 0; position: relative;
+    transition: border-color 160ms ease;
+}
+.kk-stage .fi-checkbox-input:checked,
+.kk-stage input[type="radio"]:checked { border-color: var(--kk-ink); }
+
+/* inner mark (white): a vertical dash when off, morphs into a circle when on */
+.kk-stage .fi-checkbox-input::after {
+    content: "";
+    position: absolute; left: 50%; top: 50%;
+    width: 2px; height: 58%;
+    transform: translate(-50%, -50%);
+    border-radius: 1px;
+    background-color: #fff;
+    transition: width 280ms cubic-bezier(0.22, 1, 0.36, 1),
+                height 280ms cubic-bezier(0.22, 1, 0.36, 1),
+                border-radius 280ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.kk-stage .fi-checkbox-input:checked::after {
+    width: 0.55rem; height: 0.55rem;
+    border-radius: 50%;
+    background-color: #fff;
+}
+
+/* radios (huurder / verhuurder) — same control language as the checkbox:
+   black square box, white vertical dash when off, morphs to a white circle when on */
+.kk-stage input[type="radio"] {
+    appearance: none; -webkit-appearance: none;
+    width: 1rem; height: 1rem;
+    border: 1.5px solid var(--kk-line); border-radius: 3px;
+    background-color: transparent;
+    cursor: pointer; flex-shrink: 0; position: relative;
+}
+.kk-stage input[type="radio"]::after {
+    content: "";
+    position: absolute; left: 50%; top: 50%;
+    width: 2px; height: 58%;
+    transform: translate(-50%, -50%);
+    border-radius: 1px;
+    background-color: #fff;
+    transition: width 280ms cubic-bezier(0.22, 1, 0.36, 1),
+                height 280ms cubic-bezier(0.22, 1, 0.36, 1),
+                border-radius 280ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.kk-stage input[type="radio"]:checked::after {
+    width: 0.55rem; height: 0.55rem;
+    border-radius: 50%;
+}
+.kk-stage .fi-fo-radio-label-text { color: var(--kk-ink); }
+
+/* ---- Submit (Inloggen / Registreren) — Ynarchive "Start a project" pill ---- */
+.kk-stage .fi-sc-actions { position: static; margin-top: 1.75rem; width: auto; }
+.kk-stage .fi-sc-actions .fi-ac { width: auto; }
+
+/* login: forgot-password link relocated beside the submit, sharing one row */
+.kk-stage .fi-sc-actions:has(.kk-forgot) { display: flex; flex-direction: row; flex-wrap: nowrap; align-items: center; justify-content: space-between; gap: 1rem; }
+.kk-stage .fi-sc-actions .kk-forgot { margin-top: 0; order: -1; }
+
+.kk-stage .kk-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: auto;
+    height: 2.5rem;
+    padding: 0 0.3rem 0 1rem;
+    border: 0;
+    border-radius: 3px;
+    background-color: #fff !important;
+    color: var(--kk-navy);
+    font-family: 'area-normal', sans-serif;
+    font-weight: 500;
+    font-size: 0.75rem;
+    letter-spacing: 0.01em;
+    text-transform: none;
+    text-decoration: none;
+    box-shadow: none;
+    cursor: pointer;
+}
+.kk-stage .kk-cta .kk-cta-label { line-height: 1; vertical-align: middle; }
+
+/* light chip on the right holding the arrow */
+.kk-stage .kk-cta-chip {
+    display: inline-flex;
+    vertical-align: middle;
+    margin-left: 0.6rem;
+    position: relative;
+    height: 1.75rem;
+    width: 1.75rem;
+    flex-shrink: 0;
+    overflow: hidden;
+    border-radius: 2px;
+    background-color: theme('colors.primary.700');   /* a touch lighter than the navy bg (#002f5b) */
+    color: #fff;
+}
+.kk-stage .kk-cta-arrow {
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    width: 0.75rem;
+    height: auto;
+    transition: transform 0.5s cubic-bezier(0.65, 0, 0.35, 1);
+}
+.kk-stage .kk-cta-arrow--in { transform: translate(-220%, 220%); }
+.kk-stage .kk-cta:hover .kk-cta-arrow--out { transform: translate(220%, -220%); }
+.kk-stage .kk-cta:hover .kk-cta-arrow--in { transform: translate(0, 0); }
+
+
+/* ---- Switch portal, bottom-RIGHT ----
+   The OTHER page's name in its own uncontested quadrant: the form panel owns the left,
+   the marketing aside owns the top-right, so the switch takes the empty bottom-right —
+   no overlap with the panel, so no z-index trickery. Recessive tint at rest (never
+   competes with the panel's solid-white page title); a baseline rule + persistent arrow
+   mark it as a link; on hover the word brightens to solid white while an accent rule
+   wipes in toward the arrow. */
+.kk-switch {
+    position: fixed;
+    right: clamp(1.5rem, 4vw, 3.5rem);
+    bottom: clamp(1rem, 3vh, 2.25rem);
+    z-index: 2;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-end;
+    text-align: right;
+    text-decoration: none;
+    color: var(--kk-ink);
+    max-width: min(46vw, 34rem);
+}
+
+/* persistent kicker — tracked caps micro-label frames the giant word as an action */
+.kk-switch-eyebrow {
+    font-size: clamp(0.85rem, 1.05vw, 1.1rem);
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--kk-ink-soft);
+    margin-bottom: 0.35rem;
+    margin-right: 0.1em;
+    transition: color 0.3s ease;
+}
+.kk-switch:hover .kk-switch-eyebrow,
+.kk-switch:focus-visible .kk-switch-eyebrow { color: var(--kk-hover); }
+
+/* giant word + arrow on one baseline; the rule under them = "link" */
+.kk-switch-row {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3em;
+    font-weight: 500;
+    font-size: clamp(2rem, 4.2vw, 3.75rem);
+    line-height: 1;
+    letter-spacing: -0.035em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    padding-bottom: 0.12em;
+    border-bottom: 1.5px solid var(--kk-line);
+}
+/* accent rule wipes in toward the arrow on hover */
+.kk-switch-row::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1.5px;
+    height: 1.5px;
+    background-color: var(--kk-hover);
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.kk-switch:hover .kk-switch-row::after,
+.kk-switch:focus-visible .kk-switch-row::after { transform: scaleX(1); }
+
+/* recessive at rest → solid white on hover (the activation cue) */
+.kk-switch-word {
+    line-height: 1;
+    color: rgba(255, 255, 255, 0.62);
+    -webkit-text-fill-color: rgba(255, 255, 255, 0.62);
+    transition: color 0.3s ease, -webkit-text-fill-color 0.3s ease;
+}
+.kk-switch:hover .kk-switch-word,
+.kk-switch:focus-visible .kk-switch-word {
+    color: #fff;
+    -webkit-text-fill-color: #fff;
+}
+
+/* ep1 footer arrow — ↗ at rest, rotates to → on hover, recessive → cerulean */
+.kk-arrow {
+    width: 0.42em;
+    height: auto;
+    flex-shrink: 0;
+    color: rgba(255, 255, 255, 0.62);
+    transform: rotate(45deg);
+    transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), color 0.3s ease;
+}
+.kk-switch:hover .kk-arrow,
+.kk-switch:focus-visible .kk-arrow {
+    transform: rotate(90deg);
+    color: var(--kk-hover);
+}
+
+/* forgot-password (below password) — plain secondary link, clearly subordinate to the pill */
+.kk-stage .fi-link {
+    color: var(--kk-ink-soft);
+    font-weight: 500;
+    font-size: 0.8125rem;
+    text-underline-offset: 3px;
+}
+.kk-stage .fi-link:hover { color: var(--kk-hover); text-decoration-line: underline; }
+.kk-stage .kk-forgot { display: inline-block; margin-top: 0.85rem; text-decoration: underline; text-underline-offset: 3px; }
+
+/* Social sign-in row is styled with Tailwind utilities in
+   resources/views/filament/dashboard/auth/social.blade.php (markup we own). */
+
+/* ---- Entry: staggered build-in (skipped under reduced-motion) ---- */
+@media (prefers-reduced-motion: no-preference) {
+    @keyframes kk-rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+    @keyframes kk-fade { from { opacity: 0; } to { opacity: 1; } }
+    /* arrival order: wordmark → aside → form panel → giant word */
+    .kk-auth header span { animation: kk-rise 560ms cubic-bezier(0.16, 1, 0.3, 1) both; }
+    .kk-auth aside { animation: kk-rise 560ms cubic-bezier(0.16, 1, 0.3, 1) 80ms both; }
+    .kk-stage .fi-simple-main { animation: kk-rise 560ms cubic-bezier(0.16, 1, 0.3, 1) 180ms both; }
+    .kk-switch { animation: kk-fade 560ms cubic-bezier(0.16, 1, 0.3, 1) 320ms both; }   /* opacity only — it's fixed */
+}
+
+/* ---- Page transition: login ⇄ register ⇄ password-reset ----
+   Cross-document view transitions (the auth pages are full navigations, all share this
+   theme so both sides opt in). Soft crossfade — the shared photo background stays put while
+   the panel/content gently fades over. Unsupported browsers just navigate normally. */
+@view-transition { navigation: auto; }
+
+@media (prefers-reduced-motion: no-preference) {
+    ::view-transition-old(root) { animation: kk-xfade-out 320ms ease both; }
+    ::view-transition-new(root) { animation: kk-xfade-in 360ms ease both; }
+    @keyframes kk-xfade-out { from { opacity: 1; } to { opacity: 0; } }
+    @keyframes kk-xfade-in  { from { opacity: 0; } to { opacity: 1; } }
+}
+
+/* ---- Mobile: drop the fixed editorial layout, stack and scroll ---- */
+@media (max-width: 48rem) {
+    /* allow vertical scroll, never horizontal */
+    .kk-auth { height: auto; min-height: 100dvh; overflow: visible; overflow-x: hidden; }
+
+    /* stage becomes a single scrolling column */
+    .kk-stage {
+        height: auto;
+        min-height: 100dvh;
+        overflow: visible;
+        flex-direction: column;
+        align-items: stretch;
+        justify-content: flex-start;
+        gap: 2.5rem;
+        padding: 6.5rem 1.25rem 3rem;            /* top clears the fixed brand */
+    }
+
+    /* form panel: full width, normal flow */
+    .kk-stage .fi-simple-main { width: 100%; order: 1; }
+    .kk-stage .fi-simple-header { margin: 0; }
+
+    /* heading scales down so it never overflows the viewport */
+    .kk-stage .fi-simple-header-heading { font-size: clamp(2.5rem, 12vw, 3.5rem); }
+
+    /* the switch flows below the form: static, left-aligned, smaller, wrap-safe */
+    .kk-switch {
+        position: static;
+        order: 2;
+        align-items: flex-start;
+        text-align: left;
+        max-width: 100%;
+    }
+    .kk-switch-row {
+        font-size: clamp(2.25rem, 11vw, 3.25rem);
+        line-height: 0.85;
+        white-space: normal;                     /* wrap instead of overflowing */
+    }
+
+    /* the password-reset back link spacing can relax on mobile */
+    .kk-stage .fi-simple-header:has(.fi-ac-link-action) { margin-bottom: 1.5rem; }
+}

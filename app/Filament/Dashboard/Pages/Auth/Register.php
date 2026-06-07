@@ -3,14 +3,18 @@
 namespace App\Filament\Dashboard\Pages\Auth;
 
 use App\Models\User;
+use Filament\Actions\Action;
 use Filament\Auth\Pages\Register as BaseRegister;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Component;
+use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
+use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\HtmlString;
 use SensitiveParameter;
 
 class Register extends BaseRegister
@@ -21,18 +25,55 @@ class Register extends BaseRegister
      */
     protected string $pendingRole = 'huurder';
 
+    public function getHeading(): string
+    {
+        return 'Registreren';
+    }
+
+    /** Submit styled after Ynarchive's "Start a project" button (pill + chip + arrow-swap). */
+    public function getRegisterFormAction(): Action
+    {
+        return Action::make('register')
+            ->label(new HtmlString(Login::ctaLabel('Registreren')))
+            ->extraAttributes(['class' => 'kk-cta'])
+            ->submit('register');
+    }
+
+    protected function hasFullWidthFormActions(): bool
+    {
+        return false;
+    }
+
+    /**
+     * The giant bottom-left word is the switch to the other auth page.
+     * On registration it sends you back to login.
+     */
+    public function getSubheading(): string|Htmlable
+    {
+        return new HtmlString(
+            '<a href="'.filament()->getLoginUrl().'" class="kk-switch" aria-label="Ga naar inloggen">'
+            .'<span class="kk-switch-eyebrow">Al een account?</span>'
+            .'<span class="kk-switch-row"><span class="kk-switch-word">Inloggen</span>'
+            .'<svg class="kk-arrow" viewBox="0 0 16 19" fill="none" aria-hidden="true"><path d="M7 18C7 18.5523 7.44772 19 8 19C8.55228 19 9 18.5523 9 18H7ZM8.70711 0.292893C8.31658 -0.0976311 7.68342 -0.0976311 7.29289 0.292893L0.928932 6.65685C0.538408 7.04738 0.538408 7.68054 0.928932 8.07107C1.31946 8.46159 1.95262 8.46159 2.34315 8.07107L8 2.41421L13.6569 8.07107C14.0474 8.46159 14.6805 8.46159 15.0711 8.07107C15.4616 7.68054 15.4616 7.04738 15.0711 6.65685L8.70711 0.292893ZM9 18L9 1H7L7 18H9Z" fill="currentColor"/></svg></span></a>'
+        );
+    }
+
     public function form(Schema $schema): Schema
     {
         return $schema
             ->components([
-                $this->getNameFormComponent(),
-                $this->getLastnameFormComponent(),
-                $this->getEmailFormComponent(),
-                $this->getPhoneFormComponent(),
-                $this->getDateOfBirthFormComponent(),
+                Grid::make(['default' => 1, 'sm' => 2])->schema([
+                    $this->getNameFormComponent(),
+                    $this->getLastnameFormComponent(),
+                    $this->getEmailFormComponent(),
+                    $this->getPhoneFormComponent(),
+                ]),
                 $this->getRoleFormComponent(),
-                $this->getPasswordFormComponent(),
-                $this->getPasswordConfirmationFormComponent(),
+                $this->getDateOfBirthFormComponent(),
+                Grid::make(['default' => 1, 'sm' => 2])->schema([
+                    $this->getPasswordFormComponent(),
+                    $this->getPasswordConfirmationFormComponent(),
+                ]),
             ]);
     }
 
@@ -67,8 +108,8 @@ class Register extends BaseRegister
         return Radio::make('role')
             ->label('Ik ben een …')
             ->options([
-                'huurder' => 'Huurder (student/ketter)',
-                'verhuurder' => 'Verhuurder (eigenaar/agent)',
+                'huurder' => 'Huurder (student)',
+                'verhuurder' => 'Verhuurder (eigenaar)',
             ])
             ->live()
             ->required();
