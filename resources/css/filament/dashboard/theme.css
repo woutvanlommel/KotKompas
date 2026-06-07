@@ -419,27 +419,26 @@
    palette via DashboardPanelProvider.
    ============================================================================= */
 
-.fi-no {
+/* .fi-no is the always-present wrapper — never add visual styles here */
+
+/* Individual notification card */
+.fi-no-notification {
     font-family: 'area-normal', ui-sans-serif, system-ui, sans-serif;
     border-radius: 6px;
     box-shadow: 0 8px 32px rgba(0, 16, 30, 0.18), 0 2px 8px rgba(0, 16, 30, 0.10);
 }
 
-/* Title: slightly heavier weight than Filament's default */
-.fi-no-title {
+.fi-no-notification-title {
     font-weight: 600;
     letter-spacing: -0.01em;
 }
 
-/* Body: soft, readable */
-.fi-no-body {
+.fi-no-notification-body {
     font-size: 0.8125rem;
-    color: var(--gray-600, #6b7280);
     line-height: 1.45;
 }
 
-/* Action buttons inside notifications */
-.fi-no .fi-btn {
+.fi-no-notification .fi-btn {
     font-family: 'area-normal', ui-sans-serif, system-ui, sans-serif;
     font-weight: 500;
 }
