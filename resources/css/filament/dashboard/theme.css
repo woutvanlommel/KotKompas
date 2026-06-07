@@ -17,30 +17,34 @@
  */
 .kk-auth {
     --kk-ink: #fff;                              /* text is white on the dark canvas */
-    --kk-ink-soft: rgba(255, 255, 255, 0.6);
-    --kk-line: rgba(255, 255, 255, 0.32);
+    --kk-ink-soft: rgba(255, 255, 255, 0.82);   /* labels — bumped for the lighter frosted panel */
+    --kk-line: rgba(255, 255, 255, 0.45);
     --kk-accent: theme('colors.accent.DEFAULT');
     --kk-hover: theme('colors.secondary.300');   /* hover highlight — cool cerulean, never the orange */
     --kk-navy: theme('colors.primary.900');      /* near-black navy for inverted chips */
 
-    height: 100dvh;
+    min-height: 100dvh;          /* fits in one viewport when content is short (login);
+                                    grows + lets the page scroll when it can't (register on
+                                    short screens) — never clips the form */
     width: 100%;
-    overflow: hidden;
+    overflow-x: hidden;
     display: block;
-    background-color: theme('colors.primary.800');   /* fallback under the animated canvas */
+    background-color: theme('colors.primary.900');   /* fallback under the hero background */
     color: var(--kk-ink);
     font-family: 'area-normal', ui-sans-serif, system-ui, sans-serif;
 }
 
 .fi-body { overflow-x: hidden; }
 
-/* animated contour background sits behind everything */
+/* photographic hero background (ep1) sits behind everything; navy base is what the
+   overlay-blended photo layer mixes against */
 .kk-bg {
     position: fixed;
     inset: 0;
     z-index: 0;
     pointer-events: none;
     display: block;
+    background-color: theme('colors.primary.900');   /* #00101e — ep1's auth base */
 }
 
 /* header + aside are Tailwind-utility classes in the blade (simple.blade.php) */
@@ -49,8 +53,8 @@
 .kk-stage {
     position: relative;
     z-index: 1;
-    height: 100dvh;
-    overflow: hidden;
+    min-height: 100dvh;
+    overflow-x: hidden;
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
@@ -65,11 +69,13 @@
     width: min(34rem, 58vw);
     margin: 0;
     padding: clamp(1.5rem, 2.4vw, 2.25rem);
-    background: rgba(6, 20, 38, 0.78);       /* frosted DARK glass — conceals the giant word behind it so it reads as tucked under the card (no visible overlap) */
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.12);   /* frosted WHITE veil — lifts the panel off the dark
+                                                hero; text stays white (panel sits in the darkest
+                                                bottom-left scrim corner so contrast holds) */
+    border: 1px solid rgba(255, 255, 255, 0.22);
     border-radius: 10px;
     box-shadow: 0 24px 70px rgba(0, 0, 0, 0.32);
-    backdrop-filter: blur(8px);
+    backdrop-filter: blur(14px);
 }
 .kk-stage .fi-logo { display: none; }
 
@@ -91,6 +97,14 @@
 .kk-stage .fi-simple-header { margin: 0; text-align: left; }
 /* the subheading holds the giant switch link, pulled out of flow below */
 .kk-stage .fi-simple-header-subheading { margin: 0; }
+
+/* login only (no role radios, no reset back-link) is short — nudge its panel down a
+   touch so it sits less top-heavy; aside stays on the top rail. Desktop only. */
+@media (min-width: 48.0625rem) {
+    .kk-stage:not(:has(input[type="radio"])):not(:has(.fi-ac-link-action)) .fi-simple-main {
+        margin-top: clamp(2rem, 7vh, 5.5rem);
+    }
+}
 
 /* password-reset pages: heading + "terug naar inloggen" back link are in normal flow
    (no giant switch word). Give the back link room under the heading and breathing space
@@ -130,6 +144,15 @@
 }
 .kk-stage .fi-input::placeholder { color: var(--kk-line); letter-spacing: -0.01em; }
 .kk-stage form { gap: 0.45rem; }
+
+/* native date picker icon (geboortedatum) — invert the black browser glyph to white */
+.kk-stage input::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    opacity: 0.65;
+    cursor: pointer;
+    transition: opacity 160ms ease;
+}
+.kk-stage input::-webkit-calendar-picker-indicator:hover { opacity: 1; }
 
 /* eye toggle — no default divider/box; sits inline on the same underline */
 .kk-stage .fi-input-wrp-suffix {
@@ -241,8 +264,8 @@
     flex-shrink: 0;
     overflow: hidden;
     border-radius: 2px;
-    background-color: var(--kk-navy);
-    color: var(--kk-ink);
+    background-color: theme('colors.primary.700');   /* a touch lighter than the navy bg (#002f5b) */
+    color: #fff;
 }
 .kk-stage .kk-cta-arrow {
     position: absolute;
@@ -257,57 +280,97 @@
 .kk-stage .kk-cta:hover .kk-cta-arrow--in { transform: translate(0, 0); }
 
 
-/* ---- Giant switch word, bottom-left ----
-   Ink on the white canvas; on hover a pumpkin fill rises bottom→top through the
-   letters (border included), and the ep1 arrow rotates + turns accent in lock-step. */
+/* ---- Switch portal, bottom-RIGHT ----
+   The OTHER page's name in its own uncontested quadrant: the form panel owns the left,
+   the marketing aside owns the top-right, so the switch takes the empty bottom-right —
+   no overlap with the panel, so no z-index trickery. Recessive tint at rest (never
+   competes with the panel's solid-white page title); a baseline rule + persistent arrow
+   mark it as a link; on hover the word brightens to solid white while an accent rule
+   wipes in toward the arrow. */
 .kk-switch {
     position: fixed;
-    left: clamp(1rem, 3vw, 2.25rem);
-    bottom: clamp(0rem, 1.5vh, 1.25rem);
-    z-index: 1;                              /* behind the form panel (z-index:2) so big type can overlap cleanly */
+    right: clamp(1.5rem, 4vw, 3.5rem);
+    bottom: clamp(1rem, 3vh, 2.25rem);
+    z-index: 2;
     display: inline-flex;
+    flex-direction: column;
     align-items: flex-end;
-    gap: 0.24em;
-    font-weight: 500;
-    font-size: clamp(4rem, 12.5vw, 12rem);   /* big, bleeds a touch — sized so register's submit still clears it */
-    line-height: 0.8;
-    letter-spacing: -0.06em;
-    text-transform: uppercase;
+    text-align: right;
     text-decoration: none;
-    white-space: nowrap;
     color: var(--kk-ink);
+    max-width: min(46vw, 34rem);
 }
 
-.kk-switch-word {
-    line-height: 1.06;
-    color: #fff;                  /* solid white at rest (no outline) */
-    -webkit-text-fill-color: #fff;
-    /* only the slant glides; colour snaps (a transitioned `color` sticks at a pale
-       intermediate while the bg canvas rAF runs — Chrome compositor quirk) */
-    transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
-    transform-origin: left bottom;
+/* persistent kicker — tracked caps micro-label frames the giant word as an action */
+.kk-switch-eyebrow {
+    font-size: clamp(0.85rem, 1.05vw, 1.1rem);
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--kk-ink-soft);
+    margin-bottom: 0.35rem;
+    margin-right: 0.1em;
+    transition: color 0.3s ease;
 }
-/* on hover the same area-normal face simply slants (oblique) + turns cerulean */
+.kk-switch:hover .kk-switch-eyebrow,
+.kk-switch:focus-visible .kk-switch-eyebrow { color: var(--kk-hover); }
+
+/* giant word + arrow on one baseline; the rule under them = "link" */
+.kk-switch-row {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3em;
+    font-weight: 500;
+    font-size: clamp(2rem, 4.2vw, 3.75rem);
+    line-height: 1;
+    letter-spacing: -0.035em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    padding-bottom: 0.12em;
+    border-bottom: 1.5px solid var(--kk-line);
+}
+/* accent rule wipes in toward the arrow on hover */
+.kk-switch-row::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1.5px;
+    height: 1.5px;
+    background-color: var(--kk-hover);
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.kk-switch:hover .kk-switch-row::after,
+.kk-switch:focus-visible .kk-switch-row::after { transform: scaleX(1); }
+
+/* recessive at rest → solid white on hover (the activation cue) */
+.kk-switch-word {
+    line-height: 1;
+    color: rgba(255, 255, 255, 0.62);
+    -webkit-text-fill-color: rgba(255, 255, 255, 0.62);
+    transition: color 0.3s ease, -webkit-text-fill-color 0.3s ease;
+}
 .kk-switch:hover .kk-switch-word,
 .kk-switch:focus-visible .kk-switch-word {
-    font-style: italic;
-    transform: skewX(-9deg);      /* guaranteed slant even if the face has no true italic */
-    color: var(--kk-hover);
-    -webkit-text-fill-color: var(--kk-hover);
+    color: #fff;
+    -webkit-text-fill-color: #fff;
 }
 
-/* ep1 footer arrow — up-arrow, rotates 45° → 90°, turns accent with the text */
+/* ep1 footer arrow — ↗ at rest, rotates to → on hover, recessive → cerulean */
 .kk-arrow {
-    width: 0.62em;
+    width: 0.42em;
     height: auto;
     flex-shrink: 0;
-    color: var(--kk-ink);
-    transform: rotate(45deg);   /* ↗ forward at rest */
-    transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);   /* colour snaps (same canvas-rAF quirk as the word) */
+    color: rgba(255, 255, 255, 0.62);
+    transform: rotate(45deg);
+    transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), color 0.3s ease;
 }
 .kk-switch:hover .kk-arrow,
 .kk-switch:focus-visible .kk-arrow {
-    transform: rotate(90deg);   /* → on hover */
+    transform: rotate(90deg);
     color: var(--kk-hover);
 }
 
@@ -337,31 +400,15 @@
 
 /* ---- Page transition: login ⇄ register ⇄ password-reset ----
    Cross-document view transitions (the auth pages are full navigations, all share this
-   theme so both sides opt in). Each new page drops in from above and settles like a fresh
-   sheet of paper landing on the stack, casting a shadow as it falls; the old page sinks
-   a touch underneath. Unsupported browsers (Firefox/older Safari) just navigate normally. */
+   theme so both sides opt in). Soft crossfade — the shared photo background stays put while
+   the panel/content gently fades over. Unsupported browsers just navigate normally. */
 @view-transition { navigation: auto; }
 
 @media (prefers-reduced-motion: no-preference) {
-    /* keep the outgoing page solid and still — it's the stack the new sheet lands on */
-    ::view-transition-old(root) {
-        animation: kk-sheet-hold 600ms linear both;
-        z-index: 1;
-    }
-    /* the incoming page is a full opaque sheet that slides down from above and settles,
-       casting a shadow on its leading edge as it drops — it sits ON TOP of the old stack */
-    ::view-transition-new(root) {
-        animation: kk-sheet-drop 600ms cubic-bezier(0.16, 1, 0.3, 1) both;
-        z-index: 2;
-    }
-    @keyframes kk-sheet-drop {
-        from { transform: translateY(-100%) rotate(-0.6deg); filter: drop-shadow(0 26px 44px rgba(0, 0, 0, 0.6)); }
-        to   { transform: translateY(0) rotate(0deg); filter: drop-shadow(0 0 0 rgba(0, 0, 0, 0)); }
-    }
-    @keyframes kk-sheet-hold {
-        from { transform: none; opacity: 1; }
-        to   { transform: none; opacity: 1; }
-    }
+    ::view-transition-old(root) { animation: kk-xfade-out 320ms ease both; }
+    ::view-transition-new(root) { animation: kk-xfade-in 360ms ease both; }
+    @keyframes kk-xfade-out { from { opacity: 1; } to { opacity: 0; } }
+    @keyframes kk-xfade-in  { from { opacity: 0; } to { opacity: 1; } }
 }
 
 /* ---- Mobile: drop the fixed editorial layout, stack and scroll ---- */
@@ -388,10 +435,15 @@
     /* heading scales down so it never overflows the viewport */
     .kk-stage .fi-simple-header-heading { font-size: clamp(2.5rem, 12vw, 3.5rem); }
 
-    /* the giant switch word flows below the form: static, smaller, wrap-safe */
+    /* the switch flows below the form: static, left-aligned, smaller, wrap-safe */
     .kk-switch {
         position: static;
         order: 2;
+        align-items: flex-start;
+        text-align: left;
+        max-width: 100%;
+    }
+    .kk-switch-row {
         font-size: clamp(2.25rem, 11vw, 3.25rem);
         line-height: 0.85;
         white-space: normal;                     /* wrap instead of overflowing */

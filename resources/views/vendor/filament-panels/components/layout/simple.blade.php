@@ -21,92 +21,15 @@
     <div class="fi-simple-layout kk-auth">
         {{ \Filament\Support\Facades\FilamentView::renderHook(\Filament\View\PanelsRenderHook::SIMPLE_LAYOUT_START, scopes: $renderHookScopes) }}
 
-        {{-- Animated background: a sparse drifting node network — "kotten" as points,
-             thin links between nearby ones, on deep navy. Slow + restrained so the white
-             type stays dominant. A few nodes carry the pumpkin accent. --}}
-        <canvas class="kk-bg" aria-hidden="true"></canvas>
-        <script>
-            (() => {
-                const c = document.currentScript.previousElementSibling;
-                if (!c || !c.getContext) return;
-                const ctx = c.getContext('2d');
-                const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-                const NAVY = '#001f3d';
-                const ACCENT = '255, 103, 0';   // pumpkin — a handful of highlighted kotten
-                let w, h, dpr, pts, link;
-
-                const build = () => {
-                    // sparse: density scaled to area, capped — refined, not a screensaver
-                    const target = Math.min(44, Math.round((innerWidth * innerHeight) / 38000));
-                    link = Math.min(w, h) * 0.2;            // connect radius — sparse: only nearby kotten link up
-                    pts = [];
-                    for (let i = 0; i < target; i++) {
-                        pts.push({
-                            x: Math.random() * w,
-                            y: Math.random() * h,
-                            vx: (Math.random() - 0.5) * 0.055 * dpr,
-                            vy: (Math.random() - 0.5) * 0.055 * dpr,
-                            r: (Math.random() * 1.4 + 0.8) * dpr,
-                            accent: Math.random() < 0.06,   // ~6% accent nodes
-                        });
-                    }
-                };
-                const resize = () => {
-                    dpr = Math.min(window.devicePixelRatio || 1, 2);
-                    w = c.width = innerWidth * dpr;
-                    h = c.height = innerHeight * dpr;
-                    c.style.width = innerWidth + 'px';
-                    c.style.height = innerHeight + 'px';
-                    build();
-                };
-                resize();
-                addEventListener('resize', resize, { passive: true });
-
-                const draw = () => {
-                    ctx.fillStyle = NAVY;
-                    ctx.fillRect(0, 0, w, h);
-                    // links first, behind the dots
-                    ctx.lineWidth = dpr * 0.6;
-                    for (let i = 0; i < pts.length; i++) {
-                        for (let j = i + 1; j < pts.length; j++) {
-                            const dx = pts[i].x - pts[j].x, dy = pts[i].y - pts[j].y;
-                            const d = Math.hypot(dx, dy);
-                            if (d < link) {
-                                ctx.strokeStyle = 'rgba(150, 184, 224, ' + (1 - d / link) * 0.12 + ')';
-                                ctx.beginPath();
-                                ctx.moveTo(pts[i].x, pts[i].y);
-                                ctx.lineTo(pts[j].x, pts[j].y);
-                                ctx.stroke();
-                            }
-                        }
-                    }
-                    // dots — a few accent "kotten" carry a faint halo
-                    for (const p of pts) {
-                        if (p.accent) {
-                            ctx.beginPath();
-                            ctx.arc(p.x, p.y, p.r * 3, 0, Math.PI * 2);
-                            ctx.fillStyle = 'rgba(' + ACCENT + ', 0.04)';
-                            ctx.fill();
-                        }
-                        ctx.beginPath();
-                        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-                        ctx.fillStyle = p.accent ? 'rgba(' + ACCENT + ', 0.45)' : 'rgba(214, 228, 246, 0.35)';
-                        ctx.fill();
-                    }
-                };
-                const step = () => {
-                    for (const p of pts) {
-                        p.x += p.vx; p.y += p.vy;
-                        if (p.x < 0 || p.x > w) p.vx *= -1;
-                        if (p.y < 0 || p.y > h) p.vy *= -1;
-                    }
-                    draw();
-                    requestAnimationFrame(step);
-                };
-                if (reduce) { draw(); return; }
-                step();
-            })();
-        </script>
+        {{-- Background, borrowed from ep1's auth hero: the Antwerp Grote Markt photo washed
+             under deep navy (opacity + overlay blend) with a gradient that anchors the bottom
+             so the giant switch word + form panel stay legible. Static — no canvas/JS. --}}
+        <div class="kk-bg" aria-hidden="true">
+            <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('{{ asset('img/hero-bg.jpg') }}');"></div>
+            {{-- scrim: deep navy anchors the bottom-left (giant word + panel), eases toward the
+                 bright top-right so the photo keeps its warm daylight instead of going flat-blue --}}
+            <div class="absolute inset-0 bg-gradient-to-tr from-primary-900 via-primary-900/75 to-primary-900/20"></div>
+        </div>
 
 
         {{-- Fixed editorial header — brand left --}}
@@ -134,8 +57,28 @@
                 {{ $slot }}
             </main>
 
-            <aside class="max-md:hidden shrink-0 self-start max-w-60 mr-[6vw] pt-[0.4rem] text-justify font-sans">
-                <p lang="nl" class="hyphens-auto text-[0.85rem] leading-normal tracking-[-0.015em] text-white">Vind je kot, regel het contract en volg alles op vanaf één plek. rechtstreeks met de eigenaar, zonder makelaarskosten of tussenpersoon. Bekijk beschikbare panden in jouw stad, vergelijk prijzen en voorzieningen, en plan een bezichtiging op een moment dat jou past, allemaal binnen dezelfde omgeving. Onderteken je huurovereenkomst digitaal, beheer je waarborg veilig en houd elke betaling en communicatie overzichtelijk bij zonder gedoe met losse documenten of verspreide e-mails. Of je nu op zoek bent naar een studentenkamer, een studio of een appartement, je behoudt altijd de volledige controle en transparantie — van de eerste zoekopdracht tot de dag dat je de sleutels in handen krijgt en daarna</p>
+            <aside lang="nl" class="max-md:hidden shrink-0 self-start max-w-xs pt-[0.4rem] text-right font-sans text-white [text-shadow:0_1px_18px_rgba(0,16,30,0.9)]">
+                {{-- eyebrow: tracked-caps kicker + single accent dash marks this as KotKompas's pitch --}}
+                <p class="flex items-center justify-end gap-2 text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-white/70">
+                    Waarom KotKompas
+                    <span class="inline-block h-px w-6 bg-accent" aria-hidden="true"></span>
+                </p>
+
+                {{-- three distilled value-props — hairline-divided, scannable in one pass --}}
+                <dl class="mt-5 divide-y divide-white/20">
+                    <div class="py-3">
+                        <dt class="text-[0.62rem] font-semibold uppercase tracking-[0.2em] text-white/55">Direct</dt>
+                        <dd class="mt-1 text-[0.9rem] leading-snug tracking-[-0.01em]">Huur rechtstreeks van de eigenaar, zonder makelaarskosten of tussenpersoon.</dd>
+                    </div>
+                    <div class="py-3">
+                        <dt class="text-[0.62rem] font-semibold uppercase tracking-[0.2em] text-white/55">Overzicht</dt>
+                        <dd class="mt-1 text-[0.9rem] leading-snug tracking-[-0.01em]">Zoek, vergelijk en plan bezichtigingen in jouw stad, alles op één plek.</dd>
+                    </div>
+                    <div class="py-3">
+                        <dt class="text-[0.62rem] font-semibold uppercase tracking-[0.2em] text-white/55">Zeker</dt>
+                        <dd class="mt-1 text-[0.9rem] leading-snug tracking-[-0.01em]">Geen makelaarskosten of verborgen kosten — volledig transparant.</dd>
+                    </div>
+                </dl>
             </aside>
         </div>
 
