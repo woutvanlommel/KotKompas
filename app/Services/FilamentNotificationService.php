@@ -74,7 +74,7 @@ class FilamentNotificationService
     /**
      * Core send method. Called by the convenience methods above.
      *
-     * @param string $status  'success' | 'warning' | 'danger' | 'info'
+     * @param  string  $status  'success' | 'warning' | 'danger' | 'info'
      */
     public static function send(
         ?string $title = null,
@@ -113,7 +113,7 @@ class FilamentNotificationService
         $text = $title ?? static::defaultTitle($status);
 
         return $emoji !== null
-            ? $emoji . ' ' . $text
+            ? $emoji.' '.$text
             : $text;
     }
 
@@ -125,9 +125,9 @@ class FilamentNotificationService
         return match ($status) {
             'success' => 'Gelukt',
             'warning' => 'Opgelet',
-            'danger'  => 'Er is iets misgegaan',
-            'info'    => 'Info',
-            default   => 'Melding',
+            'danger' => 'Er is iets misgegaan',
+            'info' => 'Info',
+            default => 'Melding',
         };
     }
 }
