@@ -413,34 +413,103 @@
 
 /* =============================================================================
    KotKompas — Notification styling
-   Filament notifications (.fi-no) use CSS custom properties driven by the panel
-   color config. We only need to touch the structural/font properties; the
-   status colours (primary/warning/danger/info) already resolve to our brand
-   palette via DashboardPanelProvider.
+   .fi-no       = always-present wrapper (never add visual styles here)
+   .fi-no-notification = individual card (only present when a notification fires)
    ============================================================================= */
 
-/* .fi-no is the always-present wrapper — never add visual styles here */
-
-/* Individual notification card */
+/* ---- Base card: frosted glass, iets wilder dan de login-card ---- */
 .fi-no-notification {
     font-family: 'area-normal', ui-sans-serif, system-ui, sans-serif;
-    border-radius: 6px;
-    box-shadow: 0 8px 32px rgba(0, 16, 30, 0.18), 0 2px 8px rgba(0, 16, 30, 0.10);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.32);
+    backdrop-filter: blur(14px);
+    box-shadow: 0 8px 32px rgba(0, 16, 30, 0.28), 0 2px 8px rgba(0, 16, 30, 0.14);
+    position: relative;   /* needed for ::after progress bar */
+    overflow: hidden;     /* clips the progress bar to the rounded corners */
 }
 
+/* ---- Status: achtergrondtint + randkleur ---- */
+.fi-no-notification.fi-status-success {
+    background: rgba(34, 197, 94, 0.18);
+    border-color: rgba(34, 197, 94, 0.38);
+}
+.fi-no-notification.fi-status-warning {
+    background: rgba(255, 103, 0, 0.18);
+    border-color: rgba(255, 103, 0, 0.38);
+}
+.fi-no-notification.fi-status-danger {
+    background: rgba(239, 68, 68, 0.18);
+    border-color: rgba(239, 68, 68, 0.38);
+}
+.fi-no-notification.fi-status-info {
+    background: rgba(58, 110, 165, 0.22);
+    border-color: rgba(58, 110, 165, 0.38);
+}
+
+/* ---- Progress bar onderaan via ::after ----
+   --kk-no-duration wordt dynamisch gezet via JS (zie DashboardPanelProvider
+   render hook). Fallback = 6s (Filament's standaard).
+   Persistent notificaties krijgen de klasse .kk-no-persistent → balk verborgen. */
+.fi-no-notification::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    width: 100%;
+    border-radius: 0;
+    animation: kk-no-progress var(--kk-no-duration, 6s) linear forwards;
+}
+.fi-no-notification.kk-no-persistent::after { display: none; }
+
+.fi-no-notification.fi-status-success::after { background: #22c55e; }
+.fi-no-notification.fi-status-warning::after  { background: #ff6700; }
+.fi-no-notification.fi-status-danger::after   { background: #ef4444; }
+.fi-no-notification.fi-status-info::after     { background: #3a6ea5; }
+
+@keyframes kk-no-progress {
+    from { width: 100%; }
+    to   { width: 0%; }
+}
+
+/* ---- Typography ---- */
 .fi-no-notification-title {
     font-weight: 600;
     letter-spacing: -0.01em;
+    color: #fff;
 }
-
 .fi-no-notification-body {
     font-size: 0.8125rem;
     line-height: 1.45;
+    color: rgba(255, 255, 255, 0.82);
 }
 
+/* Close button */
+.fi-no-notification-close-btn {
+    color: rgba(255, 255, 255, 0.65) !important;
+}
+.fi-no-notification-close-btn:hover {
+    color: #fff !important;
+    background: rgba(255, 255, 255, 0.12) !important;
+}
+
+/* Icon: altijd wit, groter dan standaard */
+.fi-no-notification-icon {
+    width: 1.75rem !important;
+    height: 1.75rem !important;
+    flex-shrink: 0;
+    color: #fff !important;
+}
+
+/* ---- Action buttons ---- */
 .fi-no-notification .fi-btn {
     font-family: 'area-normal', ui-sans-serif, system-ui, sans-serif;
     font-weight: 500;
+    color: #fff !important;
+    border-color: rgba(255, 255, 255, 0.35) !important;
+}
+.fi-no-notification .fi-btn:hover {
+    background: rgba(255, 255, 255, 0.15) !important;
 }
 
 /* ---- Mobile: drop the fixed editorial layout, stack and scroll ---- */
