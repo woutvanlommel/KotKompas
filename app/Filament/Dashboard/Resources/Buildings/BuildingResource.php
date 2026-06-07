@@ -18,7 +18,17 @@ class BuildingResource extends Resource
 {
     protected static ?string $model = Building::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBuildingOffice;
+
+    protected static string|\UnitEnum|null $navigationGroup = 'Beheer';
+
+    protected static ?string $navigationLabel = 'Gebouwen';
+
+    protected static ?string $modelLabel = 'Gebouw';
+
+    protected static ?string $pluralModelLabel = 'Gebouwen';
+
+    protected static ?int $navigationSort = 1;
 
     public static function canAccess(): bool
     {

@@ -15,34 +15,46 @@ class BuildingsTable
         return $table
             ->columns([
                 TextColumn::make('name')
+                    ->label('Naam')
                     ->searchable(),
                 TextColumn::make('description')
+                    ->label('Beschrijving')
                     ->searchable(),
                 TextColumn::make('street')
+                    ->label('Straat')
                     ->searchable(),
                 TextColumn::make('house_number')
+                    ->label('Huisnummer')
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('postal_code')
+                    ->label('Postcode')
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('box')
+                    ->label('Bus/Appartement')
                     ->searchable(),
                 TextColumn::make('city')
+                    ->label('Plaats')
                     ->searchable(),
                 TextColumn::make('country')
+                    ->label('Land')
                     ->searchable(),
                 TextColumn::make('longitude')
+                    ->label('Lengtegraad')
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('latitude')
+                    ->label('Breedtegraad')
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('created_at')
+                    ->label('Aangemaakt op')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
+                    ->label('Bijgewerkt op')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
