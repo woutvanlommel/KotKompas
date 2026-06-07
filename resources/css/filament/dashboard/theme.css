@@ -411,6 +411,39 @@
     @keyframes kk-xfade-in  { from { opacity: 0; } to { opacity: 1; } }
 }
 
+/* =============================================================================
+   KotKompas — Notification styling
+   Filament notifications (.fi-no) use CSS custom properties driven by the panel
+   color config. We only need to touch the structural/font properties; the
+   status colours (primary/warning/danger/info) already resolve to our brand
+   palette via DashboardPanelProvider.
+   ============================================================================= */
+
+.fi-no {
+    font-family: 'area-normal', ui-sans-serif, system-ui, sans-serif;
+    border-radius: 6px;
+    box-shadow: 0 8px 32px rgba(0, 16, 30, 0.18), 0 2px 8px rgba(0, 16, 30, 0.10);
+}
+
+/* Title: slightly heavier weight than Filament's default */
+.fi-no-title {
+    font-weight: 600;
+    letter-spacing: -0.01em;
+}
+
+/* Body: soft, readable */
+.fi-no-body {
+    font-size: 0.8125rem;
+    color: var(--gray-600, #6b7280);
+    line-height: 1.45;
+}
+
+/* Action buttons inside notifications */
+.fi-no .fi-btn {
+    font-family: 'area-normal', ui-sans-serif, system-ui, sans-serif;
+    font-weight: 500;
+}
+
 /* ---- Mobile: drop the fixed editorial layout, stack and scroll ---- */
 @media (max-width: 48rem) {
     /* allow vertical scroll, never horizontal */
