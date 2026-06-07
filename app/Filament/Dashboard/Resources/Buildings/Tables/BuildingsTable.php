@@ -5,6 +5,10 @@ namespace App\Filament\Dashboard\Resources\Buildings\Tables;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Wizard;
+use Filament\Schemas\Components\Wizard\Step;
+use Filament\Forms\Form;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
@@ -29,7 +33,6 @@ class BuildingsTable
                     ->sortable(),
                 TextColumn::make('postal_code')
                     ->label('Postcode')
-                    ->numeric()
                     ->sortable(),
                 TextColumn::make('box')
                     ->label('Bus/Appartement')
@@ -40,14 +43,6 @@ class BuildingsTable
                 TextColumn::make('country')
                     ->label('Land')
                     ->searchable(),
-                TextColumn::make('longitude')
-                    ->label('Lengtegraad')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('latitude')
-                    ->label('Breedtegraad')
-                    ->numeric()
-                    ->sortable(),
                 TextColumn::make('created_at')
                     ->label('Aangemaakt op')
                     ->dateTime()
@@ -63,12 +58,62 @@ class BuildingsTable
                 //
             ])
             ->recordActions([
-                EditAction::make(),
+                EditAction::make()
+                    ->modalHeading('Gebouw bewerken')
+                    ->form(self::getEditFormSchema()),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    public static function getEditFormSchema(): array
+    {
+        return [
+            Wizard::make([
+                Step::make('Algemene informatie')
+                    ->description('Basisgegevens van het pand')
+                    ->schema([
+                        TextInput::make('name')
+                            ->label('Naam')
+                            ->required(),
+                        TextInput::make('description')
+                            ->label('Beschrijving'),
+                    ]),
+                Step::make('Adres en locatie')
+                    ->description('Adresgegevens en GPS-coördinaten')
+                    ->schema([
+                        TextInput::make('street')
+                            ->label('Straat')
+                            ->required(),
+                        TextInput::make('house_number')
+                            ->label('Huisnummer')
+                            ->required()
+                            ->numeric(),
+                        TextInput::make('postal_code')
+                            ->label('Postcode')
+                            ->required()
+                            ->numeric(),
+                        TextInput::make('box')
+                            ->label('Bus/Appartement'),
+                        TextInput::make('city')
+                            ->label('Plaats')
+                            ->required(),
+                        TextInput::make('country')
+                            ->label('Land')
+                            ->required(),
+                        TextInput::make('longitude')
+                            ->label('Lengtegraad')
+                            ->numeric(),
+                        TextInput::make('latitude')
+                            ->label('Breedtegraad')
+                            ->numeric(),
+                    ]),
+            ])
+                ->columnSpan('full')
+                ->skippable(),
+        ];
     }
 }
