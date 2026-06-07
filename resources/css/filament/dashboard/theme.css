@@ -411,6 +411,76 @@
     @keyframes kk-xfade-in  { from { opacity: 0; } to { opacity: 1; } }
 }
 
+/* =============================================================================
+   KotKompas — Notification styling
+   .fi-no       = always-present wrapper (never add visual styles here)
+   .fi-no-notification = individual card (only present when a notification fires)
+   ============================================================================= */
+
+/* ---- Base card: simpele witte kaart ---- */
+.fi-no-notification {
+    font-family: 'area-normal', ui-sans-serif, system-ui, sans-serif;
+    border-radius: 10px;
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    box-shadow: 0 8px 32px rgba(0, 16, 30, 0.12), 0 2px 8px rgba(0, 16, 30, 0.06);
+    position: relative;
+    overflow: hidden;
+}
+
+/* ---- Progress bar onderaan via ::after ----
+   --kk-no-duration wordt dynamisch gezet via JS (zie DashboardPanelProvider
+   render hook). Fallback = 6s (Filament's standaard).
+   Persistent notificaties krijgen de klasse .kk-no-persistent → balk verborgen. */
+.fi-no-notification::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    width: 100%;
+    border-radius: 0;
+    animation: kk-no-progress var(--kk-no-duration, 6s) linear forwards;
+}
+.fi-no-notification.kk-no-persistent::after { display: none; }
+
+.fi-no-notification.fi-status-success::after { background: #22c55e; }
+.fi-no-notification.fi-status-warning::after  { background: #ff6700; }
+.fi-no-notification.fi-status-danger::after   { background: #ef4444; }
+.fi-no-notification.fi-status-info::after     { background: #3a6ea5; }
+
+@keyframes kk-no-progress {
+    from { width: 100%; }
+    to   { width: 0%; }
+}
+
+/* ---- Typography ---- */
+.fi-no-notification-title {
+    font-weight: 600;
+    letter-spacing: -0.01em;
+}
+.fi-no-notification-body {
+    font-size: 0.8125rem;
+    line-height: 1.45;
+}
+
+/* ---- Icon: statuskleur, groter ---- */
+.fi-no-notification-icon {
+    width: 1.75rem !important;
+    height: 1.75rem !important;
+    flex-shrink: 0;
+}
+.fi-no-notification.fi-status-success .fi-no-notification-icon { color: #16a34a !important; }
+.fi-no-notification.fi-status-warning .fi-no-notification-icon  { color: #ff6700 !important; }
+.fi-no-notification.fi-status-danger  .fi-no-notification-icon  { color: #dc2626 !important; }
+.fi-no-notification.fi-status-info    .fi-no-notification-icon  { color: #3a6ea5 !important; }
+
+/* ---- Action buttons ---- */
+.fi-no-notification .fi-btn {
+    font-family: 'area-normal', ui-sans-serif, system-ui, sans-serif;
+    font-weight: 500;
+}
+
 /* ---- Mobile: drop the fixed editorial layout, stack and scroll ---- */
 @media (max-width: 48rem) {
     /* allow vertical scroll, never horizontal */
