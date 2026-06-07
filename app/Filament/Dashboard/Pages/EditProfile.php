@@ -50,7 +50,7 @@ class EditProfile extends Page implements HasForms
                         ->label('Email')
                         ->email()
                         ->required()
-                        ->rules(['unique:users,email,' . auth()->id()]),
+                        ->rules(['unique:users,email,'.auth()->id()]),
                     TextInput::make('phone')
                         ->label('Phone number')
                         ->tel(),
