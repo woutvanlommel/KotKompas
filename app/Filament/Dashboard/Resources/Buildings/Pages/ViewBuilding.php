@@ -3,6 +3,7 @@
 namespace App\Filament\Dashboard\Resources\Buildings\Pages;
 
 use App\Filament\Dashboard\Resources\Buildings\BuildingResource;
+use App\Services\FilamentNotificationService;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Resources\Pages\ViewRecord;
@@ -24,8 +25,24 @@ class ViewBuilding extends ViewRecord
         return [
             EditAction::make()
                 ->label('Bewerken')
-                ->slideOver(),
-            DeleteAction::make(),
+                ->slideOver()
+                ->successNotification(null)
+                ->after(function () {
+                    FilamentNotificationService::success(
+                        'Gebouw bijgewerkt',
+                        "{$this->record->name} is bijgewerkt.",
+                        icon: 'heroicon-o-building-office-2'
+                    );
+                }),
+            DeleteAction::make()
+                ->successNotification(null)
+                ->after(function () {
+                    FilamentNotificationService::success(
+                        'Gebouw verwijderd',
+                        "{$this->record->name} is verwijderd.",
+                        icon: 'heroicon-o-building-office-2'
+                    );
+                }),
         ];
     }
 }

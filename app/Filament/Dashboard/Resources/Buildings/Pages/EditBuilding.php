@@ -3,7 +3,9 @@
 namespace App\Filament\Dashboard\Resources\Buildings\Pages;
 
 use App\Filament\Dashboard\Resources\Buildings\BuildingResource;
+use App\Services\FilamentNotificationService;
 use Filament\Actions\DeleteAction;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 
 class EditBuilding extends EditRecord
@@ -24,7 +26,14 @@ class EditBuilding extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            DeleteAction::make(),
+            DeleteAction::make()
+                ->successNotification(
+                    fn() => FilamentNotificationService::success(
+                        'Gebouw verwijderd',
+                        "{$this->record->name} is verwijderd.",
+                        icon: 'heroicon-o-building-office-2'
+                    )
+                ),
         ];
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Filament\Dashboard\Resources\Buildings\Schemas;
 
 use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Wizard;
 use Filament\Schemas\Components\Wizard\Step;
@@ -57,8 +58,12 @@ class BuildingForm
                                 TextInput::make('city')
                                     ->label('Plaats')
                                     ->required(),
-                                TextInput::make('country')
+                                Select::make('country')
                                     ->label('Land')
+                                    ->options([
+                                        'BE' => 'België',
+                                        // 'Nederland' => 'Nederland',
+                                    ])
                                     ->required(),
                             ]),
                     ]),

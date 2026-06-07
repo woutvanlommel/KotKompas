@@ -3,6 +3,7 @@
 namespace App\Filament\Dashboard\Resources\Buildings\Tables;
 
 use App\Filament\Dashboard\Resources\Buildings\BuildingResource;
+use App\Services\FilamentNotificationService;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -53,11 +54,40 @@ class BuildingsTable
                 //
             ])
             ->recordActions([
-                EditAction::make(),
+                EditAction::make()
+                    ->successNotification(null)
+                    ->after(function ($record) {
+                        FilamentNotificationService::success(
+                            'Gebouw bijgewerkt',
+                            "{$record->name} is bijgewerkt.",
+                            icon: 'heroicon-o-building-office-2'
+                        );
+                    }),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                    DeleteBulkAction::make()
+                        ->successNotification(null)
+                        ->using(function ($records) {
+                            $count = $records->count();
+                            $firstName = $records->first()?->name;
+
+                            $records->each->delete();
+
+                            if ($count === 1) {
+                                FilamentNotificationService::success(
+                                    'Gebouw verwijderd',
+                                    "{$firstName} is verwijderd.",
+                                    icon: 'heroicon-o-building-office-2'
+                                );
+                            } else {
+                                FilamentNotificationService::success(
+                                    'Gebouwen verwijderd',
+                                    "{$count} geselecteerde gebouwen zijn verwijderd.",
+                                    icon: 'heroicon-o-building-office-2'
+                                );
+                            }
+                        }),
                 ]),
             ]);
     }

@@ -3,6 +3,8 @@
 namespace App\Filament\Dashboard\Resources\Buildings\Pages;
 
 use App\Filament\Dashboard\Resources\Buildings\BuildingResource;
+use App\Services\FilamentNotificationService;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
 
 class CreateBuilding extends CreateRecord
@@ -18,5 +20,16 @@ class CreateBuilding extends CreateRecord
     {
         $data['landlord_id'] = auth()->id();
         return $data;
+    }
+
+    protected function getCreatedNotification(): ?Notification
+    {
+        FilamentNotificationService::success(
+            'Gebouw aangemaakt',
+            "{$this->record->name} is succesvol aangemaakt.",
+            icon: 'heroicon-o-building-office-2'
+        );
+
+        return null;
     }
 }
