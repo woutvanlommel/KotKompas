@@ -8,8 +8,9 @@ parameters:
 
     level: 5
 
-    memory_limit: 512M
-
     ignoreErrors:
+        -
+            identifier: property.notFound
+            path: app/Filament
 
     excludePaths:
