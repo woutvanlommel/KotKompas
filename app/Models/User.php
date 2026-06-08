@@ -87,6 +87,13 @@ class User extends Authenticatable implements FilamentUser, HasMedia
         );
     }
 
+    protected function avatarUrl(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->getFirstMediaUrl('avatar', 'avatar_thumb') ?: null,
+        );
+    }
+
     public function sendPasswordResetNotification($token): void
     {
         ResetPasswordNotification::createUrlUsing(

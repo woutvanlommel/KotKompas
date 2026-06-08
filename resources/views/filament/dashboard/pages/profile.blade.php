@@ -2,9 +2,9 @@
     <div class="flex items-center gap-4 mb-6">
         @php $user = auth()->user(); @endphp
 
-        @if ($user->avatar)
+        @if ($user->avatar_url)
             <img
-                src="{{ Storage::url($user->avatar) }}"
+                src="{{ $user->avatar_url }}"
                 alt="{{ $user->full_name }}"
                 class="w-20 h-20 rounded-full object-cover"
             />
