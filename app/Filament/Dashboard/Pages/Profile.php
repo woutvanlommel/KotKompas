@@ -20,14 +20,39 @@ class Profile extends Page implements HasForms
 
     public ?array $data = [];
 
-    protected function getHeaderActions(): array
-    {
-        return [
-            Action::make('edit')
-                ->label('Edit profile')
-                ->url(EditProfile::getUrl()),
-        ];
-    }
+protected function getHeaderActions(): array
+{
+    return [
+        Action::make('edit')
+            ->label('Edit profile')
+            ->slideOver()
+            ->fillForm(fn () => [
+                'email' => auth()->user()->email,
+                'phone' => auth()->user()->phone,
+            ])
+            ->form([
+                TextInput::make('email')
+                    ->label('Email')
+                    ->email()
+                    ->required()
+                    ->rules(['unique:users,email,' . auth()->id()]),
+                TextInput::make('phone')
+                    ->label('Phone number')
+                    ->tel(),
+            ])
+            ->action(function (array $data): void {
+                auth()->user()->update([
+                    'email' => $data['email'],
+                    'phone' => $data['phone'],
+                ]);
+
+                Notification::make()
+                    ->title('Profile updated')
+                    ->success()
+                    ->send();
+            }),
+    ];
+}
 
     public function mount(): void
     {
