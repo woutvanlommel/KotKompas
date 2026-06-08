@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Spatie\Image\Enums\Fit;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Spatie\Permission\Traits\HasRoles;
@@ -52,7 +53,7 @@ class User extends Authenticatable implements FilamentUser, HasMedia
         $this->addMediaConversion('avatar_thumb')
             ->performOnCollections('avatar')
             ->format('webp')
-            ->fit(\Spatie\Image\Enums\Fit::Crop, 200, 200)
+            ->fit(Fit::Crop, 200, 200)
             ->quality(80);
     }
 
