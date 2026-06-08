@@ -18,6 +18,8 @@ class ViewRoom extends ViewRecord
 
     protected string $view = 'filament.dashboard.pages.rooms.view';
 
+    public ?int $buildingId = null;
+
     public function getBreadcrumbs(): array
     {
         $building = $this->record->building;
@@ -46,6 +48,9 @@ class ViewRoom extends ViewRecord
                 }),
             DeleteAction::make()
                 ->successNotification(null)
+                ->before(function () {
+                    $this->buildingId = $this->record->building_id;
+                })
                 ->after(function () {
                     FilamentNotificationService::success(
                         'Kamer verwijderd',
@@ -53,7 +58,7 @@ class ViewRoom extends ViewRecord
                         icon: 'heroicon-o-rectangle-stack'
                     );
                 })
-                ->successRedirectUrl(fn () => BuildingResource::getUrl('view', ['record' => $this->record->building_id])),
+                ->successRedirectUrl(fn () => BuildingResource::getUrl('view', ['record' => $this->buildingId])),
         ];
     }
 }

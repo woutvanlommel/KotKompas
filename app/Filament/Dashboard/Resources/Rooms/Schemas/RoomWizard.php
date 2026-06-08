@@ -31,24 +31,24 @@ class RoomWizard
                     // Adres van het gebouw (read-only)
                     TextInput::make('_street')
                         ->label('Straat')
-                        ->default($building?->street)
                         ->disabled()
-                        ->dehydrated(false),
+                        ->dehydrated(false)
+                        ->afterStateHydrated(fn ($component) => $component->state($building?->street)),
                     TextInput::make('_house_number')
                         ->label('Huisnummer')
-                        ->default($building?->house_number)
                         ->disabled()
-                        ->dehydrated(false),
+                        ->dehydrated(false)
+                        ->afterStateHydrated(fn ($component) => $component->state($building?->house_number)),
                     TextInput::make('_postal_code')
                         ->label('Postcode')
-                        ->default($building?->postal_code)
                         ->disabled()
-                        ->dehydrated(false),
+                        ->dehydrated(false)
+                        ->afterStateHydrated(fn ($component) => $component->state($building?->postal_code)),
                     TextInput::make('_city')
                         ->label('Plaats')
-                        ->default($building?->city)
                         ->disabled()
-                        ->dehydrated(false),
+                        ->dehydrated(false)
+                        ->afterStateHydrated(fn ($component) => $component->state($building?->city)),
 
                     // Bus enkel invulbaar als het gebouw geen bus heeft
                     TextInput::make('bus')

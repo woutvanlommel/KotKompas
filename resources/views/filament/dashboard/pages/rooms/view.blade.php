@@ -59,7 +59,9 @@
                     </h1>
                     <p class="mt-1 text-gray-500 text-base">
                         Kamer {{ $room->room_number }} &middot; {{ $typeLabels[$room->type] ?? $room->type }}
-                        &middot; {{ $room->building->name }}
+                    </p>
+                    <p class="mt-0.5 text-gray-400 text-sm">
+                        {{ $room->full_address }}
                     </p>
                 </div>
                 <div class="text-right shrink-0">
