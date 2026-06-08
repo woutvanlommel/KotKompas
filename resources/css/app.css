@@ -1,5 +1,59 @@
 @import "tailwindcss";
 
+/* Editorial palette for the public site (light Swiss). Warm, never pure. */
+@theme {
+    --color-canvas: #f6f4ee;        /* warm off-white */
+    --color-canvas-deep: #efece3;   /* slightly deeper warm panel */
+    --color-ink: #1a1612;           /* warm near-black */
+    --color-ink-soft: #6b645c;      /* muted body / labels */
+    --color-hairline: #1a16121f;    /* ~12% ink for 1px seams */
+}
+
+/* ---- Auth-signature pill CTA (white pill + sliding arrow chip) ---- */
+@layer components {
+    .kk-cta {
+        display: inline-flex; align-items: center; gap: 0.5rem;
+        height: 2.75rem; padding: 0 0.35rem 0 1.25rem;
+        border: 0; border-radius: 4px; background-color: #fff;
+        color: #00101e; font-weight: 500; font-size: 0.8125rem;
+        letter-spacing: 0.04em; text-transform: uppercase;
+        text-decoration: none; cursor: pointer; transition: background-color 0.2s ease;
+    }
+    .kk-cta--ink { background-color: #00101e; color: #fff; }
+    .kk-cta-chip {
+        position: relative; display: inline-flex; height: 2rem; width: 2rem;
+        flex-shrink: 0; overflow: hidden; border-radius: 3px;
+        background-color: #ff6700; color: #fff;
+    }
+    .kk-cta--ink .kk-cta-chip { background-color: #ff6700; }
+    .kk-cta-arrow {
+        position: absolute; inset: 0; margin: auto; width: 0.85rem; height: auto;
+        transition: transform 0.5s cubic-bezier(0.65, 0, 0.35, 1);
+    }
+    .kk-cta-arrow--in { transform: translate(-220%, 220%); }
+    .kk-cta:hover .kk-cta-arrow--out { transform: translate(220%, -220%); }
+    .kk-cta:hover .kk-cta-arrow--in { transform: translate(0, 0); }
+}
+
+/* Adaptive nav: transparent (white) over a dark hero → solid canvas after scroll */
+.kk-nav[data-adaptive] {
+    background-color: transparent;
+    border-color: transparent;
+    color: #fff;
+}
+.kk-nav[data-adaptive] .kk-nav-link { color: rgba(255, 255, 255, 0.75); }
+.kk-nav[data-adaptive] .kk-nav-link:hover,
+.kk-nav[data-adaptive] .kk-nav-strong { color: #fff; }
+.kk-nav[data-adaptive].is-solid {
+    background-color: color-mix(in oklab, var(--color-canvas) 85%, transparent);
+    border-color: var(--color-hairline);
+    color: var(--color-ink);
+    backdrop-filter: blur(12px);
+}
+.kk-nav[data-adaptive].is-solid .kk-nav-link { color: var(--color-ink-soft); }
+.kk-nav[data-adaptive].is-solid .kk-nav-link:hover,
+.kk-nav[data-adaptive].is-solid .kk-nav-strong { color: var(--color-ink); }
+
 @source '../views/**/*.blade.php';
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
