@@ -2,17 +2,19 @@
 
 namespace App\Models;
 
+use App\Concerns\HasImages;
 use Database\Factories\BuildingFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\MediaLibrary\HasMedia;
 
 #[Fillable(['landlord_id', 'name', 'description', 'street', 'house_number', 'box', 'postal_code', 'city', 'country', 'longitude', 'latitude'])]
-class Building extends Model
+class Building extends Model implements HasMedia
 {
     /** @use HasFactory<BuildingFactory> */
-    use HasFactory;
+    use HasFactory, HasImages;
 
     protected function casts(): array
     {
