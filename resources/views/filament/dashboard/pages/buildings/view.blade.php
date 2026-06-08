@@ -19,10 +19,40 @@
         ];
     @endphp
 
+    @php
+        $rooms = $record->rooms()->orderBy('room_number')->get();
+        $availableCount = $rooms->where('status', 'available')->count();
+    @endphp
+
     <div class="space-y-8">
-        <!-- Header -->
+
+        {{-- Hero --}}
+        <div class="w-full h-72 rounded-2xl overflow-hidden bg-gray-100 relative shadow-sm">
+            <div class="w-full h-full flex flex-col items-center justify-center gap-3 text-gray-300">
+                <svg class="w-16 h-16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                          d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21" />
+                </svg>
+                <p class="text-sm font-medium">Geen afbeelding beschikbaar</p>
+            </div>
+
+            {{-- Kamers badge --}}
+            @if ($rooms->count())
+                <div class="absolute top-4 right-4">
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold shadow-sm bg-white/90 text-gray-700">
+                        {{ $rooms->count() }} {{ Str::plural('kamer', $rooms->count()) }}
+                        @if ($availableCount)
+                            &middot; <span class="text-green-600">{{ $availableCount }} beschikbaar</span>
+                        @endif
+                    </span>
+                </div>
+            @endif
+        </div>
+
+        {{-- Titel & meta --}}
         <div>
-            <h1 class="text-5xl font-bold text-gray-900">{{ $record->name }}</h1>
+            <h1 class="text-4xl font-bold text-gray-900">{{ $record->name }}</h1>
+            <p class="mt-1 text-gray-500 text-base">{{ $record->full_address }} &middot; {{ $record->country }}</p>
             @if ($record->description)
                 <div class="mt-4 prose prose-sm max-w-none text-gray-600">
                     {!! $record->description !!}
@@ -30,43 +60,46 @@
             @endif
         </div>
 
-        <!-- Locatie Kaart -->
-        <div class="grid gap-6">
-            <div class="bg-white rounded-lg border border-gray-200 p-8 shadow-sm">
-                <h2 class="text-xl font-semibold text-gray-900 mb-6">Locatie</h2>
-                <div class="grid grid-cols-2 md:grid-cols-3 gap-6">
-                    <div>
-                        <p class="text-sm font-medium text-gray-500 uppercase tracking-wide">Straat</p>
-                        <p class="mt-2 text-lg text-gray-900">{{ $record->street }}</p>
-                    </div>
-                    <div>
-                        <p class="text-sm font-medium text-gray-500 uppercase tracking-wide">Huisnummer</p>
-                        <p class="mt-2 text-lg text-gray-900">{{ $record->house_number }}</p>
-                    </div>
-                    @if ($record->box)
-                        <div>
-                            <p class="text-sm font-medium text-gray-500 uppercase tracking-wide">Bus/Apt</p>
-                            <p class="mt-2 text-lg text-gray-900">{{ $record->box }}</p>
-                        </div>
-                    @endif
-                    <div>
-                        <p class="text-sm font-medium text-gray-500 uppercase tracking-wide">Postcode</p>
-                        <p class="mt-2 text-lg text-gray-900">{{ $record->postal_code }}</p>
-                    </div>
-                    <div>
-                        <p class="text-sm font-medium text-gray-500 uppercase tracking-wide">Plaats</p>
-                        <p class="mt-2 text-lg text-gray-900">{{ $record->city }}</p>
-                    </div>
-                    <div>
-                        <p class="text-sm font-medium text-gray-500 uppercase tracking-wide">Land</p>
-                        <p class="mt-2 text-lg text-gray-900">{{ $record->country }}</p>
-                    </div>
+        {{-- Locatie kaart --}}
+        <div class="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
+            <h2 class="text-base font-semibold text-gray-900 mb-5 flex items-center gap-2">
+                <svg class="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
+                </svg>
+                Locatie
+            </h2>
+            <dl class="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-5">
+                <div>
+                    <dt class="text-xs font-medium text-gray-400 uppercase tracking-wide">Straat</dt>
+                    <dd class="mt-1 text-sm font-medium text-gray-900">{{ $record->street }}</dd>
                 </div>
-            </div>
+                <div>
+                    <dt class="text-xs font-medium text-gray-400 uppercase tracking-wide">Huisnummer</dt>
+                    <dd class="mt-1 text-sm font-medium text-gray-900">{{ $record->house_number }}</dd>
+                </div>
+                @if ($record->box)
+                    <div>
+                        <dt class="text-xs font-medium text-gray-400 uppercase tracking-wide">Bus/Apt</dt>
+                        <dd class="mt-1 text-sm font-medium text-gray-900">{{ $record->box }}</dd>
+                    </div>
+                @endif
+                <div>
+                    <dt class="text-xs font-medium text-gray-400 uppercase tracking-wide">Postcode</dt>
+                    <dd class="mt-1 text-sm font-medium text-gray-900">{{ $record->postal_code }}</dd>
+                </div>
+                <div>
+                    <dt class="text-xs font-medium text-gray-400 uppercase tracking-wide">Plaats</dt>
+                    <dd class="mt-1 text-sm font-medium text-gray-900">{{ $record->city }}</dd>
+                </div>
+                <div>
+                    <dt class="text-xs font-medium text-gray-400 uppercase tracking-wide">Land</dt>
+                    <dd class="mt-1 text-sm font-medium text-gray-900">{{ $record->country }}</dd>
+                </div>
+            </dl>
         </div>
 
         <!-- Kamers -->
-        @php $rooms = $record->rooms()->orderBy('room_number')->get(); @endphp
 
         <div>
             <div class="flex items-center justify-between mb-6">
