@@ -7,6 +7,7 @@ use App\Concerns\HasImages;
 use Database\Factories\UserFactory;
 use Filament\Facades\Filament;
 use Filament\Models\Contracts\FilamentUser;
+use Filament\Models\Contracts\HasAvatar;
 use Filament\Panel;
 use Illuminate\Auth\Notifications\ResetPassword as ResetPasswordNotification;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -16,6 +17,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Spatie\Image\Enums\Fit;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
@@ -23,7 +26,7 @@ use Spatie\Permission\Traits\HasRoles;
 
 #[Fillable(['name', 'lastname', 'email', 'phone', 'date_of_birth', 'password', 'provider', 'provider_id', 'avatar'])]
 #[Hidden(['password', 'remember_token'])]
-class User extends Authenticatable implements FilamentUser, HasMedia
+class User extends Authenticatable implements FilamentUser, HasAvatar, HasMedia
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, HasRoles, Notifiable, SoftDeletes;
@@ -92,6 +95,25 @@ class User extends Authenticatable implements FilamentUser, HasMedia
         return Attribute::make(
             get: fn () => $this->getFirstMediaUrl('avatar', 'avatar_thumb') ?: null,
         );
+    }
+
+    /**
+     * Avatar shown across Filament (topbar, profile nav). An uploaded image wins;
+     * otherwise fall back to the social provider photo URL stored on the `avatar` column.
+     */
+    public function getFilamentAvatarUrl(): ?string
+    {
+        if ($uploaded = $this->getFirstMediaUrl('avatar', 'avatar_thumb')) {
+            return $uploaded;
+        }
+
+        if ($this->avatar) {
+            return Str::startsWith($this->avatar, ['http://', 'https://'])
+                ? $this->avatar
+                : Storage::url($this->avatar);
+        }
+
+        return null;
     }
 
     public function sendPasswordResetNotification($token): void

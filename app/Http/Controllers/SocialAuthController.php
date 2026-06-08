@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
 use Symfony\Component\HttpFoundation\RedirectResponse as SymfonyRedirectResponse;
 
@@ -67,8 +68,14 @@ class SocialAuthController extends Controller
                 'avatar' => $user->avatar ?: $oauthUser->getAvatar(),
             ])->save();
         } else {
+            // Google returns first/last separately as given_name/family_name; fall back
+            // to splitting the full name on whitespace.
+            $raw = (array) ($oauthUser->user ?? []);
+            $fullName = $oauthUser->getName() ?: $oauthUser->getNickname() ?: 'Gebruiker';
+
             $user = User::create([
-                'name' => $oauthUser->getName() ?: $oauthUser->getNickname() ?: 'Gebruiker',
+                'name' => $raw['given_name'] ?? Str::before($fullName, ' '),
+                'lastname' => $raw['family_name'] ?? (Str::contains($fullName, ' ') ? Str::after($fullName, ' ') : null),
                 'email' => $oauthUser->getEmail(),
                 'provider' => $provider,
                 'provider_id' => $oauthUser->getId(),
