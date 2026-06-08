@@ -9,6 +9,7 @@ use Filament\Auth\Http\Responses\Contracts\PasswordResetResponse;
 use Filament\Auth\Pages\PasswordReset\ResetPassword as BaseResetPassword;
 use Filament\Notifications\Notification;
 use Illuminate\Support\HtmlString;
+use SensitiveParameter;
 
 class ResetPassword extends BaseResetPassword
 {
@@ -17,6 +18,17 @@ class ResetPassword extends BaseResetPassword
      * accidentally show a generic danger notification on top of it.
      */
     private bool $wasRateLimited = false;
+
+    public function mount(?string $email = null, #[SensitiveParameter] ?string $token = null): void
+    {
+        // Skip the parent's authenticated redirect so logged-in users
+        // can still use a reset link from their profile page.
+        $this->token = $token ?? request()->query('token');
+
+        $this->form->fill([
+            'email' => $email ?? request()->query('email'),
+        ]);
+    }
 
     public function getHeading(): string
     {
