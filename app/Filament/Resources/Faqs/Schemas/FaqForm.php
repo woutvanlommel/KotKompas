@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Faqs\Schemas;
 
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -15,6 +16,15 @@ class FaqForm
     {
         return $schema
             ->components([
+                // JSON name lives in a nested column, so resolve the label manually.
+                Select::make('faq_category_id')
+                    ->label('Categorie')
+                    ->relationship('category')
+                    ->getOptionLabelFromRecordUsing(fn ($record) => $record->naam)
+                    ->searchable()
+                    ->preload()
+                    ->required()
+                    ->columnSpanFull(),
                 // Nested JSON in the single `content` column:
                 // {"vraag": {"nl": "...", "en": "..."}, "antwoord": {"nl": "...", "en": "..."}}.
                 Tabs::make('Vertalingen')

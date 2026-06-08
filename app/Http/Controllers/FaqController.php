@@ -2,18 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Faq;
+use App\Models\FaqCategory;
 use Illuminate\View\View;
 
 class FaqController extends Controller
 {
     public function index(): View
     {
-        $faqs = Faq::query()
+        $categories = FaqCategory::query()
             ->where('is_active', true)
+            ->whereHas('faqs', fn ($q) => $q->where('is_active', true))
+            ->with(['faqs' => fn ($q) => $q->where('is_active', true)->orderBy('sort')])
             ->orderBy('sort')
             ->get();
 
-        return view('faq', ['faqs' => $faqs]);
+        return view('faq', ['categories' => $categories]);
     }
 }
