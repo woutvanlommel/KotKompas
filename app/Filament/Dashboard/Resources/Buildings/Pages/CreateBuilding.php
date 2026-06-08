@@ -19,6 +19,7 @@ class CreateBuilding extends CreateRecord
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         $data['landlord_id'] = auth()->id();
+
         return $data;
     }
 

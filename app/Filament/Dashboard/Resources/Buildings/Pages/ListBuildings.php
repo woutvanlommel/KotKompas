@@ -19,6 +19,7 @@ class ListBuildings extends ListRecords
                 ->slideOver()
                 ->mutateFormDataUsing(function (array $data): array {
                     $data['landlord_id'] = auth()->id();
+
                     return $data;
                 }),
         ];

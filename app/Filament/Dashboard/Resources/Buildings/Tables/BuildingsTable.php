@@ -15,7 +15,7 @@ class BuildingsTable
     public static function configure(Table $table): Table
     {
         return $table
-            ->recordUrl(fn($record) => BuildingResource::getUrl('view', ['record' => $record]))
+            ->recordUrl(fn ($record) => BuildingResource::getUrl('view', ['record' => $record]))
             ->columns([
                 TextColumn::make('name')
                     ->label('Naam')

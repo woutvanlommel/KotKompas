@@ -32,6 +32,7 @@ class BuildingResource extends Resource
     public static function canAccess(): bool
     {
         $user = auth()->user();
+
         return $user?->hasRole('verhuurder') ?? false;
     }
 
@@ -39,6 +40,7 @@ class BuildingResource extends Resource
     {
         $userId = auth()->id();
         $count = static::getModel()::where('landlord_id', $userId)->count();
+
         return (string) $count ?: null;
     }
 
