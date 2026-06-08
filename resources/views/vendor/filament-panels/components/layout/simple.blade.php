@@ -28,7 +28,7 @@
             <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('{{ asset('img/hero-test.jpg') }}');"></div>
             {{-- scrim: deep navy anchors the bottom-left (giant word + panel), eases toward the
                  bright top-right so the photo keeps its warm daylight instead of going flat-blue --}}
-            <div class="absolute inset-0 bg-gradient-to-tr from-primary-900 via-primary-900/75 to-primary-900/20"></div>
+            <div class="absolute inset-0 bg-linear-to-tr from-primary-900 via-primary-900/75 to-primary-900/20"></div>
         </div>
 
 
