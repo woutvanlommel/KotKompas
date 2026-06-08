@@ -7,12 +7,18 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 #[Fillable(['building_id', 'room_number', 'type', 'title', 'description', 'price_per_month', 'costs_included', 'extra_costs', 'surface_m2', 'is_furnished', 'available_from', 'status'])]
 class Room extends Model
 {
     /** @use HasFactory<RoomFactory> */
     use HasFactory;
+
+    public function building(): BelongsTo
+    {
+        return $this->belongsTo(Building::class);
+    }
 
     protected function casts(): array
     {

@@ -7,12 +7,18 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[Fillable(['landlord_id', 'name', 'description', 'street', 'house_number', 'box', 'postal_code', 'city', 'country', 'longitude', 'latitude'])]
 class Building extends Model
 {
     /** @use HasFactory<BuildingFactory> */
     use HasFactory;
+
+    public function rooms(): HasMany
+    {
+        return $this->hasMany(Room::class);
+    }
 
     protected function casts(): array
     {
