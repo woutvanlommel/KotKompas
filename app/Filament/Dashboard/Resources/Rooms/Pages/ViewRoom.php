@@ -4,6 +4,7 @@ namespace App\Filament\Dashboard\Resources\Rooms\Pages;
 
 use App\Filament\Dashboard\Resources\Buildings\BuildingResource;
 use App\Filament\Dashboard\Resources\Rooms\RoomResource;
+use App\Filament\Dashboard\Resources\Rooms\Schemas\RoomWizard;
 use App\Models\Room;
 use App\Services\FilamentNotificationService;
 use Filament\Actions\DeleteAction;
@@ -17,12 +18,24 @@ class ViewRoom extends ViewRecord
 
     protected string $view = 'filament.dashboard.pages.rooms.view';
 
+    public function getBreadcrumbs(): array
+    {
+        $building = $this->record->building;
+
+        return [
+            BuildingResource::getUrl('index') => 'Gebouwen',
+            BuildingResource::getUrl('view', ['record' => $building->id]) => $building->name,
+            '#' => $this->record->title ?: 'Kamer ' . $this->record->room_number,
+        ];
+    }
+
     protected function getHeaderActions(): array
     {
         return [
             EditAction::make()
                 ->label('Bewerken')
                 ->slideOver()
+                ->form([RoomWizard::make()])
                 ->successNotification(null)
                 ->after(function () {
                     FilamentNotificationService::success(

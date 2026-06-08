@@ -162,6 +162,33 @@
 
         </div>
 
+        {{-- Huurder --}}
+        @if ($room->status === 'rented')
+            <div class="bg-blue-50 border border-blue-100 rounded-2xl p-6">
+                <h2 class="text-base font-semibold text-blue-900 mb-4 flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                    </svg>
+                    Verhuurd aan
+                </h2>
+                @if ($room->tenant)
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-full bg-blue-200 flex items-center justify-center shrink-0">
+                            <span class="text-sm font-semibold text-blue-700">
+                                {{ strtoupper(substr($room->tenant->name, 0, 1)) }}
+                            </span>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold text-blue-900">{{ $room->tenant->name }}</p>
+                            <p class="text-xs text-blue-600">{{ $room->tenant->email }}</p>
+                        </div>
+                    </div>
+                @else
+                    <p class="text-sm text-blue-600 italic">Geen huurder gekoppeld.</p>
+                @endif
+            </div>
+        @endif
+
         {{-- Beschrijving --}}
         @if ($room->description)
             <div class="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">

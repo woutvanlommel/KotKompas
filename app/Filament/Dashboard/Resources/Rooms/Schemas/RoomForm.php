@@ -21,13 +21,13 @@ class RoomForm
                     ->required(),
                 Select::make('type')
                     ->options([
-            'studio' => 'Studio',
-            'one_bedroom' => 'One bedroom',
-            'two_bedroom' => 'Two bedroom',
-            'three_bedroom' => 'Three bedroom',
-            'four_bedroom' => 'Four bedroom',
-            'five_plus_bedroom' => 'Five plus bedroom',
-        ])
+                        'studio' => 'Studio',
+                        'one_bedroom' => 'One bedroom',
+                        'two_bedroom' => 'Two bedroom',
+                        'three_bedroom' => 'Three bedroom',
+                        'four_bedroom' => 'Four bedroom',
+                        'five_plus_bedroom' => 'Five plus bedroom',
+                    ])
                     ->required(),
                 TextInput::make('title'),
                 Textarea::make('description')
@@ -45,11 +45,11 @@ class RoomForm
                 DatePicker::make('available_from'),
                 Select::make('status')
                     ->options([
-            'available' => 'Available',
-            'rented' => 'Rented',
-            'maintenance' => 'Maintenance',
-            'archived' => 'Archived',
-        ])
+                        'available' => 'Available',
+                        'rented' => 'Rented',
+                        'maintenance' => 'Maintenance',
+                        'archived' => 'Archived',
+                    ])
                     ->required(),
             ]);
     }
