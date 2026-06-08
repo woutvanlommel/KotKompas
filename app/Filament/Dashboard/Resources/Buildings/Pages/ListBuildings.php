@@ -25,8 +25,8 @@ class ListBuildings extends ListRecords
         ];
     }
 
-    protected function getQuery(): Builder
+    protected function getTableQuery(): Builder
     {
-        return parent::getQuery()->where('landlord_id', auth()->id());
+        return parent::getTableQuery()->where('landlord_id', auth()->id());
     }
 }

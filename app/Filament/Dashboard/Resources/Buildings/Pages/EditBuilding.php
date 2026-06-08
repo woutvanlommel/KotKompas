@@ -3,6 +3,7 @@
 namespace App\Filament\Dashboard\Resources\Buildings\Pages;
 
 use App\Filament\Dashboard\Resources\Buildings\BuildingResource;
+use App\Models\Building;
 use App\Services\FilamentNotificationService;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
@@ -14,6 +15,7 @@ class EditBuilding extends EditRecord
     public function mount(int|string $record): void
     {
         parent::mount($record);
+        assert($this->record instanceof Building);
         abort_if($this->record->landlord_id !== auth()->id(), 403);
     }
 
