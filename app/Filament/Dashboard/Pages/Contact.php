@@ -28,7 +28,9 @@ class Contact extends Page implements HasForms
 
     protected static ?string $title = 'Contact met support';
 
-    protected static ?int $navigationSort = 9;
+    // Pinned to the bottom of the sidebar (just above the profile link) via a
+    // SIDEBAR_NAV_END render hook in DashboardPanelProvider — not the auto nav.
+    protected static bool $shouldRegisterNavigation = false;
 
     public ?array $data = [];
 
