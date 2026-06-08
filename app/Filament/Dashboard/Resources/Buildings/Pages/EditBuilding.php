@@ -2,6 +2,7 @@
 
 namespace App\Filament\Dashboard\Resources\Buildings\Pages;
 
+use App\Filament\Concerns\SyncsMediaUploads;
 use App\Filament\Dashboard\Resources\Buildings\BuildingResource;
 use App\Models\Building;
 use App\Services\FilamentNotificationService;
@@ -11,6 +12,8 @@ use Filament\Resources\Pages\EditRecord;
 /** @property Building $record */
 class EditBuilding extends EditRecord
 {
+    use SyncsMediaUploads;
+
     protected static string $resource = BuildingResource::class;
 
     public function mount(int|string $record): void

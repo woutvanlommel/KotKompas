@@ -2,6 +2,7 @@
 
 namespace App\Filament\Dashboard\Resources\Buildings\Pages;
 
+use App\Filament\Concerns\SyncsMediaUploads;
 use App\Filament\Dashboard\Resources\Buildings\BuildingResource;
 use App\Services\FilamentNotificationService;
 use Filament\Notifications\Notification;
@@ -9,6 +10,8 @@ use Filament\Resources\Pages\CreateRecord;
 
 class CreateBuilding extends CreateRecord
 {
+    use SyncsMediaUploads;
+
     protected static string $resource = BuildingResource::class;
 
     protected function getRedirectUrl(): string
@@ -19,6 +22,9 @@ class CreateBuilding extends CreateRecord
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         $data['landlord_id'] = auth()->id();
+
+        // Extract image uploads before the model is created
+        $this->extractUploadsFromData($data);
 
         return $data;
     }
