@@ -42,7 +42,6 @@ class ImageUpload
             ->label(ucfirst($collection))
             ->image()
             ->multiple($multiple)
-            ->reorderable($multiple)
             ->disk('public')
             ->directory('tmp-media')
             ->visibility('public')

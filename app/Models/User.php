@@ -48,12 +48,11 @@ class User extends Authenticatable implements FilamentUser, HasMedia
         // WebP + thumb conversions from HasImages
         $this->registerBaseMediaConversions($media);
 
-        // Square crop for avatar thumbnails
+        // 200×200 square crop for avatar thumbnails
         $this->addMediaConversion('avatar_thumb')
             ->performOnCollections('avatar')
             ->format('webp')
-            ->width(200)
-            ->height(200)
+            ->fit(\Spatie\Image\Enums\Fit::Crop, 200, 200)
             ->quality(80);
     }
 

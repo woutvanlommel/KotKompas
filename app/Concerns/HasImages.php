@@ -2,7 +2,6 @@
 
 namespace App\Concerns;
 
-use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
@@ -29,7 +28,7 @@ trait HasImages
 
     public function registerMediaConversions(?Media $media = null): void
     {
-        // Full-size WebP — replaces the original for web delivery
+        // Full-size WebP conversion — use this for web delivery (the original is still retained)
         $this->addMediaConversion('webp')
             ->performOnCollections('images')
             ->format('webp')
