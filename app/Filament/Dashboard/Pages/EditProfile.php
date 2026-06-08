@@ -54,6 +54,18 @@ class EditProfile extends Page implements HasForms
                     TextInput::make('phone')
                         ->label('Phone number')
                         ->tel(),
+                    TextInput::make('password')
+                        ->label('New password')
+                        ->password()
+                        ->nullable()
+                        ->minLength(8)
+                        ->dehydrated(fn ($state) => filled($state)),
+                    TextInput::make('password_confirmation')
+                        ->label('Confirm password')
+                        ->password()
+                        ->nullable()
+                        ->same('password')
+                        ->dehydrated(false),
                 ]),
             ])
             ->statePath('data');
@@ -77,10 +89,16 @@ class EditProfile extends Page implements HasForms
         $data = $this->form->getState();
 
         $user = auth()->user();
-        $user->update([
+        $updateData = [
             'email' => $data['email'],
             'phone' => $data['phone'],
-        ]);
+        ];
+
+        if (filled($data['password'] ?? null)) {
+            $updateData['password'] = bcrypt($data['password']);
+        }
+
+        $user->update($updateData);
 
         Notification::make()
             ->title('Profile updated')
