@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Concerns\HasImages;
 use Database\Factories\UserFactory;
 use Filament\Facades\Filament;
 use Filament\Models\Contracts\FilamentUser;
@@ -15,14 +16,46 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Spatie\Image\Enums\Fit;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Spatie\Permission\Traits\HasRoles;
 
 #[Fillable(['name', 'lastname', 'email', 'phone', 'date_of_birth', 'password'])]
 #[Hidden(['password', 'remember_token'])]
-class User extends Authenticatable implements FilamentUser
+class User extends Authenticatable implements FilamentUser, HasMedia
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, HasRoles, Notifiable, SoftDeletes;
+
+    use HasImages {
+        HasImages::registerMediaCollections as registerBaseMediaCollections;
+        HasImages::registerMediaConversions as registerBaseMediaConversions;
+    }
+
+    public function registerMediaCollections(): void
+    {
+        // Single avatar image
+        $this->addMediaCollection('avatar')
+            ->singleFile()
+            ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/webp']);
+
+        // General images collection from HasImages
+        $this->registerBaseMediaCollections();
+    }
+
+    public function registerMediaConversions(?Media $media = null): void
+    {
+        // WebP + thumb conversions from HasImages
+        $this->registerBaseMediaConversions($media);
+
+        // 200×200 square crop for avatar thumbnails
+        $this->addMediaConversion('avatar_thumb')
+            ->performOnCollections('avatar')
+            ->format('webp')
+            ->fit(Fit::Crop, 200, 200)
+            ->quality(80);
+    }
 
     public function canAccessPanel(Panel $panel): bool
     {
