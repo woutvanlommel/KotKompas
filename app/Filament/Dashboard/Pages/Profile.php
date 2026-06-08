@@ -2,6 +2,7 @@
 
 namespace App\Filament\Dashboard\Pages;
 
+use App\Filament\Components\ImageUpload;
 use Filament\Actions\Action;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Concerns\InteractsWithForms;
@@ -31,8 +32,11 @@ class Profile extends Page implements HasForms
                 ->fillForm(fn () => [
                     'email' => auth()->user()->email,
                     'phone' => auth()->user()->phone,
+                    'avatar' => ImageUpload::existingPaths(auth()->user(), 'avatar'),
                 ])
                 ->form([
+                    ImageUpload::make('avatar', false)
+                        ->label('Profile photo'),
                     TextInput::make('email')
                         ->label('Email')
                         ->email()
@@ -43,7 +47,11 @@ class Profile extends Page implements HasForms
                         ->tel(),
                 ])
                 ->action(function (array $data): void {
-                    auth()->user()->update([
+                    $user = auth()->user();
+
+                    ImageUpload::sync($user, (array) ($data['avatar'] ?? []), 'avatar');
+
+                    $user->update([
                         'email' => $data['email'],
                         'phone' => $data['phone'],
                     ]);

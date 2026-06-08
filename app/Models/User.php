@@ -38,7 +38,7 @@ class User extends Authenticatable implements FilamentUser, HasMedia
         // Single avatar image
         $this->addMediaCollection('avatar')
             ->singleFile()
-            ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/webp']);
+            ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/webp', 'image/gif']);
 
         // General images collection from HasImages
         $this->registerBaseMediaCollections();
@@ -84,6 +84,13 @@ class User extends Authenticatable implements FilamentUser, HasMedia
     {
         return Attribute::make(
             get: fn () => "{$this->name} {$this->lastname}",
+        );
+    }
+
+    protected function avatarUrl(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->getFirstMediaUrl('avatar', 'avatar_thumb') ?: null,
         );
     }
 
