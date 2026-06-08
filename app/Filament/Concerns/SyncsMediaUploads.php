@@ -3,6 +3,7 @@
 namespace App\Filament\Concerns;
 
 use App\Filament\Components\ImageUpload;
+use Spatie\MediaLibrary\HasMedia;
 
 /**
  * Add to any CreateRecord or EditRecord Filament page to automatically
@@ -49,8 +50,10 @@ trait SyncsMediaUploads
 
     protected function mutateFormDataBeforeFill(array $data): array
     {
-        foreach ($this->getMediaCollections() as $collection) {
-            $data[$collection] = ImageUpload::existingPaths($this->record, $collection);
+        if ($this->record instanceof HasMedia) {
+            foreach ($this->getMediaCollections() as $collection) {
+                $data[$collection] = ImageUpload::existingPaths($this->record, $collection);
+            }
         }
 
         return $data;
@@ -86,6 +89,10 @@ trait SyncsMediaUploads
 
     protected function processPendingUploads(): void
     {
+        if (! ($this->record instanceof HasMedia)) {
+            return;
+        }
+
         foreach ($this->pendingMediaUploads as $collection => $paths) {
             ImageUpload::sync($this->record, $paths ?? [], $collection);
         }

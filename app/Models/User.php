@@ -25,7 +25,11 @@ use Spatie\Permission\Traits\HasRoles;
 class User extends Authenticatable implements FilamentUser, HasMedia
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, HasImages, HasRoles, Notifiable, SoftDeletes;
+    use HasFactory, HasRoles, Notifiable, SoftDeletes;
+    use HasImages {
+        HasImages::registerMediaCollections as registerBaseMediaCollections;
+        HasImages::registerMediaConversions as registerBaseMediaConversions;
+    }
 
     public function registerMediaCollections(): void
     {
@@ -34,21 +38,22 @@ class User extends Authenticatable implements FilamentUser, HasMedia
             ->singleFile()
             ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/webp']);
 
-        // General images collection inherited from HasImages
-        parent::registerMediaCollections();
+        // General images collection from HasImages
+        $this->registerBaseMediaCollections();
     }
 
     public function registerMediaConversions(?Media $media = null): void
     {
-        parent::registerMediaConversions($media);
+        // WebP + thumb conversions from HasImages
+        $this->registerBaseMediaConversions($media);
 
         // Square crop for avatar thumbnails
         $this->addMediaConversion('avatar_thumb')
+            ->performOnCollections('avatar')
             ->format('webp')
             ->width(200)
             ->height(200)
-            ->quality(80)
-            ->performOnCollections('avatar');
+            ->quality(80);
     }
 
     public function canAccessPanel(Panel $panel): bool

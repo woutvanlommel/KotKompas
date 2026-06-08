@@ -31,15 +31,15 @@ trait HasImages
     {
         // Full-size WebP — replaces the original for web delivery
         $this->addMediaConversion('webp')
+            ->performOnCollections('images')
             ->format('webp')
-            ->quality(85)
-            ->performOnCollections('images');
+            ->quality(85);
 
         // Small thumbnail in WebP — used for previews, cards, galleries
         $this->addMediaConversion('thumb')
+            ->performOnCollections('images')
             ->format('webp')
             ->width(400)
-            ->quality(80)
-            ->performOnCollections('images');
+            ->quality(80);
     }
 }
