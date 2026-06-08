@@ -2,6 +2,7 @@
 
 namespace App\Filament\Dashboard\Resources\Buildings\Schemas;
 
+use App\Filament\Components\ImageUpload;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -37,6 +38,13 @@ class BuildingForm
                                         'undo',
                                         'redo',
                                     ]),
+                            ]),
+                        Step::make('Foto\'s')
+                            ->completedIcon(Heroicon::HandThumbUp)
+                            ->columnSpanFull()
+                            ->schema([
+                                ImageUpload::make('images')
+                                    ->label('Foto\'s van het gebouw'),
                             ]),
                         Step::make('Adres')
                             ->completedIcon(Heroicon::HandThumbUp)

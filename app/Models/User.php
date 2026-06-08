@@ -3,9 +3,12 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Concerns\HasImages;
 use Database\Factories\UserFactory;
+use Filament\Facades\Filament;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
+use Illuminate\Auth\Notifications\ResetPassword as ResetPasswordNotification;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -13,14 +16,46 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Spatie\Image\Enums\Fit;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Spatie\Permission\Traits\HasRoles;
 
-#[Fillable(['name', 'lastname', 'email', 'phone', 'date_of_birth', 'password'])]
+#[Fillable(['name', 'lastname', 'email', 'phone', 'date_of_birth', 'password', 'provider', 'provider_id', 'avatar'])]
 #[Hidden(['password', 'remember_token'])]
-class User extends Authenticatable implements FilamentUser
+class User extends Authenticatable implements FilamentUser, HasMedia
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, HasRoles, Notifiable, SoftDeletes;
+
+    use HasImages {
+        HasImages::registerMediaCollections as registerBaseMediaCollections;
+        HasImages::registerMediaConversions as registerBaseMediaConversions;
+    }
+
+    public function registerMediaCollections(): void
+    {
+        // Single avatar image
+        $this->addMediaCollection('avatar')
+            ->singleFile()
+            ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/webp', 'image/gif']);
+
+        // General images collection from HasImages
+        $this->registerBaseMediaCollections();
+    }
+
+    public function registerMediaConversions(?Media $media = null): void
+    {
+        // WebP + thumb conversions from HasImages
+        $this->registerBaseMediaConversions($media);
+
+        // 200×200 square crop for avatar thumbnails
+        $this->addMediaConversion('avatar_thumb')
+            ->performOnCollections('avatar')
+            ->format('webp')
+            ->fit(Fit::Crop, 200, 200)
+            ->quality(80);
+    }
 
     public function canAccessPanel(Panel $panel): bool
     {
@@ -50,5 +85,21 @@ class User extends Authenticatable implements FilamentUser
         return Attribute::make(
             get: fn () => "{$this->name} {$this->lastname}",
         );
+    }
+
+    protected function avatarUrl(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->getFirstMediaUrl('avatar', 'avatar_thumb') ?: null,
+        );
+    }
+
+    public function sendPasswordResetNotification($token): void
+    {
+        ResetPasswordNotification::createUrlUsing(
+            fn ($notifiable, $token) => Filament::getPanel('dashboard')->getResetPasswordUrl($token, $notifiable)
+        );
+
+        $this->notify(new ResetPasswordNotification($token));
     }
 }

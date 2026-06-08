@@ -122,6 +122,10 @@ class DashboardPanelProvider extends PanelProvider
                 Authenticate::class,
             ])
             ->renderHook(
+                PanelsRenderHook::SIDEBAR_NAV_END,
+                fn () => view('components.filament.contact-nav-item'),
+            )
+            ->renderHook(
                 PanelsRenderHook::SIDEBAR_FOOTER,
                 fn () => view('components.filament.profile-nav-item'),
             );

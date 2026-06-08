@@ -2,13 +2,16 @@
 
 namespace App\Filament\Dashboard\Pages;
 
+use App\Filament\Components\ImageUpload;
 use Filament\Actions\Action;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
+use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Illuminate\Support\Facades\Password;
 
 class Profile extends Page implements HasForms
 {
@@ -25,7 +28,55 @@ class Profile extends Page implements HasForms
         return [
             Action::make('edit')
                 ->label('Edit profile')
-                ->url(EditProfile::getUrl()),
+                ->slideOver()
+                ->fillForm(fn () => [
+                    'email' => auth()->user()->email,
+                    'phone' => auth()->user()->phone,
+                    'avatar' => ImageUpload::existingPaths(auth()->user(), 'avatar'),
+                ])
+                ->form([
+                    ImageUpload::make('avatar', false)
+                        ->label('Profile photo'),
+                    TextInput::make('email')
+                        ->label('Email')
+                        ->email()
+                        ->required()
+                        ->rules(['unique:users,email,'.auth()->id()]),
+                    TextInput::make('phone')
+                        ->label('Phone number')
+                        ->tel(),
+                ])
+                ->action(function (array $data): void {
+                    $user = auth()->user();
+
+                    ImageUpload::sync($user, (array) ($data['avatar'] ?? []), 'avatar');
+
+                    $user->update([
+                        'email' => $data['email'],
+                        'phone' => $data['phone'],
+                    ]);
+
+                    Notification::make()
+                        ->title('Profile updated')
+                        ->success()
+                        ->send();
+                }),
+            Action::make('changePassword')
+                ->label('Change password')
+                ->color('gray')
+                ->requiresConfirmation()
+                ->modalHeading('Change password')
+                ->modalDescription('We\'ll send a password reset link to your email address.')
+                ->modalSubmitActionLabel('Send reset link')
+                ->action(function (): void {
+                    Password::sendResetLink(['email' => auth()->user()->email]);
+
+                    Notification::make()
+                        ->title('Reset link sent')
+                        ->body('Check your inbox for the password reset link.')
+                        ->success()
+                        ->send();
+                }),
         ];
     }
 

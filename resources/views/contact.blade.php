@@ -1,9 +1,4 @@
-@extends('layouts.app')
-
-@section('title', 'Contact · KotKompas')
-@section('body_class', 'bg-primary-900 text-white overflow-x-hidden')
-
-@section('content')
+<x-layout title="Contact · KotKompas" body-class="bg-primary-900 text-white overflow-x-hidden">
 <div class="kkc-auth relative min-h-dvh">
 
     {{-- Background: same Antwerp hero + navy scrim as the login/register auth pages --}}
@@ -226,4 +221,4 @@
         btn.querySelector('[data-spinner]').classList.remove('hidden');
     });
 </script>
-@endsection
+</x-layout>

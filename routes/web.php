@@ -1,6 +1,9 @@
 <?php
 
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\FaqController;
+use App\Http\Controllers\OnboardingController;
+use App\Http\Controllers\SocialAuthController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -9,3 +12,15 @@ Route::get('/', function () {
 
 Route::get('/contact', [ContactController::class, 'show'])->name('contact');
 Route::post('/contact', [ContactController::class, 'store'])->name('contact.send');
+
+Route::get('/faq', [FaqController::class, 'index'])->name('faq');
+
+// Social login (Google)
+Route::get('/auth/{provider}/redirect', [SocialAuthController::class, 'redirect'])->name('social.redirect');
+Route::get('/auth/{provider}/callback', [SocialAuthController::class, 'callback'])->name('social.callback');
+
+// One-time role choice after social sign-up
+Route::middleware('auth')->group(function () {
+    Route::get('/onboarding/role', [OnboardingController::class, 'showRole'])->name('onboarding.role');
+    Route::post('/onboarding/role', [OnboardingController::class, 'storeRole'])->name('onboarding.role.store');
+});

@@ -1,3 +1,7 @@
+@props([
+    'title' => config('app.name', 'KotKompas'),
+    'bodyClass' => 'bg-base-een-200 text-primary-900',
+])
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="scroll-smooth">
 <head>
@@ -5,14 +9,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>@yield('title', config('app.name', 'KotKompas'))</title>
+    <title>{{ $title }}</title>
 
     <link rel="preconnect" href="https://use.typekit.net" crossorigin>
     <link rel="stylesheet" href="https://use.typekit.net/ztn2kjh.css">
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    {{ $head ?? '' }}
 </head>
-<body class="min-h-screen font-sans antialiased @yield('body_class', 'bg-base-een-200 text-primary-900')">
-    @yield('content')
+<body {{ $attributes->class(['min-h-screen font-sans antialiased', $bodyClass]) }}>
+    {{ $slot }}
 </body>
 </html>
