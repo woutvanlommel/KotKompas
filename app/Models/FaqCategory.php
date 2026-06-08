@@ -30,14 +30,12 @@ class FaqCategory extends Model
     {
         $value = $this->name ?? [];
 
-        if (! is_array($value)) {
-            return (string) $value;
-        }
-
-        return $value[app()->getLocale()]
+        $name = $value[app()->getLocale()]
             ?? $value['nl']
             ?? $value['en']
-            ?? (string) reset($value)
+            ?? reset($value)
             ?: '';
+
+        return (string) $name;
     }
 }
