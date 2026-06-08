@@ -133,7 +133,7 @@ class ImageUpload
                 continue;
             }
 
-            if (! str_starts_with($resolvedPath, $storagePath)) {
+            if (! str_starts_with($resolvedPath, $storagePath . DIRECTORY_SEPARATOR)) {
                 continue;
             }
 

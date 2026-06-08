@@ -38,7 +38,7 @@ class User extends Authenticatable implements FilamentUser, HasMedia
         // Single avatar image
         $this->addMediaCollection('avatar')
             ->singleFile()
-            ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/webp']);
+            ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/webp', 'image/gif']);
 
         // General images collection from HasImages
         $this->registerBaseMediaCollections();
