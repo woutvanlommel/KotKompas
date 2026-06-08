@@ -23,13 +23,9 @@ class EditProfile extends Page implements HasForms
 
     public function mount(): void
     {
-        $user = auth()->user();
-
         $this->form->fill([
-            'name' => $user->name,
-            'lastname' => $user->lastname,
-            'email' => $user->email,
-            'phone' => $user->phone,
+            'email' => auth()->user()->email,
+            'phone' => auth()->user()->phone,
         ]);
     }
 
@@ -37,36 +33,34 @@ class EditProfile extends Page implements HasForms
     {
         return $form
             ->schema([
-                Section::make()->schema([
-                    TextInput::make('name')
-                        ->label('First name')
-                        ->disabled()
-                        ->dehydrated(false),
-                    TextInput::make('lastname')
-                        ->label('Last name')
-                        ->disabled()
-                        ->dehydrated(false),
+                Section::make('Contact details')->schema([
                     TextInput::make('email')
                         ->label('Email')
                         ->email()
                         ->required()
-                        ->rules(['unique:users,email,'.auth()->id()]),
+                        ->unique('users', 'email', ignorable: auth()->user()),
                     TextInput::make('phone')
                         ->label('Phone number')
                         ->tel(),
-                    TextInput::make('password')
-                        ->label('New password')
-                        ->password()
-                        ->nullable()
-                        ->minLength(8)
-                        ->dehydrated(fn ($state) => filled($state)),
-                    TextInput::make('password_confirmation')
-                        ->label('Confirm password')
-                        ->password()
-                        ->nullable()
-                        ->same('password')
-                        ->dehydrated(false),
                 ]),
+                Section::make('Change password')
+                    ->description('Leave blank to keep your current password.')
+                    ->schema([
+                        TextInput::make('password')
+                            ->label('New password')
+                            ->password()
+                            ->revealable()
+                            ->minLength(8)
+                            ->nullable()
+                            ->dehydrated(fn ($state) => filled($state)),
+                        TextInput::make('password_confirmation')
+                            ->label('Confirm new password')
+                            ->password()
+                            ->revealable()
+                            ->same('password')
+                            ->nullable()
+                            ->dehydrated(false),
+                    ]),
             ])
             ->statePath('data');
     }
