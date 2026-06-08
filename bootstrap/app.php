@@ -13,7 +13,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        // No generic "login" route (auth lives in Filament panels) — send guests
+        // on web routes (e.g. /onboarding/role) to the dashboard login.
+        $middleware->redirectGuestsTo(fn () => route('filament.dashboard.auth.login'));
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(
