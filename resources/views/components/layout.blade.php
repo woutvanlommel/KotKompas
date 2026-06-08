@@ -14,7 +14,7 @@
     <link rel="preconnect" href="https://use.typekit.net" crossorigin>
     <link rel="stylesheet" href="https://use.typekit.net/ztn2kjh.css">
 
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @vite(['resources/css/app.css', 'resources/js/app.ts'])
     {{ $head ?? '' }}
 </head>
 <body {{ $attributes->class(['min-h-screen font-sans antialiased', $bodyClass]) }}>
