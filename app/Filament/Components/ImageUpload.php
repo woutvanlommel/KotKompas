@@ -33,8 +33,8 @@ class ImageUpload
     private const UNSUPPORTED_TYPES = ['image/heic', 'image/heif', 'image/heic-sequence', 'image/heif-sequence'];
 
     private const HEIC_MESSAGE = 'HEIC/HEIF images (used by iPhones by default) are not supported. '
-        . 'On your iPhone, go to Settings → Camera → Formats and choose "Most Compatible" to shoot in JPEG instead. '
-        . 'Alternatively, convert the image to JPEG or PNG before uploading.';
+        .'On your iPhone, go to Settings → Camera → Formats and choose "Most Compatible" to shoot in JPEG instead. '
+        .'Alternatively, convert the image to JPEG or PNG before uploading.';
 
     public static function make(string $collection = 'images', bool $multiple = true): FileUpload
     {
@@ -92,7 +92,7 @@ class ImageUpload
      */
     public static function sync(HasMedia $record, array $formPaths, string $collection = 'images'): void
     {
-        $existingMedia  = $record->getMedia($collection);
+        $existingMedia = $record->getMedia($collection);
         $existingByPath = $existingMedia->keyBy(fn ($m) => $m->getPathRelativeToRoot());
 
         $keptPaths = [];
@@ -105,6 +105,7 @@ class ImageUpload
             if (isset($existingByPath[$path])) {
                 // Already in media library — keep it
                 $keptPaths[] = $path;
+
                 continue;
             }
 
