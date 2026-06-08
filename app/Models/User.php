@@ -56,8 +56,10 @@ class User extends Authenticatable implements FilamentUser
 
     public function sendPasswordResetNotification($token): void
     {
-        $url = Filament::getPanel('dashboard')->getResetPasswordUrl($token, $this);
+        ResetPasswordNotification::createUrlUsing(
+            fn ($notifiable, $token) => Filament::getPanel('dashboard')->getResetPasswordUrl($token, $notifiable)
+        );
 
-        $this->notify(new ResetPasswordNotification($url));
+        $this->notify(new ResetPasswordNotification($token));
     }
 }
