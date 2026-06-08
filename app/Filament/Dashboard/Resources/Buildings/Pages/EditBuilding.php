@@ -8,6 +8,7 @@ use App\Services\FilamentNotificationService;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
 
+/** @property Building $record */
 class EditBuilding extends EditRecord
 {
     protected static string $resource = BuildingResource::class;
@@ -15,7 +16,6 @@ class EditBuilding extends EditRecord
     public function mount(int|string $record): void
     {
         parent::mount($record);
-        assert($this->record instanceof Building);
         abort_if($this->record->landlord_id !== auth()->id(), 403);
     }
 

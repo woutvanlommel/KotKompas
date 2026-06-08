@@ -9,6 +9,7 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Resources\Pages\ViewRecord;
 
+/** @property Building $record */
 class ViewBuilding extends ViewRecord
 {
     protected static string $resource = BuildingResource::class;
@@ -18,7 +19,6 @@ class ViewBuilding extends ViewRecord
     public function mount(int|string $record): void
     {
         parent::mount($record);
-        assert($this->record instanceof Building);
         abort_if($this->record->landlord_id !== auth()->id(), 403);
     }
 
