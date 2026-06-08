@@ -24,3 +24,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/onboarding/role', [OnboardingController::class, 'showRole'])->name('onboarding.role');
     Route::post('/onboarding/role', [OnboardingController::class, 'storeRole'])->name('onboarding.role.store');
 });
+
+// Policies
+Route::view('/privacy', 'privacy')->name('privacy');
+Route::view('/cookies', 'cookies')->name('cookies');
+Route::view('/algemene-voorwaarden', 'algemene-voorwaarden')->name('algemene-voorwaarden');
