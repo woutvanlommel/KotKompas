@@ -6,10 +6,10 @@
             <img
                 src="{{ $user->avatar_url }}"
                 alt="{{ $user->full_name }}"
-                class="w-20 h-20 rounded-full object-cover"
+                class="w-32 h-32 rounded-full object-cover"
             />
         @else
-            <div class="w-20 h-20 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-2xl font-semibold text-gray-500 dark:text-gray-300">
+            <div class="w-32 h-32 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-4xl font-semibold text-gray-500 dark:text-gray-300">
                 {{ strtoupper(substr($user->name, 0, 1)) }}{{ strtoupper(substr($user->lastname, 0, 1)) }}
             </div>
         @endif
