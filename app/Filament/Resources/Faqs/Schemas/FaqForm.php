@@ -16,7 +16,8 @@ class FaqForm
     {
         return $schema
             ->components([
-                // JSON name lives in a nested column, so resolve the label manually.
+                // Category is managed inline here — create or edit one without
+                // leaving the FAQ form (no separate resource needed).
                 Select::make('faq_category_id')
                     ->label('Categorie')
                     ->relationship('category')
@@ -24,9 +25,11 @@ class FaqForm
                     ->searchable()
                     ->preload()
                     ->required()
+                    ->createOptionForm(self::categoryFields())
+                    ->editOptionForm(self::categoryFields())
                     ->columnSpanFull(),
-                // Nested JSON in the single `content` column:
-                // {"vraag": {"nl": "...", "en": "..."}, "antwoord": {"nl": "...", "en": "..."}}.
+
+                // FAQ content: nested JSON {"vraag": {nl, en}, "antwoord": {nl, en}}.
                 Tabs::make('Vertalingen')
                     ->columnSpanFull()
                     ->tabs([
@@ -59,5 +62,35 @@ class FaqForm
                     ->label('Actief')
                     ->default(true),
             ]);
+    }
+
+    /**
+     * Category fields, reused by the inline create + edit option forms.
+     */
+    protected static function categoryFields(): array
+    {
+        return [
+            Tabs::make('Vertalingen')
+                ->tabs([
+                    Tab::make('Nederlands')->schema([
+                        TextInput::make('name.nl')
+                            ->label('Naam (NL)')
+                            ->required()
+                            ->maxLength(255),
+                    ]),
+                    Tab::make('English')->schema([
+                        TextInput::make('name.en')
+                            ->label('Naam (EN)')
+                            ->maxLength(255),
+                    ]),
+                ]),
+            TextInput::make('sort')
+                ->label('Volgorde')
+                ->numeric()
+                ->default(0),
+            Toggle::make('is_active')
+                ->label('Actief')
+                ->default(true),
+        ];
     }
 }
