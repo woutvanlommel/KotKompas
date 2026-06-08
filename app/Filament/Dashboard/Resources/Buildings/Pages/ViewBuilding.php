@@ -2,7 +2,6 @@
 
 namespace App\Filament\Dashboard\Resources\Buildings\Pages;
 
-use App\Filament\Components\ImageUpload;
 use App\Filament\Dashboard\Resources\Buildings\BuildingResource;
 use App\Filament\Dashboard\Resources\Rooms\Schemas\RoomWizard;
 use App\Models\Building;
@@ -40,14 +39,7 @@ class ViewBuilding extends ViewRecord
                     ]),
                 ])
                 ->action(function (array $data) {
-                    $cover = $data['cover'] ?? [];
-                    $gallery = $data['gallery'] ?? [];
-                    unset($data['cover'], $data['gallery']);
-
-                    $room = Room::create($data);
-
-                    ImageUpload::sync($room, is_array($cover) ? $cover : [$cover], 'cover');
-                    ImageUpload::sync($room, is_array($gallery) ? $gallery : [], 'gallery');
+                    Room::create($data);
 
                     FilamentNotificationService::success(
                         'Kamer toegevoegd',

@@ -24,13 +24,43 @@ class ViewRoom extends ViewRecord
 
     public int $galleryPage = 1;
 
-    public array $selectedMedia = [];
+    public function uploadGalleryAction(): Action
+    {
+        return Action::make('uploadGallery')
+            ->label('Afbeeldingen toevoegen')
+            ->icon('heroicon-o-photo')
+            ->slideOver()
+            ->form([
+                ImageUpload::make('gallery')
+                    ->label('Afbeeldingen'),
+            ])
+            ->action(function (array $data): void {
+                ImageUpload::append($this->record, $data['gallery'] ?? [], 'gallery');
+                $this->record->refresh();
+            });
+    }
 
-    public bool $selectMode = false;
+    public function setCoverAction(): Action
+    {
+        return Action::make('setCover')
+            ->action(function (array $arguments): void {
+                // Huidige cover terug naar gallery
+                $currentCover = $this->record->getFirstMedia('cover');
+                if ($currentCover) {
+                    $currentCover->collection_name = 'gallery';
+                    $currentCover->save();
+                }
 
-    protected mixed $pendingCover = [];
+                // Geselecteerde foto instellen als cover
+                $media = $this->record->getMedia('gallery')->firstWhere('id', $arguments['mediaId']);
+                if ($media) {
+                    $media->collection_name = 'cover';
+                    $media->save();
+                }
 
-    protected mixed $pendingGallery = [];
+                $this->record->refresh();
+            });
+    }
 
     public function deleteGalleryImageAction(): Action
     {
@@ -41,8 +71,13 @@ class ViewRoom extends ViewRecord
             ->modalSubmitActionLabel('Verwijderen')
             ->color('danger')
             ->action(function (array $arguments): void {
-                $media = $this->record->getMedia('gallery')->firstWhere('id', $arguments['mediaId']);
+                // Zoek in zowel gallery als cover collection
+                $media = $this->record->getMedia('gallery')->firstWhere('id', $arguments['mediaId'])
+                    ?? $this->record->getFirstMedia('cover')?->id === $arguments['mediaId']
+                        ? $this->record->getFirstMedia('cover')
+                        : null;
                 $media?->delete();
+                $this->record->refresh();
             });
     }
 
@@ -51,31 +86,15 @@ class ViewRoom extends ViewRecord
         return Action::make('deleteSelectedGalleryImages')
             ->requiresConfirmation()
             ->modalHeading('Foto\'s verwijderen')
-            ->modalDescription(fn () => count($this->selectedMedia).' foto\'s worden permanent verwijderd. Dit kan niet ongedaan gemaakt worden.')
+            ->modalDescription(fn (array $arguments) => count($arguments['ids'] ?? []).' foto\'s worden permanent verwijderd. Dit kan niet ongedaan gemaakt worden.')
             ->modalSubmitActionLabel('Verwijderen')
             ->color('danger')
-            ->action(function (): void {
-                foreach ($this->record->getMedia('gallery')->whereIn('id', $this->selectedMedia) as $media) {
-                    $media->delete();
-                }
-                $this->selectedMedia = [];
-                $this->selectMode = false;
+            ->action(function (array $arguments): void {
+                $this->record->getMedia('gallery')
+                    ->whereIn('id', $arguments['ids'] ?? [])
+                    ->each->delete();
+                $this->record->refresh();
             });
-    }
-
-    public function toggleMediaSelection(int $mediaId): void
-    {
-        if (in_array($mediaId, $this->selectedMedia, true)) {
-            $this->selectedMedia = array_values(array_filter($this->selectedMedia, fn ($id) => $id !== $mediaId));
-        } else {
-            $this->selectedMedia[] = $mediaId;
-        }
-    }
-
-    public function cancelSelectMode(): void
-    {
-        $this->selectMode = false;
-        $this->selectedMedia = [];
     }
 
     public function previousGalleryPage(): void
@@ -110,24 +129,8 @@ class ViewRoom extends ViewRecord
                 ->label('Bewerken')
                 ->slideOver()
                 ->form([RoomWizard::make($this->record->building)])
-                ->mutateRecordDataUsing(function (array $data): array {
-                    $data['cover'] = ImageUpload::existingPaths($this->record, 'cover');
-                    $data['gallery'] = ImageUpload::existingPaths($this->record, 'gallery');
-
-                    return $data;
-                })
-                ->mutateFormDataUsing(function (array $data): array {
-                    $this->pendingCover = $data['cover'] ?? [];
-                    $this->pendingGallery = $data['gallery'] ?? [];
-                    unset($data['cover'], $data['gallery']);
-
-                    return $data;
-                })
                 ->successNotification(null)
                 ->after(function () {
-                    ImageUpload::sync($this->record, is_array($this->pendingCover) ? $this->pendingCover : [$this->pendingCover], 'cover');
-                    ImageUpload::sync($this->record, is_array($this->pendingGallery) ? $this->pendingGallery : [], 'gallery');
-
                     FilamentNotificationService::success(
                         'Kamer bijgewerkt',
                         "{$this->record->title} is bijgewerkt.",

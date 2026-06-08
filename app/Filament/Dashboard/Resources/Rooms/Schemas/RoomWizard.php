@@ -2,7 +2,6 @@
 
 namespace App\Filament\Dashboard\Resources\Rooms\Schemas;
 
-use App\Filament\Components\ImageUpload;
 use App\Models\Building;
 use App\Models\User;
 use Filament\Actions\Action;
@@ -94,15 +93,6 @@ class RoomWizard
                             'orderedList',
                         ])
                         ->columnSpanFull(),
-                ]),
-
-            Wizard\Step::make('Foto\'s')
-                ->description('Voeg foto\'s toe')
-                ->schema([
-                    ImageUpload::make('cover', false)
-                        ->label('Hoofdafbeelding'),
-                    ImageUpload::make('gallery')
-                        ->label('Bijafbeeldingen'),
                 ]),
 
             Wizard\Step::make('Aanvullend')
