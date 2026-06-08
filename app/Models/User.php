@@ -26,6 +26,7 @@ class User extends Authenticatable implements FilamentUser, HasMedia
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, HasRoles, Notifiable, SoftDeletes;
+
     use HasImages {
         HasImages::registerMediaCollections as registerBaseMediaCollections;
         HasImages::registerMediaConversions as registerBaseMediaConversions;
