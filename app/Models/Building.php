@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[Fillable(['landlord_id', 'name', 'description', 'street', 'house_number', 'box', 'postal_code', 'city', 'country', 'longitude', 'latitude'])]
+#[Fillable(['landlord_id', 'name', 'description', 'street', 'house_number', 'bus', 'postal_code', 'city', 'country', 'longitude', 'latitude'])]
 class Building extends Model
 {
     /** @use HasFactory<BuildingFactory> */
@@ -32,9 +32,9 @@ class Building extends Model
     {
         return Attribute::make(
             get: function () {
-                $box = $this->box ? " Bus {$this->box}" : '';
+                $bus = $this->bus ? " bus {$this->bus}" : '';
 
-                return "{$this->street} {$this->house_number} {$box}, {$this->postal_code} {$this->city}";
+                return "{$this->street} {$this->house_number}{$bus}, {$this->postal_code} {$this->city}";
             },
         );
     }

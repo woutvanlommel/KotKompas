@@ -34,7 +34,7 @@ class ViewBuilding extends ViewRecord
                 ->icon('heroicon-m-plus')
                 ->slideOver()
                 ->form([
-                    RoomWizard::make([
+                    RoomWizard::make($this->record, [
                         Hidden::make('building_id')->default($this->record->id),
                     ]),
                 ])

@@ -35,7 +35,7 @@ class ViewRoom extends ViewRecord
             EditAction::make()
                 ->label('Bewerken')
                 ->slideOver()
-                ->form([RoomWizard::make()])
+                ->form([RoomWizard::make($this->record->building)])
                 ->successNotification(null)
                 ->after(function () {
                     FilamentNotificationService::success(

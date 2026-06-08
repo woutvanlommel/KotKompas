@@ -2,6 +2,7 @@
 
 namespace App\Filament\Dashboard\Resources\Rooms\Schemas;
 
+use App\Models\Building;
 use App\Models\User;
 use Filament\Actions\Action;
 use Filament\Forms\Components\DatePicker;
@@ -14,7 +15,7 @@ use Filament\Schemas\Components\Wizard;
 
 class RoomWizard
 {
-    public static function make(array $extraLastStepFields = []): Wizard
+    public static function make(?Building $building = null, array $extraLastStepFields = []): Wizard
     {
         return Wizard::make([
             Wizard\Step::make('Basis info')
@@ -26,6 +27,34 @@ class RoomWizard
                     TextInput::make('room_number')
                         ->label('Kamernummer')
                         ->required(),
+
+                    // Adres van het gebouw (read-only)
+                    TextInput::make('_street')
+                        ->label('Straat')
+                        ->default($building?->street)
+                        ->disabled()
+                        ->dehydrated(false),
+                    TextInput::make('_house_number')
+                        ->label('Huisnummer')
+                        ->default($building?->house_number)
+                        ->disabled()
+                        ->dehydrated(false),
+                    TextInput::make('_postal_code')
+                        ->label('Postcode')
+                        ->default($building?->postal_code)
+                        ->disabled()
+                        ->dehydrated(false),
+                    TextInput::make('_city')
+                        ->label('Plaats')
+                        ->default($building?->city)
+                        ->disabled()
+                        ->dehydrated(false),
+
+                    // Bus enkel invulbaar als het gebouw geen bus heeft
+                    TextInput::make('bus')
+                        ->label('Bus')
+                        ->placeholder('bv. 1, b, 3.01')
+                        ->visible($building !== null && $building->bus === null),
                 ]),
 
             Wizard\Step::make('Details')
