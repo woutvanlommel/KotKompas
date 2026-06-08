@@ -9,7 +9,7 @@
     {{-- Background: same Antwerp hero + navy scrim as the login/register auth pages --}}
     <div class="fixed inset-0 z-0" aria-hidden="true">
         <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('{{ asset('img/hero-test.jpg') }}');"></div>
-        <div class="absolute inset-0 bg-gradient-to-tr from-primary-900 via-primary-900/75 to-primary-900/20"></div>
+        <div class="absolute inset-0 bg-linear-to-tr from-primary-900 via-primary-900/75 to-primary-900/20"></div>
     </div>
 
     {{-- Fixed editorial header — white wordmark, left (mirrors auth) --}}
