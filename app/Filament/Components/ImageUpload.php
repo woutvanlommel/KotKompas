@@ -92,25 +92,53 @@ class ImageUpload
      */
     public static function sync(HasMedia $record, array $formPaths, string $collection = 'images'): void
     {
-        $existingMedia   = $record->getMedia($collection);
-        $existingByPath  = $existingMedia->keyBy(fn ($m) => $m->getPathRelativeToRoot());
+        $existingMedia  = $record->getMedia($collection);
+        $existingByPath = $existingMedia->keyBy(fn ($m) => $m->getPathRelativeToRoot());
 
         $keptPaths = [];
 
         foreach ($formPaths as $path) {
+            if (! is_string($path)) {
+                continue;
+            }
+
             if (isset($existingByPath[$path])) {
                 // Already in media library — keep it
                 $keptPaths[] = $path;
                 continue;
             }
 
-            // New temp upload — move into media library
+            // Guard against path traversal: only process files in our temp directory
+            if (! str_starts_with($path, 'tmp-media/')) {
+                continue;
+            }
+
+            // Reject any path containing directory traversal sequences
+            if (str_contains($path, '..') || str_contains($path, "\0")) {
+                continue;
+            }
+
             $fullPath = Storage::disk('public')->path($path);
 
-            if (file_exists($fullPath)) {
-                $record->addMedia($fullPath)
-                    ->toMediaCollection($collection);
+            if (! file_exists($fullPath)) {
+                continue;
             }
+
+            // Verify the resolved path is actually inside the storage root
+            // to prevent symlink or edge-case traversal
+            $storagePath = realpath(Storage::disk('public')->path('tmp-media'));
+            $resolvedPath = realpath($fullPath);
+
+            if ($storagePath === false || $resolvedPath === false) {
+                continue;
+            }
+
+            if (! str_starts_with($resolvedPath, $storagePath)) {
+                continue;
+            }
+
+            $record->addMedia($fullPath)
+                ->toMediaCollection($collection);
         }
 
         // Delete media the user removed from the upload field
