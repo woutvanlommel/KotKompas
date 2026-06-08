@@ -17,8 +17,8 @@ class FaqsTable
             ->defaultSort('sort')
             ->reorderable('sort')
             ->columns([
-                TextColumn::make('content.vraag')
-                    ->label('Vraag')
+                TextColumn::make('content.vraag.nl')
+                    ->label('Vraag (NL)')
                     ->limit(70)
                     ->wrap(),
                 IconColumn::make('is_active')
