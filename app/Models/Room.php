@@ -16,6 +16,7 @@ class Room extends Model implements HasMedia
 {
     /** @use HasFactory<RoomFactory> */
     use HasFactory;
+
     use InteractsWithMedia;
 
     public function building(): BelongsTo

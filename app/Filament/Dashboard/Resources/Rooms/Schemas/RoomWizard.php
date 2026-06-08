@@ -63,11 +63,11 @@ class RoomWizard
                     Select::make('type')
                         ->label('Type')
                         ->options([
-                            'studio'            => 'Studio',
-                            'one_bedroom'       => 'One bedroom',
-                            'two_bedroom'       => 'Two bedroom',
-                            'three_bedroom'     => 'Three bedroom',
-                            'four_bedroom'      => 'Four bedroom',
+                            'studio' => 'Studio',
+                            'one_bedroom' => 'One bedroom',
+                            'two_bedroom' => 'Two bedroom',
+                            'three_bedroom' => 'Three bedroom',
+                            'four_bedroom' => 'Four bedroom',
                             'five_plus_bedroom' => 'Five plus bedroom',
                         ])
                         ->required(),
@@ -108,10 +108,10 @@ class RoomWizard
                     Select::make('status')
                         ->label('Status')
                         ->options([
-                            'available'   => 'Beschikbaar',
-                            'rented'      => 'Verhuurd',
+                            'available' => 'Beschikbaar',
+                            'rented' => 'Verhuurd',
                             'maintenance' => 'Onderhoud',
-                            'archived'    => 'Gearchiveerd',
+                            'archived' => 'Gearchiveerd',
                         ])
                         ->required()
                         ->live(),

@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -20,7 +21,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('rooms', function (Blueprint $table) {
-            $table->dropForeignIdFor(\App\Models\User::class, 'tenant_id');
+            $table->dropForeignIdFor(User::class, 'tenant_id');
             $table->dropColumn('tenant_id');
         });
     }

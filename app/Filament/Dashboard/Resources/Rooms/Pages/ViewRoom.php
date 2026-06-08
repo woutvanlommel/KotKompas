@@ -27,7 +27,7 @@ class ViewRoom extends ViewRecord
         return [
             BuildingResource::getUrl('index') => 'Gebouwen',
             BuildingResource::getUrl('view', ['record' => $building->id]) => $building->name,
-            '#' => $this->record->title ?: 'Kamer ' . $this->record->room_number,
+            '#' => $this->record->title ?: 'Kamer '.$this->record->room_number,
         ];
     }
 
