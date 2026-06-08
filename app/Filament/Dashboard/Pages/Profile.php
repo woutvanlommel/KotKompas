@@ -8,6 +8,7 @@ use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
+use Illuminate\Support\Facades\Password;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 
@@ -55,35 +56,16 @@ protected function getHeaderActions(): array
         Action::make('changePassword')
             ->label('Change password')
             ->color('gray')
-            ->slideOver()
-            ->form([
-                TextInput::make('current_password')
-                    ->label('Current password')
-                    ->password()
-                    ->revealable()
-                    ->required()
-                    ->currentPassword(),
-                TextInput::make('password')
-                    ->label('New password')
-                    ->password()
-                    ->revealable()
-                    ->required()
-                    ->minLength(8)
-                    ->confirmed(),
-                TextInput::make('password_confirmation')
-                    ->label('Confirm new password')
-                    ->password()
-                    ->revealable()
-                    ->required()
-                    ->dehydrated(false),
-            ])
-            ->action(function (array $data): void {
-                auth()->user()->update([
-                    'password' => $data['password'],
-                ]);
+            ->requiresConfirmation()
+            ->modalHeading('Change password')
+            ->modalDescription('We\'ll send a password reset link to your email address.')
+            ->modalSubmitActionLabel('Send reset link')
+            ->action(function (): void {
+                Password::sendResetLink(['email' => auth()->user()->email]);
 
                 Notification::make()
-                    ->title('Password updated')
+                    ->title('Reset link sent')
+                    ->body('Check your inbox for the password reset link.')
                     ->success()
                     ->send();
             }),
