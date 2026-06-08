@@ -29,7 +29,7 @@ class ViewRoom extends ViewRecord
         return Action::make('uploadGallery')
             ->label('Afbeeldingen toevoegen')
             ->icon('heroicon-o-photo')
-            ->slideOver()
+            // ->slideOver()
             ->form([
                 ImageUpload::make('gallery')
                     ->label('Afbeeldingen'),
@@ -74,8 +74,8 @@ class ViewRoom extends ViewRecord
                 // Zoek in zowel gallery als cover collection
                 $media = $this->record->getMedia('gallery')->firstWhere('id', $arguments['mediaId'])
                     ?? $this->record->getFirstMedia('cover')?->id === $arguments['mediaId']
-                        ? $this->record->getFirstMedia('cover')
-                        : null;
+                    ? $this->record->getFirstMedia('cover')
+                    : null;
                 $media?->delete();
                 $this->record->refresh();
             });
@@ -86,7 +86,7 @@ class ViewRoom extends ViewRecord
         return Action::make('deleteSelectedGalleryImages')
             ->requiresConfirmation()
             ->modalHeading('Foto\'s verwijderen')
-            ->modalDescription(fn (array $arguments) => count($arguments['ids'] ?? []).' foto\'s worden permanent verwijderd. Dit kan niet ongedaan gemaakt worden.')
+            ->modalDescription(fn(array $arguments) => count($arguments['ids'] ?? []) . ' foto\'s worden permanent verwijderd. Dit kan niet ongedaan gemaakt worden.')
             ->modalSubmitActionLabel('Verwijderen')
             ->color('danger')
             ->action(function (array $arguments): void {
@@ -94,6 +94,7 @@ class ViewRoom extends ViewRecord
                     ->whereIn('id', $arguments['ids'] ?? [])
                     ->each->delete();
                 $this->record->refresh();
+                $this->dispatch('gallery-deleted');
             });
     }
 
@@ -118,7 +119,7 @@ class ViewRoom extends ViewRecord
         return [
             BuildingResource::getUrl('index') => 'Gebouwen',
             BuildingResource::getUrl('view', ['record' => $building->id]) => $building->name,
-            '#' => $this->record->title ?: 'Kamer '.$this->record->room_number,
+            '#' => $this->record->title ?: 'Kamer ' . $this->record->room_number,
         ];
     }
 
@@ -149,7 +150,7 @@ class ViewRoom extends ViewRecord
                         icon: 'heroicon-o-rectangle-stack'
                     );
                 })
-                ->successRedirectUrl(fn () => BuildingResource::getUrl('view', ['record' => $this->buildingId])),
+                ->successRedirectUrl(fn() => BuildingResource::getUrl('view', ['record' => $this->buildingId])),
         ];
     }
 }

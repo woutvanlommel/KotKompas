@@ -206,7 +206,7 @@
         @php
             $coverMedia = $room->getFirstMedia('cover');
             $allMedia   = $room->getMedia('gallery');
-            $perPage    = 9;
+            $perPage    = 8;
             $total      = $allMedia->count();
             $totalAll   = ($coverMedia ? 1 : 0) + $total;
             $totalPages = max(1, (int) ceil($total / $perPage));
@@ -215,7 +215,8 @@
         @endphp
 
         {{-- Foto's sectie — selectie-state via Alpine (geen server round-trip) --}}
-        <div x-data="{ selectMode: false, selected: [] }"
+        <div x-data="{ selectMode: false, selected: [], coverLoading: null }"
+             @gallery-deleted.window="selectMode = false; selected = []"
              class="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
 
             {{-- Header --}}
@@ -306,6 +307,14 @@
 
             {{-- Grid --}}
             @if ($coverMedia || $total > 0)
+                <div class="relative">
+                <div wire:loading wire:target="previousGalleryPage,nextGalleryPage"
+                     class="absolute inset-0 z-10 bg-white/60 rounded-xl flex items-center justify-center">
+                    <svg class="w-6 h-6 text-gray-400 animate-spin" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"/>
+                    </svg>
+                </div>
                 <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
 
                     {{-- Cover --}}
@@ -355,9 +364,19 @@
                                 </div>
                             </div>
 
+                            {{-- Loading overlay (cover instellen) --}}
+                            <div x-show="coverLoading === {{ $media->id }}"
+                                 x-cloak
+                                 class="absolute inset-0 bg-black/40 flex items-center justify-center">
+                                <svg class="w-6 h-6 text-white animate-spin" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"/>
+                                </svg>
+                            </div>
+
                             {{-- Hover knoppen (normale modus) --}}
                             <div x-show="!selectMode" class="contents">
-                                <button @click.stop="$wire.mountAction('setCover', { mediaId: {{ $media->id }} })"
+                                <button @click.stop="coverLoading = {{ $media->id }}; $wire.mountAction('setCover', { mediaId: {{ $media->id }} }).finally(() => coverLoading = null)"
                                         title="Stel in als cover"
                                         class="absolute top-2 left-2 w-7 h-7 rounded-full bg-black/50 hover:bg-amber-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
                                     <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
@@ -374,6 +393,7 @@
                         </div>
                     @endforeach
 
+                </div>
                 </div>
             @endif
 
