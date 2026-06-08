@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\MediaLibrary\HasMedia;
 
 #[Fillable(['landlord_id', 'name', 'description', 'street', 'house_number', 'box', 'postal_code', 'city', 'country', 'longitude', 'latitude'])]
@@ -15,6 +16,11 @@ class Building extends Model implements HasMedia
 {
     /** @use HasFactory<BuildingFactory> */
     use HasFactory, HasImages;
+
+    public function rooms(): HasMany
+    {
+        return $this->hasMany(Room::class);
+    }
 
     protected function casts(): array
     {
@@ -28,9 +34,9 @@ class Building extends Model implements HasMedia
     {
         return Attribute::make(
             get: function () {
-                $box = $this->box ? " {$this->box}" : '';
+                $bus = $this->bus ? " bus {$this->bus}" : '';
 
-                return "{$this->street} {$this->house_number}{$box}, {$this->postal_code} {$this->city}";
+                return "{$this->street} {$this->house_number}{$bus}, {$this->postal_code} {$this->city}";
             },
         );
     }

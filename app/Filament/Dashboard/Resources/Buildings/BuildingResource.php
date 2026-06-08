@@ -4,6 +4,7 @@ namespace App\Filament\Dashboard\Resources\Buildings;
 
 use App\Filament\Dashboard\Resources\Buildings\Pages\ListBuildings;
 use App\Filament\Dashboard\Resources\Buildings\Pages\ViewBuilding;
+use App\Filament\Dashboard\Resources\Buildings\RelationManagers\RoomsRelationManager;
 use App\Filament\Dashboard\Resources\Buildings\Schemas\BuildingForm;
 use App\Filament\Dashboard\Resources\Buildings\Tables\BuildingsTable;
 use App\Models\Building;
@@ -57,7 +58,7 @@ class BuildingResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RoomsRelationManager::class,
         ];
     }
 

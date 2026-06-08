@@ -55,14 +55,15 @@ class BuildingForm
                                     ->required(),
                                 TextInput::make('house_number')
                                     ->label('Huisnummer')
-                                    ->required()
-                                    ->numeric(),
+                                    ->placeholder('bv. 15 of 15A')
+                                    ->required(),
+                                TextInput::make('bus')
+                                    ->label('Bus')
+                                    ->placeholder('bv. 1, b, 3.01'),
                                 TextInput::make('postal_code')
                                     ->label('Postcode')
                                     ->required()
                                     ->numeric(),
-                                TextInput::make('box')
-                                    ->label('Bus/Appartement'),
                                 TextInput::make('city')
                                     ->label('Plaats')
                                     ->required(),

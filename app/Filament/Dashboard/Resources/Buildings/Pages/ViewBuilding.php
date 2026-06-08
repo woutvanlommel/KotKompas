@@ -3,10 +3,14 @@
 namespace App\Filament\Dashboard\Resources\Buildings\Pages;
 
 use App\Filament\Dashboard\Resources\Buildings\BuildingResource;
+use App\Filament\Dashboard\Resources\Rooms\Schemas\RoomWizard;
 use App\Models\Building;
+use App\Models\Room;
 use App\Services\FilamentNotificationService;
+use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\Hidden;
 use Filament\Resources\Pages\ViewRecord;
 
 /** @property Building $record */
@@ -25,6 +29,24 @@ class ViewBuilding extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
+            Action::make('createRoom')
+                ->label('Kamer toevoegen')
+                ->icon('heroicon-m-plus')
+                ->slideOver()
+                ->form([
+                    RoomWizard::make($this->record, [
+                        Hidden::make('building_id')->default($this->record->id),
+                    ]),
+                ])
+                ->action(function (array $data) {
+                    Room::create($data);
+                    FilamentNotificationService::success(
+                        'Kamer toegevoegd',
+                        'De kamer is succesvol toegevoegd.',
+                        icon: 'heroicon-o-square-3-stack-3d'
+                    );
+                })
+                ->successRedirectUrl(fn () => route('filament.dashboard.resources.buildings.view', $this->record)),
             EditAction::make()
                 ->label('Bewerken')
                 ->slideOver()
