@@ -19,6 +19,7 @@ class Room extends Model implements HasMedia
 
     use InteractsWithMedia;
 
+    /** @return BelongsTo<Building, $this> */
     public function building(): BelongsTo
     {
         return $this->belongsTo(Building::class);
