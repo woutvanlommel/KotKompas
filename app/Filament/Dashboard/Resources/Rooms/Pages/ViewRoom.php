@@ -3,6 +3,8 @@
 namespace App\Filament\Dashboard\Resources\Rooms\Pages;
 
 use App\Filament\Dashboard\Resources\Buildings\BuildingResource;
+use App\Filament\Dashboard\Resources\Rooms\Concerns\HasGalleryActions;
+use App\Filament\Dashboard\Resources\Rooms\Concerns\HasTenantActions;
 use App\Filament\Dashboard\Resources\Rooms\RoomResource;
 use App\Filament\Dashboard\Resources\Rooms\Schemas\RoomWizard;
 use App\Models\Room;
@@ -14,6 +16,9 @@ use Filament\Resources\Pages\ViewRecord;
 /** @property Room $record */
 class ViewRoom extends ViewRecord
 {
+    use HasGalleryActions;
+    use HasTenantActions;
+
     protected static string $resource = RoomResource::class;
 
     protected string $view = 'filament.dashboard.pages.rooms.view';

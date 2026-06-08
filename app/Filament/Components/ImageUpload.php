@@ -150,6 +150,43 @@ class ImageUpload
     }
 
     /**
+     * Append new temp uploads to a collection without touching existing media.
+     * Use this when you want additive-only behaviour (e.g. an "add photos" action).
+     */
+    public static function append(HasMedia $record, array $formPaths, string $collection = 'images'): void
+    {
+        $storagePath = realpath(Storage::disk('public')->path('tmp-media'));
+
+        foreach ($formPaths as $path) {
+            if (! is_string($path) || ! str_starts_with($path, 'tmp-media/')) {
+                continue;
+            }
+
+            if (str_contains($path, '..') || str_contains($path, "\0")) {
+                continue;
+            }
+
+            $fullPath = Storage::disk('public')->path($path);
+
+            if (! file_exists($fullPath)) {
+                continue;
+            }
+
+            $resolvedPath = realpath($fullPath);
+
+            if ($storagePath === false || $resolvedPath === false) {
+                continue;
+            }
+
+            if (! str_starts_with($resolvedPath, $storagePath.DIRECTORY_SEPARATOR)) {
+                continue;
+            }
+
+            $record->addMedia($fullPath)->toMediaCollection($collection);
+        }
+    }
+
+    /**
      * Return existing media paths for a collection, ready to pre-populate
      * a FileUpload field in an edit form via mutateFormDataBeforeFill().
      */

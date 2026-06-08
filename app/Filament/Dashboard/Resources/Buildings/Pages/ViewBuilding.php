@@ -40,6 +40,7 @@ class ViewBuilding extends ViewRecord
                 ])
                 ->action(function (array $data) {
                     Room::create($data);
+
                     FilamentNotificationService::success(
                         'Kamer toegevoegd',
                         'De kamer is succesvol toegevoegd.',
