@@ -19,7 +19,8 @@
         ];
 
         $status = $statusConfig[$room->status] ?? $statusConfig['archived'];
-        $imageUrl = $room->getFirstMediaUrl('rooms');
+        $coverMedia = $room->getFirstMedia('cover');
+        $imageUrl = $coverMedia?->getUrl('webp') ?: $coverMedia?->getUrl();
     @endphp
 
     <div class="space-y-8">
@@ -182,7 +183,7 @@
                         </div>
                         <div>
                             <p class="text-sm font-semibold text-blue-900">{{ $room->tenant->name }}</p>
-                            <p class="text-xs text-blue-600">{{ $room->tenant->email }}</p>
+                            <a href="mailto:{{ $room->tenant->email }}" class="text-xs text-blue-600 hover:text-blue-400">{{ $room->tenant->email }}</a>
                         </div>
                     </div>
                 @else
@@ -198,6 +199,121 @@
                 <div class="prose prose-sm max-w-none text-gray-600">
                     {!! $room->description !!}
                 </div>
+            </div>
+        @endif
+
+        {{-- Foto's --}}
+        @php
+            $allMedia   = $room->getMedia('gallery');
+            $perPage    = 9;
+            $total      = $allMedia->count();
+            $totalPages = max(1, (int) ceil($total / $perPage));
+            $page       = min($this->galleryPage, $totalPages);
+            $slice      = $allMedia->slice(($page - 1) * $perPage, $perPage);
+            $selectMode = $this->selectMode;
+            $selected   = $this->selectedMedia;
+        @endphp
+
+        @if ($total > 0)
+            <div class="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
+
+                {{-- Header --}}
+                <div class="flex items-center justify-between mb-5">
+                    <h2 class="text-base font-semibold text-gray-900">
+                        Foto's
+                        <span class="ml-1.5 text-sm font-normal text-gray-400">({{ $total }})</span>
+                    </h2>
+
+                    <div class="flex items-center gap-2">
+
+                        {{-- Selecteer / annuleer --}}
+                        @if ($selectMode)
+                            @if (count($selected) > 0)
+                                <button wire:click="mountAction('deleteSelectedGalleryImages')"
+                                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-red-50 text-red-600 hover:bg-red-100 transition">
+                                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/>
+                                    </svg>
+                                    Verwijder ({{ count($selected) }})
+                                </button>
+                            @endif
+                            <button wire:click="cancelSelectMode"
+                                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-gray-500 hover:bg-gray-100 transition">
+                                Annuleren
+                            </button>
+                        @else
+                            <button wire:click="$set('selectMode', true)"
+                                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-gray-500 hover:bg-gray-100 transition">
+                                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                Selecteren
+                            </button>
+                        @endif
+
+                        {{-- Paginering --}}
+                        @if ($totalPages > 1)
+                            <div class="flex items-center gap-1 text-sm text-gray-500 border-l border-gray-200 pl-2 ml-1">
+                                <button wire:click="previousGalleryPage"
+                                        @disabled($page <= 1)
+                                        class="p-1.5 rounded-lg hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition">
+                                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/>
+                                    </svg>
+                                </button>
+                                <span class="text-xs w-10 text-center">{{ $page }} / {{ $totalPages }}</span>
+                                <button wire:click="nextGalleryPage({{ $totalPages }})"
+                                        @disabled($page >= $totalPages)
+                                        class="p-1.5 rounded-lg hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition">
+                                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        @endif
+
+                    </div>
+                </div>
+
+                {{-- Grid --}}
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                    @foreach ($slice as $media)
+                        @php $isSelected = in_array($media->id, $selected, true); @endphp
+                        <div class="relative aspect-[4/3] rounded-xl overflow-hidden bg-gray-100 group">
+                            <img src="{{ $media->getUrl('webp') ?: $media->getUrl() }}"
+                                 alt="{{ $media->name }}"
+                                 class="w-full h-full object-cover transition duration-200 {{ $selectMode ? 'cursor-pointer' : '' }} {{ $isSelected ? 'brightness-75' : '' }}"
+                                 @if ($selectMode) wire:click="toggleMediaSelection({{ $media->id }})" @endif>
+
+                            {{-- Select mode: checkbox overlay --}}
+                            @if ($selectMode)
+                                <button wire:click="toggleMediaSelection({{ $media->id }})"
+                                        class="absolute inset-0 w-full h-full cursor-pointer">
+                                </button>
+                                <div class="absolute top-2 left-2 pointer-events-none">
+                                    <div class="w-5 h-5 rounded-md border-2 flex items-center justify-center transition
+                                        {{ $isSelected ? 'bg-primary-600 border-primary-600' : 'bg-white/80 border-gray-300' }}">
+                                        @if ($isSelected)
+                                            <svg class="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/>
+                                            </svg>
+                                        @endif
+                                    </div>
+                                </div>
+
+                            {{-- Normale modus: X knop bij hover --}}
+                            @else
+                                <button wire:click="mountAction('deleteGalleryImage', { mediaId: {{ $media->id }} })"
+                                        class="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/50 hover:bg-black/70 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
+                                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                                    </svg>
+                                </button>
+                            @endif
+                        </div>
+                    @endforeach
+                </div>
+
             </div>
         @endif
 

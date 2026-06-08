@@ -126,7 +126,8 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     @foreach ($rooms as $room)
                         @php
-                            $imageUrl = $room->getFirstMediaUrl('rooms');
+                            $coverMedia = $room->getFirstMedia('cover');
+                            $imageUrl   = $coverMedia?->getUrl('webp') ?: $coverMedia?->getUrl();
                             $status   = $statusConfig[$room->status] ?? $statusConfig['archived'];
                             $viewUrl  = \App\Filament\Dashboard\Resources\Rooms\RoomResource::getUrl('view', ['record' => $room->id]);
                         @endphp
