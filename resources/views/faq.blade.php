@@ -1,4 +1,5 @@
 <x-layout title="Veelgestelde vragen · KotKompas">
+<x-public-nav />
 <section class="mx-auto w-full max-w-2xl px-5 py-12 sm:px-6 sm:py-20">
 
     <header class="mb-10 sm:mb-12">
@@ -45,4 +46,6 @@
     .kk-faq .kk-faq-bar { transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1); }
     .kk-faq[open] .kk-faq-bar { transform: translate(-50%, -50%) scaleY(0); }
 </style>
+
+<x-footer />
 </x-layout>
