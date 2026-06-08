@@ -39,9 +39,12 @@
                             <span class="text-lg font-semibold">{{ $role['title'] }}</span>
                             <span class="mt-1 text-xs font-semibold uppercase tracking-[0.12em] text-accent-400">{{ $role['sub'] }}</span>
                             <span class="mt-3 text-sm leading-relaxed text-white/70">{{ $role['desc'] }}</span>
-                            <span class="mt-4 inline-flex items-center gap-1 text-sm font-medium text-white/80 group-hover:text-white">
+                            <span class="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-white/80 group-hover:text-white">
                                 Kies
-                                <svg class="h-4 w-4" viewBox="0 0 16 16" fill="none"><path d="M3 13L13 3M13 3H5M13 3V11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                <span class="kk-ra-box" aria-hidden="true">
+                                    <svg class="kk-ra kk-ra--out" viewBox="0 0 16 16" fill="none"><path d="M3 13L13 3M13 3H5M13 3V11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                    <svg class="kk-ra kk-ra--in" viewBox="0 0 16 16" fill="none"><path d="M3 13L13 3M13 3H5M13 3V11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                </span>
                             </span>
                         </button>
                     </form>
@@ -50,4 +53,14 @@
         </div>
     </div>
 </div>
+
+<style>
+    /* arrow slides out top-right, a fresh one wipes in from bottom-left on card hover
+       — same motion language as the login/contact CTA */
+    .kk-ra-box { position: relative; display: inline-block; height: 1rem; width: 1rem; overflow: hidden; }
+    .kk-ra { position: absolute; inset: 0; margin: auto; height: 1rem; width: 1rem; transition: transform 0.5s cubic-bezier(0.65, 0, 0.35, 1); }
+    .kk-ra--in { transform: translate(-180%, 180%); }
+    .group:hover .kk-ra--out { transform: translate(180%, -180%); }
+    .group:hover .kk-ra--in { transform: translate(0, 0); }
+</style>
 </x-layout>

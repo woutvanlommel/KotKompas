@@ -47,6 +47,13 @@ class SocialAuthController extends Controller
                 ->withErrors(['social' => 'Aanmelden met '.ucfirst($provider).' is mislukt. Probeer opnieuw.']);
         }
 
+        // A soft-deleted account still holds the unique email slot — refuse a fresh
+        // sign-up rather than crash on the unique constraint (and don't silently revive it).
+        if (User::onlyTrashed()->where('email', $oauthUser->getEmail())->exists()) {
+            return redirect()->to(filament()->getPanel('dashboard')->getLoginUrl())
+                ->withErrors(['social' => 'Dit account is niet langer actief.']);
+        }
+
         $user = User::where('provider', $provider)
             ->where('provider_id', $oauthUser->getId())
             ->first()
@@ -71,6 +78,7 @@ class SocialAuthController extends Controller
         }
 
         Auth::login($user, remember: true);
+        request()->session()->regenerate(); // prevent session fixation
 
         // No role yet → force the one-time role choice before entering the panel.
         if (! $user->hasAnyRole(['huurder', 'verhuurder'])) {
