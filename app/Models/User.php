@@ -90,7 +90,10 @@ class User extends Authenticatable implements FilamentUser, HasMedia
     protected function avatarUrl(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->getFirstMediaUrl('avatar', 'avatar_thumb') ?: null,
+            // Uploaded avatar (media library) takes precedence over the OAuth provider picture.
+            get: fn () => $this->getFirstMediaUrl('avatar', 'avatar_thumb')
+                ?: $this->avatar  // Google/OAuth avatar URL stored as a plain string
+                ?: null,
         );
     }
 
