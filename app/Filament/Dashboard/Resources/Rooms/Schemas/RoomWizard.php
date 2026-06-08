@@ -33,22 +33,22 @@ class RoomWizard
                         ->label('Straat')
                         ->disabled()
                         ->dehydrated(false)
-                        ->afterStateHydrated(fn($component) => $component->state($building?->street)),
+                        ->afterStateHydrated(fn ($component) => $component->state($building?->street)),
                     TextInput::make('_house_number')
                         ->label('Huisnummer')
                         ->disabled()
                         ->dehydrated(false)
-                        ->afterStateHydrated(fn($component) => $component->state($building?->house_number)),
+                        ->afterStateHydrated(fn ($component) => $component->state($building?->house_number)),
                     TextInput::make('_postal_code')
                         ->label('Postcode')
                         ->disabled()
                         ->dehydrated(false)
-                        ->afterStateHydrated(fn($component) => $component->state($building?->postal_code)),
+                        ->afterStateHydrated(fn ($component) => $component->state($building?->postal_code)),
                     TextInput::make('_city')
                         ->label('Plaats')
                         ->disabled()
                         ->dehydrated(false)
-                        ->afterStateHydrated(fn($component) => $component->state($building?->city)),
+                        ->afterStateHydrated(fn ($component) => $component->state($building?->city)),
 
                     // Bus enkel invulbaar als het gebouw geen bus heeft
                     TextInput::make('bus')
@@ -139,7 +139,7 @@ class RoomWizard
                 ]),
         ])
             ->columnSpanFull()
-            ->nextAction(fn(Action $action) => $action->label('Volgende'))
-            ->previousAction(fn(Action $action) => $action->label('Vorige'));
+            ->nextAction(fn (Action $action) => $action->label('Volgende'))
+            ->previousAction(fn (Action $action) => $action->label('Vorige'));
     }
 }

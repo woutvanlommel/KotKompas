@@ -16,10 +16,10 @@ trait HasTenantActions
                 Select::make('status')
                     ->label('Status')
                     ->options([
-                        'available'   => 'Beschikbaar',
-                        'rented'      => 'Verhuurd',
+                        'available' => 'Beschikbaar',
+                        'rented' => 'Verhuurd',
                         'maintenance' => 'Onderhoud',
-                        'archived'    => 'Gearchiveerd',
+                        'archived' => 'Gearchiveerd',
                     ])
                     ->default(fn () => $this->record->status)
                     ->required(),
@@ -57,7 +57,7 @@ trait HasTenantActions
             ->action(function (array $data): void {
                 $this->record->update([
                     'tenant_id' => $data['tenant_id'],
-                    'status'    => 'rented',
+                    'status' => 'rented',
                 ]);
                 $this->record->refresh();
             });
@@ -75,7 +75,7 @@ trait HasTenantActions
             ->action(function (): void {
                 $this->record->update([
                     'tenant_id' => null,
-                    'status'    => 'available',
+                    'status' => 'available',
                 ]);
                 $this->record->refresh();
             });

@@ -67,7 +67,7 @@ trait HasGalleryActions
         return Action::make('deleteSelectedGalleryImages')
             ->requiresConfirmation()
             ->modalHeading('Foto\'s verwijderen')
-            ->modalDescription(fn (array $arguments) => count($arguments['ids'] ?? []) . ' foto\'s worden permanent verwijderd. Dit kan niet ongedaan gemaakt worden.')
+            ->modalDescription(fn (array $arguments) => count($arguments['ids'] ?? []).' foto\'s worden permanent verwijderd. Dit kan niet ongedaan gemaakt worden.')
             ->modalSubmitActionLabel('Verwijderen')
             ->color('danger')
             ->action(function (array $arguments): void {
