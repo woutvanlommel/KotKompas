@@ -413,6 +413,58 @@
 }
 
 /* =============================================================================
+   KotKompas — RichEditor output styling
+   ============================================================================= */
+
+.rich-content ul {
+    list-style-type: disc !important;
+    padding-left: 1.5rem !important;
+    margin-top: 0.5rem !important;
+    margin-bottom: 0.5rem !important;
+}
+.rich-content ol {
+    list-style-type: decimal !important;
+    padding-left: 1.5rem !important;
+    margin-top: 0.5rem !important;
+    margin-bottom: 0.5rem !important;
+}
+.rich-content li {
+    display: list-item !important;
+    margin-top: 0.25rem !important;
+    margin-bottom: 0.25rem !important;
+}
+.rich-content li::marker {
+    color: #6b7280;
+}
+.rich-content a {
+    color: #2563eb;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+.rich-content a:hover {
+    color: #1d4ed8;
+}
+.rich-content strong {
+    font-weight: 600;
+}
+.rich-content em {
+    font-style: italic;
+}
+.rich-content u {
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+.rich-content s {
+    text-decoration: line-through;
+}
+.rich-content p {
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+.rich-content p:first-child { margin-top: 0; }
+.rich-content p:last-child  { margin-bottom: 0; }
+
+/* =============================================================================
    KotKompas — Notification styling
    .fi-no       = always-present wrapper (never add visual styles here)
    .fi-no-notification = individual card (only present when a notification fires)
