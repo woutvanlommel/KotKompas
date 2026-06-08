@@ -5,6 +5,7 @@ namespace App\Filament\Dashboard\Resources\Rooms;
 use App\Filament\Dashboard\Resources\Rooms\Pages\CreateRoom;
 use App\Filament\Dashboard\Resources\Rooms\Pages\EditRoom;
 use App\Filament\Dashboard\Resources\Rooms\Pages\ListRooms;
+use App\Filament\Dashboard\Resources\Rooms\Pages\ViewRoom;
 use App\Filament\Dashboard\Resources\Rooms\Schemas\RoomForm;
 use App\Filament\Dashboard\Resources\Rooms\Tables\RoomsTable;
 use App\Models\Room;
@@ -51,6 +52,7 @@ class RoomResource extends Resource
         return [
             'index' => ListRooms::route('/'),
             'create' => CreateRoom::route('/create'),
+            'view' => ViewRoom::route('/{record}'),
             'edit' => EditRoom::route('/{record}/edit'),
         ];
     }
