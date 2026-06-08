@@ -115,4 +115,16 @@ return [
         'name' => env('MAIL_FROM_NAME', env('APP_NAME', 'Laravel')),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Support Inbox
+    |--------------------------------------------------------------------------
+    |
+    | Recipient for contact-form messages sent from the dashboard. Falls back
+    | to the "from" address. BACKEND DEV: set MAIL_SUPPORT_TO in .env.
+    |
+    */
+
+    'support_address' => env('MAIL_SUPPORT_TO', env('MAIL_FROM_ADDRESS', 'hello@example.com')),
+
 ];
