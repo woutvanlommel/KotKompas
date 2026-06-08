@@ -79,7 +79,7 @@ protected function getHeaderActions(): array
             ])
             ->action(function (array $data): void {
                 auth()->user()->update([
-                    'password' => bcrypt($data['password']),
+                    'password' => $data['password'],
                 ]);
 
                 Notification::make()
