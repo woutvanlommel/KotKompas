@@ -33,22 +33,22 @@ class RoomWizard
                         ->label('Straat')
                         ->disabled()
                         ->dehydrated(false)
-                        ->afterStateHydrated(fn ($component) => $component->state($building?->street)),
+                        ->afterStateHydrated(fn($component) => $component->state($building?->street)),
                     TextInput::make('_house_number')
                         ->label('Huisnummer')
                         ->disabled()
                         ->dehydrated(false)
-                        ->afterStateHydrated(fn ($component) => $component->state($building?->house_number)),
+                        ->afterStateHydrated(fn($component) => $component->state($building?->house_number)),
                     TextInput::make('_postal_code')
                         ->label('Postcode')
                         ->disabled()
                         ->dehydrated(false)
-                        ->afterStateHydrated(fn ($component) => $component->state($building?->postal_code)),
+                        ->afterStateHydrated(fn($component) => $component->state($building?->postal_code)),
                     TextInput::make('_city')
                         ->label('Plaats')
                         ->disabled()
                         ->dehydrated(false)
-                        ->afterStateHydrated(fn ($component) => $component->state($building?->city)),
+                        ->afterStateHydrated(fn($component) => $component->state($building?->city)),
 
                     // Bus enkel invulbaar als het gebouw geen bus heeft
                     TextInput::make('bus')
@@ -105,41 +105,41 @@ class RoomWizard
                     DatePicker::make('available_from')
                         ->label('Beschikbaar vanaf')
                         ->required(),
-                    Select::make('status')
-                        ->label('Status')
-                        ->options([
-                            'available' => 'Beschikbaar',
-                            'rented' => 'Verhuurd',
-                            'maintenance' => 'Onderhoud',
-                            'archived' => 'Gearchiveerd',
-                        ])
-                        ->required()
-                        ->live(),
-                    Select::make('tenant_id')
-                        ->label('Huurder')
-                        ->placeholder('Zoek op naam of e-mail…')
-                        ->searchable()
-                        ->getSearchResultsUsing(
-                            fn (string $search): array => User::role('huurder')
-                                ->where(fn ($q) => $q
-                                    ->where('name', 'like', "%{$search}%")
-                                    ->orWhere('email', 'like', "%{$search}%")
-                                )
-                                ->limit(20)
-                                ->get()
-                                ->mapWithKeys(fn (User $u) => [$u->id => "{$u->name} ({$u->email})"])
-                                ->all()
-                        )
-                        ->getOptionLabelUsing(
-                            fn ($value): ?string => User::find($value)?->name
-                        )
-                        ->nullable()
-                        ->visible(fn (Get $get): bool => $get('status') === 'rented'),
-                    ...$extraLastStepFields,
+                    // Select::make('status')
+                    //     ->label('Status')
+                    //     ->options([
+                    //         'available' => 'Beschikbaar',
+                    //         'rented' => 'Verhuurd',
+                    //         'maintenance' => 'Onderhoud',
+                    //         'archived' => 'Gearchiveerd',
+                    //     ])
+                    //     ->required()
+                    //     ->live(),
+                    // Select::make('tenant_id')
+                    //     ->label('Huurder')
+                    //     ->placeholder('Zoek op naam of e-mail…')
+                    //     ->searchable()
+                    //     ->getSearchResultsUsing(
+                    //         fn (string $search): array => User::role('huurder')
+                    //             ->where(fn ($q) => $q
+                    //                 ->where('name', 'like', "%{$search}%")
+                    //                 ->orWhere('email', 'like', "%{$search}%")
+                    //             )
+                    //             ->limit(20)
+                    //             ->get()
+                    //             ->mapWithKeys(fn (User $u) => [$u->id => "{$u->name} ({$u->email})"])
+                    //             ->all()
+                    //     )
+                    //     ->getOptionLabelUsing(
+                    //         fn ($value): ?string => User::find($value)?->name
+                    //     )
+                    //     ->nullable()
+                    //     ->visible(fn (Get $get): bool => $get('status') === 'rented'),
+                    // ...$extraLastStepFields,
                 ]),
         ])
             ->columnSpanFull()
-            ->nextAction(fn (Action $action) => $action->label('Volgende'))
-            ->previousAction(fn (Action $action) => $action->label('Vorige'));
+            ->nextAction(fn(Action $action) => $action->label('Volgende'))
+            ->previousAction(fn(Action $action) => $action->label('Vorige'));
     }
 }
