@@ -8,16 +8,25 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
 #[Fillable(['building_id', 'room_number', 'type', 'title', 'description', 'price_per_month', 'costs_included', 'extra_costs', 'surface_m2', 'is_furnished', 'available_from', 'status'])]
-class Room extends Model
+class Room extends Model implements HasMedia
 {
     /** @use HasFactory<RoomFactory> */
     use HasFactory;
+    use InteractsWithMedia;
 
     public function building(): BelongsTo
     {
         return $this->belongsTo(Building::class);
+    }
+
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('rooms')
+            ->singleFile();
     }
 
     protected function casts(): array
