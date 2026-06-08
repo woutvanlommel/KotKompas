@@ -3,6 +3,7 @@
 namespace App\Filament\Components;
 
 use Filament\Forms\Components\FileUpload;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Spatie\MediaLibrary\HasMedia;
 
@@ -25,6 +26,16 @@ use Spatie\MediaLibrary\HasMedia;
  */
 class ImageUpload
 {
+    /** MIME types that are accepted for upload. */
+    private const ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+
+    /** MIME types that are commonly tried but cannot be converted server-side. */
+    private const UNSUPPORTED_TYPES = ['image/heic', 'image/heif', 'image/heic-sequence', 'image/heif-sequence'];
+
+    private const HEIC_MESSAGE = 'HEIC/HEIF images (used by iPhones by default) are not supported. '
+        . 'On your iPhone, go to Settings → Camera → Formats and choose "Most Compatible" to shoot in JPEG instead. '
+        . 'Alternatively, convert the image to JPEG or PNG before uploading.';
+
     public static function make(string $collection = 'images', bool $multiple = true): FileUpload
     {
         return FileUpload::make($collection)
@@ -37,10 +48,39 @@ class ImageUpload
             ->visibility('public')
             ->imageEditor()
             ->maxSize(10240) // 10 MB
-            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp', 'image/gif'])
+            ->acceptedFileTypes(self::ACCEPTED_TYPES)
             ->maxFiles($multiple ? 20 : 1)
             ->panelLayout('grid')
+            ->hint('HEIC/HEIF not supported — use JPEG, PNG, or WebP.')
+            ->hintColor('warning')
+            ->hintIcon('heroicon-o-exclamation-triangle')
+            ->rules([static::heicValidationRule()])
             ->dehydrated(true); // keep paths in form data so SyncsMediaUploads can read them
+    }
+
+    /**
+     * Validation rule that catches HEIC/HEIF uploads and returns a clear,
+     * actionable error instead of a generic "invalid file type" message.
+     */
+    public static function heicValidationRule(): \Closure
+    {
+        return function ($attribute, $value, $fail) {
+            $files = is_array($value) ? $value : [$value];
+
+            foreach ($files as $file) {
+                if (! ($file instanceof UploadedFile)) {
+                    continue;
+                }
+
+                if (in_array($file->getMimeType(), self::UNSUPPORTED_TYPES, true)
+                    || in_array(strtolower($file->getClientOriginalExtension()), ['heic', 'heif'], true)
+                ) {
+                    $fail(self::HEIC_MESSAGE);
+
+                    return;
+                }
+            }
+        };
     }
 
     /**
