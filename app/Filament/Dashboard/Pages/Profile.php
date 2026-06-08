@@ -6,6 +6,7 @@ use Filament\Actions\Action;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
+use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -48,6 +49,41 @@ protected function getHeaderActions(): array
 
                 Notification::make()
                     ->title('Profile updated')
+                    ->success()
+                    ->send();
+            }),
+        Action::make('changePassword')
+            ->label('Change password')
+            ->color('gray')
+            ->slideOver()
+            ->form([
+                TextInput::make('current_password')
+                    ->label('Current password')
+                    ->password()
+                    ->revealable()
+                    ->required()
+                    ->currentPassword(),
+                TextInput::make('password')
+                    ->label('New password')
+                    ->password()
+                    ->revealable()
+                    ->required()
+                    ->minLength(8)
+                    ->confirmed(),
+                TextInput::make('password_confirmation')
+                    ->label('Confirm new password')
+                    ->password()
+                    ->revealable()
+                    ->required()
+                    ->dehydrated(false),
+            ])
+            ->action(function (array $data): void {
+                auth()->user()->update([
+                    'password' => bcrypt($data['password']),
+                ]);
+
+                Notification::make()
+                    ->title('Password updated')
                     ->success()
                     ->send();
             }),
