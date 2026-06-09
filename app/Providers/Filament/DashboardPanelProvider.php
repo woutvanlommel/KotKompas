@@ -42,6 +42,10 @@ class DashboardPanelProvider extends PanelProvider
             ->registration(Register::class)
             ->passwordReset(RequestPasswordReset::class, ResetPassword::class)
             ->renderHook(
+                PanelsRenderHook::HEAD_END,
+                fn (): HtmlString => new HtmlString(app(\Illuminate\Foundation\Vite::class)(['resources/js/echo.ts'])),
+            )
+            ->renderHook(
                 PanelsRenderHook::BODY_END,
                 fn (): HtmlString => new HtmlString(<<<'HTML'
                 <script>
