@@ -30,26 +30,26 @@
             </h1>
 
             {{-- Frosted search panel — the auth login-form panel, carried onto the hero --}}
-            <div class="kk-glass mt-11 max-w-2xl p-5 sm:p-6" data-reveal>
+            <form method="GET" action="{{ route('rooms.index') }}" class="kk-glass mt-11 max-w-2xl p-5 sm:p-6" data-reveal>
                 <div class="flex items-end gap-5">
                     <label class="min-w-0 flex-1">
                         <span class="mb-2 block text-[0.625rem] font-medium uppercase tracking-[0.14em] text-white/55">Waar zoek je?</span>
                         <input type="text" name="q" placeholder="Stad of buurt…" aria-label="Zoek op stad of buurt" class="kk-uline">
                     </label>
-                    <a href="#koten" data-magnetic="0.25" class="kk-cta kk-cta--ink mb-1 shrink-0" aria-label="Zoek koten">
+                    <button type="submit" data-magnetic="0.25" class="kk-cta kk-cta--ink mb-1 shrink-0" aria-label="Zoek koten">
                         Zoek
                         <span class="kk-cta-chip" aria-hidden="true">
                             <svg class="kk-cta-arrow kk-cta-arrow--out" viewBox="0 0 16 16" fill="none"><path d="M3 13L13 3M13 3H5M13 3V11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
                             <svg class="kk-cta-arrow kk-cta-arrow--in" viewBox="0 0 16 16" fill="none"><path d="M3 13L13 3M13 3H5M13 3V11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
                         </span>
-                    </a>
+                    </button>
                 </div>
                 <div class="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-white/15 pt-4 text-[0.8rem] text-white/60">
                     <span class="flex items-center gap-2.5"><span class="inline-block h-1 w-1 rounded-full bg-accent-500"></span> Geen makelaarskosten</span>
                     <span class="flex items-center gap-2.5"><span class="inline-block h-1 w-1 rounded-full bg-accent-500"></span> All-in prijzen</span>
                     <span class="flex items-center gap-2.5"><span class="inline-block h-1 w-1 rounded-full bg-accent-500"></span> GDPR-veilig</span>
                 </div>
-            </div>
+            </form>
 
             <p class="mt-5 text-[0.8rem] text-white/55" data-reveal>
                 Zelf verhuren? <a href="#verhuren" class="font-medium text-white underline-offset-4 transition hover:text-secondary-300 hover:underline">Verhuur je kot →</a>

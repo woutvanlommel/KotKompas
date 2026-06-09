@@ -2,7 +2,7 @@
 
 @php
     $links = [
-        ['label' => 'Koten',   'href' => '#koten',           'active' => false],
+        ['label' => 'Koten',   'href' => route('rooms.index'), 'active' => request()->routeIs('rooms.*')],
         ['label' => 'FAQ',     'href' => route('faq'),       'active' => request()->routeIs('faq')],
         ['label' => 'Contact', 'href' => route('contact'),   'active' => request()->routeIs('contact')],
     ];
@@ -100,7 +100,7 @@
     <nav class="flex flex-1 flex-col justify-center gap-1 px-5 sm:px-8" aria-label="Mobiele navigatie">
         @php
             $overlayLinks = [
-                ['label' => 'Koten',     'href' => '#koten'],
+                ['label' => 'Koten',     'href' => route('rooms.index')],
                 ['label' => 'FAQ',       'href' => route('faq')],
                 ['label' => 'Contact',   'href' => route('contact')],
                 ['label' => 'Inloggen',  'href' => url('/dashboard/login')],
