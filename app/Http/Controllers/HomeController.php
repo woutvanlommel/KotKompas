@@ -14,7 +14,7 @@ class HomeController extends Controller
             ->where('status', 'available')
             ->with(['building', 'media'])
             ->latest()
-            ->take(6)
+            ->take(8)
             ->get();
 
         $faqCategories = FaqCategory::query()

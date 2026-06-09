@@ -58,43 +58,20 @@
     </section>
 
     {{-- ════════════════════════════════════════════════════════════════
-         HOOFDSTUK 01 — DE STUDENT. Light, editorial-asymmetric, serif numeral.
+         HOOFDSTUK 01 — DE STUDENT. A horizontal step-journey: zoek → huur.
          ════════════════════════════════════════════════════════════════ --}}
     <section class="relative overflow-hidden py-24 sm:py-32">
-        <span class="kk-num pointer-events-none absolute -top-8 right-2 z-0 select-none text-[clamp(8rem,22vw,20rem)] text-ink/[0.05] sm:right-10">01</span>
-        <div class="relative z-10 mx-auto grid w-full max-w-[88rem] gap-x-16 gap-y-14 px-5 sm:px-8 lg:grid-cols-[1.1fr_0.82fr] lg:items-start">
-            <div>
-                <p class="mb-6 flex items-center gap-3 text-[0.625rem] font-medium uppercase tracking-[0.18em] text-ink-soft" data-reveal>
-                    <span class="inline-block h-px w-10 bg-accent-500"></span> Hoofdstuk 01 — Voor studenten
-                </p>
-                <h2 data-split class="max-w-[13ch] text-[clamp(2.2rem,5.5vw,4.75rem)] font-medium leading-[0.88] tracking-[-0.05em] text-balance text-ink">
-                    Jij zoekt een plek die voelt als <span class="kk-serif-it font-normal text-secondary-600">thuis</span>.
-                </h2>
-                <p class="mt-7 max-w-[46ch] text-lg leading-relaxed text-pretty text-ink-soft" data-reveal>
-                    Een kot zoeken hoort geen gevecht te zijn met makelaars, wachtlijsten en verborgen kosten. Bij KotKompas zoek je zelf, praat je rechtstreeks met de eigenaar en weet je vooraf precies wat je betaalt.
-                </p>
-
-                <div class="mt-12" data-reveal-stagger>
-                    @php
-                        $reis = [
-                            ['Zoek', 'Doorzoek koten in jouw studentenstad en filter op prijs, oppervlakte en type.'],
-                            ['Contacteer', 'Praat rechtstreeks met de eigenaar — geen tussenpersoon, geen wachttijd.'],
-                            ['Bezichtig', 'Plan een bezichtiging wanneer het jou past.'],
-                            ['Huur', 'Regel alles transparant. Eén all-in prijs, geen verrassingen achteraf.'],
-                        ];
-                    @endphp
-                    @foreach ($reis as $i => $beat)
-                        <div class="group flex items-baseline gap-6 border-t border-hairline py-5 last:border-b">
-                            <span class="kk-num text-3xl text-ink/65 transition-colors group-hover:text-secondary-600 sm:text-4xl">0{{ $i + 1 }}</span>
-                            <div class="flex-1">
-                                <h3 class="text-lg font-medium tracking-tight text-ink transition-colors group-hover:text-secondary-600">{{ $beat[0] }}</h3>
-                                <p class="mt-1 max-w-md text-sm leading-relaxed text-ink-soft">{{ $beat[1] }}</p>
-                            </div>
-                        </div>
-                    @endforeach
+        <div class="mx-auto w-full max-w-[88rem] px-5 sm:px-8">
+            <div class="flex flex-col gap-x-12 gap-y-8 lg:flex-row lg:items-end lg:justify-between">
+                <div>
+                    <p class="mb-6 flex items-center gap-3 text-[0.625rem] font-medium uppercase tracking-[0.18em] text-ink-soft" data-reveal>
+                        <span class="inline-block h-px w-10 bg-accent-500"></span> Hoofdstuk 01 — Voor studenten
+                    </p>
+                    <h2 data-split class="max-w-[16ch] text-[clamp(2.2rem,5.5vw,4.75rem)] font-medium leading-[0.88] tracking-[-0.05em] text-balance text-ink">
+                        Jouw zoektocht, stap voor stap.
+                    </h2>
                 </div>
-
-                <a href="#koten" data-magnetic="0.2" class="kk-cta kk-cta--ink mt-10" data-reveal>
+                <a href="#koten" data-magnetic="0.2" class="kk-cta kk-cta--ink shrink-0" data-reveal>
                     Zoek een kot
                     <span class="kk-cta-chip" aria-hidden="true">
                         <svg class="kk-cta-arrow kk-cta-arrow--out" viewBox="0 0 16 16" fill="none"><path d="M3 13L13 3M13 3H5M13 3V11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -102,113 +79,117 @@
                     </span>
                 </a>
             </div>
+            <p class="mt-7 max-w-[55ch] text-lg leading-relaxed text-pretty text-ink-soft" data-reveal>
+                Een kot zoeken hoort geen gevecht te zijn met makelaars, wachtlijsten en verborgen kosten. Bij KotKompas zoek je zelf, praat je rechtstreeks met de eigenaar en weet je vooraf precies wat je betaalt.
+            </p>
 
-            <div class="relative aspect-[4/5] overflow-hidden rounded-[1.75rem] bg-canvas-deep lg:sticky lg:top-28" data-reveal>
-                <img src="{{ asset('img/hero-test.jpg') }}" alt="Studentenkamer" class="h-[112%] w-full object-cover" loading="lazy" data-parallax>
-                <div class="absolute inset-x-0 bottom-0 bg-linear-to-t from-primary-900/85 via-primary-900/20 to-transparent p-6">
-                    <p class="text-[0.625rem] font-medium uppercase tracking-[0.16em] text-white/70">Jouw volgende thuis</p>
-                    <p class="mt-1.5 text-lg font-medium leading-snug text-white">Rechtstreeks van de eigenaar — geen makelaar ertussen.</p>
-                </div>
+            {{-- The journey, horizontal: each step is a beat connected to the next --}}
+            <div class="mt-16 grid gap-x-8 gap-y-12 border-t border-hairline pt-12 sm:grid-cols-2 lg:grid-cols-4" data-reveal-stagger>
+                @php
+                    $reis = [
+                        ['Zoek', 'Doorzoek koten in jouw studentenstad en filter op prijs, oppervlakte en type.'],
+                        ['Contacteer', 'Praat rechtstreeks met de eigenaar — geen tussenpersoon, geen wachttijd.'],
+                        ['Bezichtig', 'Plan een bezichtiging wanneer het jou past.'],
+                        ['Huur', 'Regel alles transparant. Eén all-in prijs, geen verrassingen achteraf.'],
+                    ];
+                @endphp
+                @foreach ($reis as $i => $beat)
+                    <div class="group relative">
+                        <span class="kk-num block text-5xl leading-none text-ink/15 transition-colors duration-300 group-hover:text-accent-500 sm:text-6xl">0{{ $i + 1 }}</span>
+                        <h3 class="mt-5 text-xl font-medium tracking-tight text-ink">{{ $beat[0] }}</h3>
+                        <p class="mt-2 text-sm leading-relaxed text-ink-soft">{{ $beat[1] }}</p>
+                        @unless ($loop->last)
+                            <span class="pointer-events-none absolute -right-4 top-4 hidden text-2xl text-ink-soft/30 lg:block" aria-hidden="true">→</span>
+                        @endunless
+                    </div>
+                @endforeach
             </div>
         </div>
     </section>
 
     {{-- ════════════════════════════════════════════════════════════════
-         HOOFDSTUK 02 — DE EIGENAAR. Navy auth panel, giant switch-word.
+         HOOFDSTUK 02 — DE EIGENAAR. Dark poster: the giant word dominates, photo beside.
          ════════════════════════════════════════════════════════════════ --}}
     <section id="verhuren" class="scroll-mt-24 px-5 pb-8 sm:px-8">
         <div class="mx-auto w-full max-w-[88rem]">
-            <div class="relative overflow-hidden rounded-[2rem] bg-primary-900 px-6 py-20 text-white sm:px-14 sm:py-28">
-                <span class="kk-num pointer-events-none absolute -top-10 right-4 z-0 select-none text-[clamp(8rem,20vw,18rem)] text-white/[0.06] sm:right-10">02</span>
-                <div class="absolute inset-0 z-0 opacity-20" aria-hidden="true">
-                    <img src="{{ asset('img/hero-bg.jpg') }}" alt="" class="h-[120%] w-full object-cover" data-parallax>
-                    <div class="absolute inset-0 bg-linear-to-bl from-primary-900 via-primary-900/85 to-primary-900/40"></div>
+            <div class="relative grid overflow-hidden rounded-[2rem] bg-primary-900 text-white lg:grid-cols-[1.3fr_0.7fr]">
+                {{-- The poster --}}
+                <div class="relative z-10 px-6 py-16 sm:px-14 sm:py-24">
+                    <p class="mb-9 flex items-center gap-3 text-[0.625rem] font-medium uppercase tracking-[0.18em] text-white/55" data-reveal>
+                        <span class="inline-block h-px w-10 bg-accent-500"></span> Hoofdstuk 02 — Voor eigenaars
+                    </p>
+                    <a href="{{ url('/dashboard/register') }}" data-magnetic="0.12" class="kk-bigword" data-reveal>
+                        <span class="kk-bigword-word">Verhuur je kot</span>
+                        <svg class="kk-bigword-arrow" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 12L12 4M12 4H6M12 4V10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </a>
+                    <p class="mt-9 max-w-md text-lg leading-relaxed text-pretty text-white/70" data-reveal>
+                        Zet je kot in enkele minuten online en bereik studenten die écht op zoek zijn. Jij kiest je huurder — wij vragen geen commissie.
+                    </p>
+                    <div class="mt-10 flex flex-wrap gap-x-8 gap-y-3 border-t border-white/15 pt-6 text-sm text-white/65" data-reveal-stagger>
+                        <span class="flex items-center gap-2.5"><span class="inline-block h-1 w-1 rounded-full bg-accent-500"></span> Gratis online plaatsen</span>
+                        <span class="flex items-center gap-2.5"><span class="inline-block h-1 w-1 rounded-full bg-accent-500"></span> Studenten rechtstreeks</span>
+                        <span class="flex items-center gap-2.5"><span class="inline-block h-1 w-1 rounded-full bg-accent-500"></span> Jij kiest je huurder</span>
+                    </div>
                 </div>
 
-                <div class="relative z-10 grid gap-x-16 gap-y-12 lg:grid-cols-[0.9fr_1.05fr] lg:items-center">
-                    <ul class="order-2 lg:order-1" data-reveal-stagger>
-                        @php
-                            $voordelen = [
-                                ['Gratis online', 'Plaats je kot zonder kosten, commissie of abonnement.'],
-                                ['Rechtstreeks bereik', 'Studenten contacteren jou direct — geen makelaar ertussen.'],
-                                ['Jij beslist', 'Kies zelf wie er in jouw kot komt wonen.'],
-                            ];
-                        @endphp
-                        @foreach ($voordelen as $i => $v)
-                            <li class="group flex items-baseline gap-6 border-t border-white/15 py-5 last:border-b">
-                                <span class="kk-num text-3xl text-white/45 transition-colors group-hover:text-secondary-300 sm:text-4xl">0{{ $i + 1 }}</span>
-                                <div>
-                                    <h3 class="text-lg font-medium tracking-tight text-white">{{ $v[0] }}</h3>
-                                    <p class="mt-1 max-w-sm text-sm leading-relaxed text-white/65">{{ $v[1] }}</p>
-                                </div>
-                            </li>
-                        @endforeach
-                    </ul>
-
-                    <div class="order-1 lg:order-2">
-                        <p class="mb-6 flex items-center gap-3 text-[0.625rem] font-medium uppercase tracking-[0.18em] text-white/55" data-reveal>
-                            <span class="inline-block h-px w-10 bg-accent-500"></span> Hoofdstuk 02 — Voor eigenaars
-                        </p>
-                        <h2 data-split class="max-w-[15ch] text-[clamp(2.2rem,5.5vw,4.5rem)] font-medium leading-[0.88] tracking-[-0.05em] text-balance text-white">
-                            Jij hebt een kot. Wij brengen de <span class="kk-serif-it font-normal">student</span>.
-                        </h2>
-                        <p class="mt-7 max-w-md text-lg leading-relaxed text-pretty text-white/70" data-reveal>
-                            Zet je kot in enkele minuten online en bereik studenten die écht op zoek zijn. Jij kiest je huurder — wij vragen geen commissie.
-                        </p>
-                        <a href="{{ url('/dashboard/register') }}" data-magnetic="0.15" class="kk-bigword mt-10" data-reveal>
-                            <span class="kk-bigword-word">Verhuur je kot</span>
-                            <svg class="kk-bigword-arrow" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 12L12 4M12 4H6M12 4V10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                        </a>
-                    </div>
+                {{-- Photo panel, fading into the navy at the seam --}}
+                <div class="relative min-h-[15rem] overflow-hidden">
+                    <img src="{{ asset('img/hero-bg.jpg') }}" alt="" class="absolute inset-0 h-[112%] w-full object-cover" loading="lazy" data-parallax>
+                    <div class="absolute inset-0 bg-linear-to-t from-primary-900 via-primary-900/40 to-primary-900/10 lg:bg-linear-to-l lg:from-transparent lg:via-primary-900/30 lg:to-primary-900"></div>
                 </div>
             </div>
         </div>
     </section>
 
     {{-- ════════════════════════════════════════════════════════════════
-         HOOFDSTUK 03 — SAMEN. Light climax, monumental statement.
+         HOOFDSTUK 03 — SAMEN. Twee stemmen: een huurder + een verhuurder.
          ════════════════════════════════════════════════════════════════ --}}
-    <section class="relative overflow-hidden py-24 sm:py-32">
-        <span class="kk-num pointer-events-none absolute -top-8 left-2 z-0 select-none text-[clamp(8rem,22vw,20rem)] text-ink/[0.05] sm:left-10">03</span>
-        <div class="relative z-10 mx-auto w-full max-w-[80rem] px-5 text-center sm:px-8">
-            <p class="mb-10 inline-flex items-center gap-3 text-[0.625rem] font-medium uppercase tracking-[0.18em] text-ink-soft" data-reveal>
-                <span class="inline-block h-px w-10 bg-accent-500"></span> Hoofdstuk 03 — Samen
-            </p>
-
-            <div class="mb-12 flex items-center justify-center gap-5 text-sm font-medium tracking-tight sm:gap-9">
-                <span data-converge="left" class="text-ink/70">De student</span>
-                <span class="relative flex h-2.5 w-2.5 shrink-0">
-                    <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent-500 opacity-60 motion-reduce:animate-none"></span>
-                    <span class="relative inline-flex h-2.5 w-2.5 rounded-full bg-accent-500"></span>
-                </span>
-                <span data-converge="right" class="text-ink/70">De eigenaar</span>
+    <section class="px-5 py-24 sm:px-8 sm:py-32">
+        <div class="mx-auto w-full max-w-[88rem]">
+            <div class="mb-14 max-w-[22ch]">
+                <p class="mb-6 flex items-center gap-3 text-[0.625rem] font-medium uppercase tracking-[0.18em] text-ink-soft" data-reveal>
+                    <span class="inline-block h-px w-10 bg-accent-500"></span> Hoofdstuk 03 — Samen
+                </p>
+                <h2 data-split class="text-[clamp(2.2rem,5.5vw,4.5rem)] font-medium leading-[0.9] tracking-[-0.05em] text-balance text-ink">
+                    Twee kanten, één plek.
+                </h2>
             </div>
 
-            <h2 data-split class="mx-auto max-w-[18ch] text-[clamp(2.4rem,6.5vw,5.5rem)] font-medium leading-[0.86] tracking-[-0.05em] text-balance text-ink">
-                Rechtstreeks met elkaar. Geen makelaar <span class="kk-serif-it font-normal text-secondary-600">ertussen</span>.
-            </h2>
-            <p class="mx-auto mt-7 max-w-[52ch] text-lg leading-relaxed text-pretty text-ink-soft" data-reveal>
-                Dat is het hele idee. Twee mensen die elkaar vinden zonder tussenpersoon — eerlijk, transparant en veilig.
-            </p>
-
-            <dl class="mx-auto mt-16 grid max-w-4xl gap-x-12 gap-y-8 text-left sm:grid-cols-3" data-reveal-stagger>
-                @php
-                    $waarom = [
-                        ['Geen makelaarskosten', 'Geen tussenpersoon, geen commissie.'],
-                        ['All-in prijstransparantie', 'Eén duidelijke prijs. Geen verrassingen.'],
-                        ['GDPR-veilig', 'Jouw gegevens, altijd beschermd.'],
-                    ];
-                @endphp
-                @foreach ($waarom as $i => $w)
-                    <div class="border-t border-ink/15 pt-5">
-                        <dt class="flex items-baseline gap-3">
-                            <span class="kk-num text-xl text-accent-500">0{{ $i + 1 }}</span>
-                            <span class="text-base font-medium tracking-tight text-ink">{{ $w[0] }}</span>
-                        </dt>
-                        <dd class="mt-2 pl-9 text-sm leading-relaxed text-ink-soft">{{ $w[1] }}</dd>
+            <div class="grid gap-6 lg:grid-cols-2">
+                {{-- Huurder --}}
+                <figure data-converge="left" class="flex h-full flex-col justify-between rounded-[2rem] border border-hairline bg-canvas-deep p-8 sm:p-12">
+                    <div>
+                        <span class="text-[0.625rem] font-medium uppercase tracking-[0.16em] text-accent-500">Huurder</span>
+                        <blockquote class="mt-6 text-balance text-[clamp(1.35rem,2.6vw,2.1rem)] font-medium leading-[1.18] tracking-[-0.02em] text-ink">
+                            “Binnen twee dagen had ik mijn kot. Rechtstreeks met de eigenaar — geen makelaar, geen verborgen kosten.”
+                        </blockquote>
                     </div>
-                @endforeach
-            </dl>
+                    <figcaption class="mt-10 flex items-center gap-4">
+                        <span class="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-primary-900 text-base font-medium text-white">L</span>
+                        <div>
+                            <p class="text-sm font-medium tracking-tight text-ink">Lotte</p>
+                            <p class="text-[0.8rem] text-ink-soft">Studente · Gent</p>
+                        </div>
+                    </figcaption>
+                </figure>
+
+                {{-- Verhuurder --}}
+                <figure data-converge="right" class="flex h-full flex-col justify-between rounded-[2rem] bg-primary-900 p-8 text-white sm:p-12">
+                    <div>
+                        <span class="text-[0.625rem] font-medium uppercase tracking-[0.16em] text-accent-400">Verhuurder</span>
+                        <blockquote class="mt-6 text-balance text-[clamp(1.35rem,2.6vw,2.1rem)] font-medium leading-[1.18] tracking-[-0.02em] text-white">
+                            “Mijn kot stond in vijf minuten online. Ik koos zelf mijn huurder — zonder commissie of tussenpersoon.”
+                        </blockquote>
+                    </div>
+                    <figcaption class="mt-10 flex items-center gap-4">
+                        <span class="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-white text-base font-medium text-primary-900">J</span>
+                        <div>
+                            <p class="text-sm font-medium tracking-tight text-white">Jan</p>
+                            <p class="text-[0.8rem] text-white/60">Verhuurder · Antwerpen</p>
+                        </div>
+                    </figcaption>
+                </figure>
+            </div>
         </div>
     </section>
 
@@ -233,7 +214,7 @@
             </div>
 
             @if ($featuredRooms->isNotEmpty())
-                <div class="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3" data-reveal-stagger>
+                <div class="grid grid-cols-1 gap-x-5 gap-y-8 sm:grid-cols-2 lg:grid-cols-4" data-reveal-stagger>
                     @foreach ($featuredRooms as $room)
                         <x-koten-card :room="$room" />
                     @endforeach

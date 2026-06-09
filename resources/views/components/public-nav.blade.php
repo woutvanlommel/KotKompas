@@ -46,7 +46,7 @@
         {{-- ── CTA cluster: ghost Inloggen · primary Verhuur je kot ────────── --}}
         <div class="flex items-center gap-2.5">
             <a href="{{ url('/dashboard/login') }}"
-               class="hidden h-11 items-center rounded-full border border-hairline px-5 text-[0.85rem] font-medium text-ink transition-colors hover:border-ink/30 hover:bg-ink/[0.04] sm:inline-flex">
+               class="hidden h-11 items-center rounded-[4px] border border-hairline px-5 text-[0.85rem] font-medium text-ink transition-colors hover:border-ink/30 hover:bg-ink/[0.04] sm:inline-flex">
                 Inloggen
             </a>
 

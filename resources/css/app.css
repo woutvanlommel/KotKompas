@@ -242,15 +242,24 @@
     -webkit-backdrop-filter: blur(14px);
 }
 
-/* ---- Cross-document view transitions — smooth page swaps across the public site
-   (the auth pages already opt in). The wordmark persists; content crossfades. ---- */
+/* ---- Cross-document view transitions — a clearly visible "push up" between pages:
+   the new page slides up over the old, the old recedes + dims. Degrades gracefully. ---- */
 @view-transition { navigation: auto; }
-.kk-topnav-mark { view-transition-name: kk-brandmark; }
 @media (prefers-reduced-motion: no-preference) {
-    ::view-transition-old(root) { animation: kk-vt-out 0.34s cubic-bezier(0.22, 1, 0.36, 1) both; }
-    ::view-transition-new(root) { animation: kk-vt-in 0.42s cubic-bezier(0.22, 1, 0.36, 1) both; }
-    @keyframes kk-vt-out { to { opacity: 0; transform: translateY(-6px); } }
-    @keyframes kk-vt-in { from { opacity: 0; transform: translateY(8px); } }
+    ::view-transition-old(root) {
+        animation: kk-vt-out 0.6s cubic-bezier(0.76, 0, 0.24, 1) both;
+    }
+    ::view-transition-new(root) {
+        animation: kk-vt-in 0.6s cubic-bezier(0.76, 0, 0.24, 1) both;
+        box-shadow: 0 -30px 80px rgba(15, 23, 32, 0.3);
+    }
+    @keyframes kk-vt-out {
+        to { transform: translateY(-22%); opacity: 0.35; }
+    }
+    @keyframes kk-vt-in {
+        from { transform: translateY(100%); }
+        to { transform: translateY(0); }
+    }
 }
 
 @source '../views/**/*.blade.php';
