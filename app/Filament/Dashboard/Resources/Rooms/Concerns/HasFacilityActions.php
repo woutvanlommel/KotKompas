@@ -17,7 +17,7 @@ trait HasFacilityActions
             ->get()
             ->groupBy('category')
             ->map(function ($facilities, string $category) use ($existingIds) {
-                $key = 'facility_cat_' . preg_replace('/[^a-z0-9]+/', '_', strtolower($category));
+                $key = 'facility_cat_'.preg_replace('/[^a-z0-9]+/', '_', strtolower($category));
 
                 $selectedInCategory = $facilities
                     ->pluck('id')
@@ -47,7 +47,7 @@ trait HasFacilityActions
             ->form($categorySections)
             ->action(function (array $data): void {
                 $allIds = collect($data)
-                    ->filter(fn($v, $k) => str_starts_with($k, 'facility_cat_'))
+                    ->filter(fn ($v, $k) => str_starts_with($k, 'facility_cat_'))
                     ->flatten()
                     ->filter()
                     ->unique()

@@ -117,7 +117,7 @@ class RoomWizard
                         ->get()
                         ->groupBy('category')
                         ->map(function ($facilities, string $category) {
-                            $key = 'facility_cat_' . preg_replace('/[^a-z0-9]+/', '_', strtolower($category));
+                            $key = 'facility_cat_'.preg_replace('/[^a-z0-9]+/', '_', strtolower($category));
 
                             return Section::make($category)
                                 ->schema([
@@ -166,8 +166,8 @@ class RoomWizard
                                         Select::make("frequency_{$id}")
                                             ->label('Frequentie')
                                             ->options([
-                                                'monthly'  => 'Maandelijks',
-                                                'yearly'   => 'Jaarlijks',
+                                                'monthly' => 'Maandelijks',
+                                                'yearly' => 'Jaarlijks',
                                                 'one_time' => 'Eenmalig',
                                             ])
                                             ->required()

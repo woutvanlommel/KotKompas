@@ -4,9 +4,9 @@ namespace App\Filament\Dashboard\Resources\Rooms\Concerns;
 
 use Filament\Actions\Action;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Toggle;
 
 trait HasRoomInfoActions
@@ -32,11 +32,11 @@ trait HasRoomInfoActions
                 Select::make('type')
                     ->label('Type')
                     ->options([
-                        'studio'            => 'Studio',
-                        'one_bedroom'       => '1 slaapkamer',
-                        'two_bedroom'       => '2 slaapkamers',
-                        'three_bedroom'     => '3 slaapkamers',
-                        'four_bedroom'      => '4 slaapkamers',
+                        'studio' => 'Studio',
+                        'one_bedroom' => '1 slaapkamer',
+                        'two_bedroom' => '2 slaapkamers',
+                        'three_bedroom' => '3 slaapkamers',
+                        'four_bedroom' => '4 slaapkamers',
                         'five_plus_bedroom' => '5+ slaapkamers',
                     ])
                     ->required()
@@ -50,10 +50,10 @@ trait HasRoomInfoActions
             ])
             ->action(function (array $data): void {
                 $this->record->update([
-                    'title'           => $data['title'],
-                    'room_number'     => $data['room_number'],
-                    'bus'             => $data['bus'] ?? null,
-                    'type'            => $data['type'],
+                    'title' => $data['title'],
+                    'room_number' => $data['room_number'],
+                    'bus' => $data['bus'] ?? null,
+                    'type' => $data['type'],
                     'price_per_month' => $data['price_per_month'],
                 ]);
                 $this->record->refresh();
@@ -80,8 +80,8 @@ trait HasRoomInfoActions
             ])
             ->action(function (array $data): void {
                 $this->record->update([
-                    'surface_m2'     => $data['surface_m2'] ?? null,
-                    'is_furnished'   => $data['is_furnished'] ?? false,
+                    'surface_m2' => $data['surface_m2'] ?? null,
+                    'is_furnished' => $data['is_furnished'] ?? false,
                     'available_from' => $data['available_from'] ?? null,
                 ]);
                 $this->record->refresh();

@@ -58,8 +58,8 @@ trait HasCostActions
                                         Select::make("frequency_{$id}")
                                             ->label('Frequentie')
                                             ->options([
-                                                'monthly'  => 'Maandelijks',
-                                                'yearly'   => 'Jaarlijks',
+                                                'monthly' => 'Maandelijks',
+                                                'yearly' => 'Jaarlijks',
                                                 'one_time' => 'Eenmalig',
                                             ])
                                             ->required()
@@ -107,8 +107,8 @@ trait HasCostActions
 
                 foreach ($data['cost_type_ids'] ?? [] as $id) {
                     $syncData[$id] = [
-                        'frequency'   => $data["frequency_{$id}"] ?? 'monthly',
-                        'amount'      => $data["amount_{$id}"] ?? null,
+                        'frequency' => $data["frequency_{$id}"] ?? 'monthly',
+                        'amount' => $data["amount_{$id}"] ?? null,
                         'is_variable' => (bool) ($data["is_variable_{$id}"] ?? false),
                         'description' => $data["description_{$id}"] ?? null,
                     ];
