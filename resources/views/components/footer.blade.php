@@ -6,9 +6,9 @@
                 <p class="flex items-center gap-3 text-[0.7rem] font-medium uppercase tracking-[0.18em] text-white/55">
                     <span class="inline-block h-px w-8 bg-accent-500"></span> Vind je plek
                 </p>
-                <h2 class="mt-6 max-w-3xl text-balance text-[clamp(2.6rem,6.5vw,5.5rem)] font-medium leading-[0.9] tracking-[-0.04em]" data-split>
+                <h2 class="mt-6 max-w-3xl text-balance text-[clamp(2.6rem,6.5vw,5.5rem)] font-medium leading-[0.88] tracking-[-0.05em]" data-split>
                     <span class="text-white">Klaar om je</span><br>
-                    <span class="text-white">kot te </span><span class="text-accent-500">vinden?</span>
+                    <span class="text-white">kot te </span><span class="kk-serif-it font-normal text-secondary-300">vinden?</span>
                 </h2>
             </div>
 
@@ -52,44 +52,44 @@
             <nav class="grid grid-cols-2 gap-10 sm:grid-cols-4 lg:col-span-4" data-reveal-stagger>
                 <div>
                     <p class="flex items-baseline gap-2 text-[0.7rem] font-medium uppercase tracking-[0.14em] text-ink-soft">
-                        <span class="font-mono text-[0.65rem] text-accent-500">01</span> Ontdek
+                        <span class="kk-num text-[0.72rem] text-accent-500">01</span> Ontdek
                     </p>
                     <ul class="mt-5 space-y-3 text-sm text-ink">
-                        <li><a href="{{ url('/') }}" class="inline-block transition-colors hover:text-accent-600">Home</a></li>
-                        <li><a href="{{ route('home') }}#koten" class="inline-block transition-colors hover:text-accent-600">Koten</a></li>
-                        <li><a href="{{ route('faq') }}" class="inline-block transition-colors hover:text-accent-600">Veelgestelde vragen</a></li>
+                        <li><a href="{{ url('/') }}" class="inline-block transition-colors hover:text-secondary-600">Home</a></li>
+                        <li><a href="{{ route('home') }}#koten" class="inline-block transition-colors hover:text-secondary-600">Koten</a></li>
+                        <li><a href="{{ route('faq') }}" class="inline-block transition-colors hover:text-secondary-600">Veelgestelde vragen</a></li>
                     </ul>
                 </div>
 
                 <div>
                     <p class="flex items-baseline gap-2 text-[0.7rem] font-medium uppercase tracking-[0.14em] text-ink-soft">
-                        <span class="font-mono text-[0.65rem] text-accent-500">02</span> Account
+                        <span class="kk-num text-[0.72rem] text-accent-500">02</span> Account
                     </p>
                     <ul class="mt-5 space-y-3 text-sm text-ink">
-                        <li><a href="{{ url('/dashboard/login') }}" class="inline-block transition-colors hover:text-accent-600">Inloggen</a></li>
-                        <li><a href="{{ url('/dashboard/register') }}" class="inline-block transition-colors hover:text-accent-600">Registreren</a></li>
-                        <li><a href="{{ url('/dashboard/register') }}" class="inline-block transition-colors hover:text-accent-600">Verhuur je kot</a></li>
+                        <li><a href="{{ url('/dashboard/login') }}" class="inline-block transition-colors hover:text-secondary-600">Inloggen</a></li>
+                        <li><a href="{{ url('/dashboard/register') }}" class="inline-block transition-colors hover:text-secondary-600">Registreren</a></li>
+                        <li><a href="{{ url('/dashboard/register') }}" class="inline-block transition-colors hover:text-secondary-600">Verhuur je kot</a></li>
                     </ul>
                 </div>
 
                 <div>
                     <p class="flex items-baseline gap-2 text-[0.7rem] font-medium uppercase tracking-[0.14em] text-ink-soft">
-                        <span class="font-mono text-[0.65rem] text-accent-500">03</span> Juridisch
+                        <span class="kk-num text-[0.72rem] text-accent-500">03</span> Juridisch
                     </p>
                     <ul class="mt-5 space-y-3 text-sm text-ink">
-                        <li><a href="{{ route('privacy') }}" class="inline-block transition-colors hover:text-accent-600">Privacybeleid</a></li>
-                        <li><a href="{{ route('cookies') }}" class="inline-block transition-colors hover:text-accent-600">Cookiebeleid</a></li>
-                        <li><a href="{{ route('algemene-voorwaarden') }}" class="inline-block transition-colors hover:text-accent-600">Algemene voorwaarden</a></li>
+                        <li><a href="{{ route('privacy') }}" class="inline-block transition-colors hover:text-secondary-600">Privacybeleid</a></li>
+                        <li><a href="{{ route('cookies') }}" class="inline-block transition-colors hover:text-secondary-600">Cookiebeleid</a></li>
+                        <li><a href="{{ route('algemene-voorwaarden') }}" class="inline-block transition-colors hover:text-secondary-600">Algemene voorwaarden</a></li>
                     </ul>
                 </div>
 
                 <div>
                     <p class="flex items-baseline gap-2 text-[0.7rem] font-medium uppercase tracking-[0.14em] text-ink-soft">
-                        <span class="font-mono text-[0.65rem] text-accent-500">04</span> Contact
+                        <span class="kk-num text-[0.72rem] text-accent-500">04</span> Contact
                     </p>
                     <ul class="mt-5 space-y-3 text-sm text-ink">
-                        <li><a href="{{ route('contact') }}" class="inline-block transition-colors hover:text-accent-600">Contacteer ons</a></li>
-                        <li><a href="mailto:hallo@kotkompas.be" class="inline-block transition-colors hover:text-accent-600">hallo@kotkompas.be</a></li>
+                        <li><a href="{{ route('contact') }}" class="inline-block transition-colors hover:text-secondary-600">Contacteer ons</a></li>
+                        <li><a href="mailto:hallo@kotkompas.be" class="inline-block transition-colors hover:text-secondary-600">hallo@kotkompas.be</a></li>
                     </ul>
                 </div>
             </nav>
@@ -98,7 +98,7 @@
         {{-- ── Baseline bar ── --}}
         <div class="flex flex-col gap-3 py-7 text-xs text-ink-soft sm:flex-row sm:items-center sm:justify-between">
             <span>© {{ date('Y') }} KotKompas. Alle rechten voorbehouden.</span>
-            <span class="font-mono uppercase tracking-[0.16em]">Antwerpen · BE</span>
+            <span class="uppercase tracking-[0.16em]">Antwerpen · BE</span>
         </div>
     </div>
 </footer>

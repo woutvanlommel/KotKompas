@@ -1,12 +1,13 @@
 @import "tailwindcss";
 
-/* Editorial palette for the public site (light Swiss). Warm, never pure. */
+/* Public palette — navy-FAMILY off-white, so it reads as one brand with the
+   dark/cerulean auth pages (NOT a warm-Swiss second identity). Never pure. */
 @theme {
-    --color-canvas: #f6f4ee;        /* warm off-white */
-    --color-canvas-deep: #efece3;   /* slightly deeper warm panel */
-    --color-ink: #1a1612;           /* warm near-black */
-    --color-ink-soft: #6b645c;      /* muted body / labels */
-    --color-hairline: #1a16121f;    /* ~12% ink for 1px seams */
+    --color-canvas: #edf0f4;        /* cool off-white, navy-family */
+    --color-canvas-deep: #e1e6ed;   /* cooler panel */
+    --color-ink: #0f1720;           /* near-navy off-black */
+    --color-ink-soft: #586573;      /* cool muted body / labels */
+    --color-hairline: #0f17201f;    /* ~12% ink for 1px seams */
 }
 
 /* ---- Auth-signature pill CTA (white pill + sliding arrow chip) ---- */
@@ -78,12 +79,13 @@
     text-transform: uppercase;
     text-decoration: none;
 }
+/* baseline rule wipes CERULEAN on hover — the auth .kk-switch signature (never orange) */
 .kk-bigword::after {
     content: "";
     position: absolute;
     left: 0; right: 0; bottom: -1.5px;
     height: 1.5px;
-    background-color: #ff6700;
+    background-color: #89a7ca;
     transform: scaleX(0);
     transform-origin: left center;
     transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
@@ -96,16 +98,44 @@
 }
 .kk-bigword:hover .kk-bigword-word,
 .kk-bigword:focus-visible .kk-bigword-word { color: #fff; }
+/* arrow: recessive ↗ → rotates to → and warms to cerulean on hover (matches auth) */
 .kk-bigword-arrow {
     width: 0.5em;
     height: auto;
     flex-shrink: 0;
-    color: #ff6700;
+    color: rgba(255, 255, 255, 0.6);
     transform: rotate(45deg);
-    transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+    transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), color 0.3s ease;
 }
 .kk-bigword:hover .kk-bigword-arrow,
-.kk-bigword:focus-visible .kk-bigword-arrow { transform: rotate(90deg); }
+.kk-bigword:focus-visible .kk-bigword-arrow { transform: rotate(90deg); color: #89a7ca; }
+
+/* ---- Light-canvas switch-word (ink → solid, cerulean wipe) for light sections ---- */
+.kk-bigword--ink { border-bottom-color: rgba(15, 23, 32, 0.25); }
+.kk-bigword--ink .kk-bigword-word { color: rgba(15, 23, 32, 0.55); }
+.kk-bigword--ink:hover .kk-bigword-word,
+.kk-bigword--ink:focus-visible .kk-bigword-word { color: #0f1720; }
+.kk-bigword--ink::after { background-color: #2e5884; }
+.kk-bigword--ink .kk-bigword-arrow { color: rgba(15, 23, 32, 0.5); }
+.kk-bigword--ink:hover .kk-bigword-arrow,
+.kk-bigword--ink:focus-visible .kk-bigword-arrow { color: #2e5884; }
+
+/* ---- Type-forward underline input (the auth login field, on the public site) ---- */
+.kk-uline {
+    width: 100%;
+    border: 0;
+    border-radius: 0;
+    background-color: transparent;
+    box-shadow: inset 0 -1.5px 0 0 rgba(255, 255, 255, 0.45);
+    color: #fff;
+    font-size: clamp(1.15rem, 2vw, 1.5rem);
+    font-weight: 400;
+    letter-spacing: -0.015em;
+    padding: 0.35rem 0;
+    transition: box-shadow 200ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.kk-uline::placeholder { color: rgba(255, 255, 255, 0.5); }
+.kk-uline:focus { outline: 0; box-shadow: inset 0 -2px 0 0 #fff; }
 
 @media (prefers-reduced-motion: reduce) {
     .kk-marquee-track { animation: none; }
@@ -195,6 +225,33 @@
 /* Fullscreen mobile overlay */
 .kk-menu { display: none; }
 .kk-menu.is-open { display: flex; }
+
+/* ---- Numeral + accent helpers — area-normal ONLY (no serif). The accent word
+   reads via a lighter weight + cerulean, not a different typeface. ---- */
+.kk-serif { font-family: inherit; }
+.kk-serif-it { font-family: inherit; font-style: normal; }
+.kk-num { font-family: inherit; font-feature-settings: "tnum" 1; line-height: 0.85; }
+
+/* ---- Frosted-glass panel — the auth login-form panel, carried to the public site ---- */
+.kk-glass {
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.32);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+}
+
+/* ---- Cross-document view transitions — smooth page swaps across the public site
+   (the auth pages already opt in). The wordmark persists; content crossfades. ---- */
+@view-transition { navigation: auto; }
+.kk-topnav-mark { view-transition-name: kk-brandmark; }
+@media (prefers-reduced-motion: no-preference) {
+    ::view-transition-old(root) { animation: kk-vt-out 0.34s cubic-bezier(0.22, 1, 0.36, 1) both; }
+    ::view-transition-new(root) { animation: kk-vt-in 0.42s cubic-bezier(0.22, 1, 0.36, 1) both; }
+    @keyframes kk-vt-out { to { opacity: 0; transform: translateY(-6px); } }
+    @keyframes kk-vt-in { from { opacity: 0; transform: translateY(8px); } }
+}
 
 @source '../views/**/*.blade.php';
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';

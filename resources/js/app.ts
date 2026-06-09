@@ -7,6 +7,18 @@ gsap.registerPlugin(ScrollTrigger, SplitText);
 
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+// First page of the session? On later same-session navigations we SKIP the entrance
+// animation so the cross-document view-transition crossfade reads as one smooth motion.
+const firstVisit = ((): boolean => {
+    try {
+        const seen = sessionStorage.getItem('kk-seen');
+        sessionStorage.setItem('kk-seen', '1');
+        return !seen;
+    } catch {
+        return true;
+    }
+})();
+
 /* ---- Lenis smooth scroll (skipped under reduced-motion) ---- */
 if (!reduceMotion) {
     const lenis = new Lenis({ duration: 1.1, smoothWheel: true });
@@ -40,10 +52,29 @@ if (!reduceMotion) {
     }
 }
 
+/* ---- Scroll parallax (always on for motion users — a scroll effect, not an entrance) ---- */
+function runParallax(): void {
+    gsap.utils.toArray<HTMLElement>('[data-parallax]').forEach((el) => {
+        gsap.fromTo(
+            el,
+            { yPercent: -8 },
+            {
+                yPercent: 8,
+                ease: 'none',
+                scrollTrigger: { trigger: el.parentElement ?? el, start: 'top bottom', end: 'bottom top', scrub: true },
+            },
+        );
+    });
+}
+
 /* ---- Reveal animations ---- */
 function initReveals(): void {
-    if (reduceMotion) {
-        gsap.set('[data-reveal], [data-split]', { opacity: 1, y: 0 });
+    // No entrance under reduced-motion OR on an intra-site navigation (a page already seen
+    // this session) — show content instantly so the page crossfade reads as one smooth motion.
+    if (reduceMotion || !firstVisit) {
+        gsap.set('[data-reveal], [data-split], [data-converge]', { opacity: 1, x: 0, y: 0 });
+        gsap.utils.toArray<HTMLElement>('[data-reveal-stagger]').forEach((g) => gsap.set(g.children, { opacity: 1, x: 0, y: 0 }));
+        if (!reduceMotion) runParallax();
         return;
     }
 
@@ -105,24 +136,8 @@ function initReveals(): void {
         });
     });
 
-    // Scroll parallax — images sit in an overflow-hidden box taller than the frame,
-    // so a small yPercent drift never reveals an edge. Transform-only (GPU).
-    gsap.utils.toArray<HTMLElement>('[data-parallax]').forEach((el) => {
-        gsap.fromTo(
-            el,
-            { yPercent: -8 },
-            {
-                yPercent: 8,
-                ease: 'none',
-                scrollTrigger: {
-                    trigger: el.parentElement ?? el,
-                    start: 'top bottom',
-                    end: 'bottom top',
-                    scrub: true,
-                },
-            },
-        );
-    });
+    // Scroll parallax (transform-only, GPU).
+    runParallax();
 
     // Hero: kinetic wordmark lines rise in; floating live card settles + scroll-drifts.
     const heroMark = document.querySelector<HTMLElement>('.kk-hero-mark');
@@ -299,4 +314,25 @@ if (topnav) {
         overlay.querySelectorAll('a').forEach((a) => a.addEventListener('click', closeMenu));
         document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && overlay.classList.contains('is-open')) closeMenu(); });
     }
+}
+
+/* ---- FAQ live search — filters questions by keyword, hides empty categories ---- */
+const faqSearch = document.querySelector<HTMLInputElement>('[data-faq-search]');
+if (faqSearch) {
+    const items = Array.from(document.querySelectorAll<HTMLElement>('[data-faq-item]'));
+    const cats = Array.from(document.querySelectorAll<HTMLElement>('[data-faq-cat]'));
+    const emptyMsg = document.querySelector<HTMLElement>('[data-faq-empty]');
+    faqSearch.addEventListener('input', () => {
+        const q = faqSearch.value.trim().toLowerCase();
+        let anyShown = false;
+        items.forEach((it) => {
+            const show = !q || (it.dataset.q || '').includes(q);
+            it.hidden = !show;
+            if (show) anyShown = true;
+        });
+        cats.forEach((cat) => {
+            cat.hidden = !Array.from(cat.querySelectorAll<HTMLElement>('[data-faq-item]')).some((i) => !i.hidden);
+        });
+        if (emptyMsg) emptyMsg.hidden = anyShown || !q;
+    });
 }

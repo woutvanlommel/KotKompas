@@ -38,7 +38,7 @@
                    class="kk-navlink group relative inline-flex items-baseline gap-1.5 rounded-full px-3.5 py-2 text-[0.9rem] font-medium text-ink-soft transition-colors hover:text-ink @if ($link['active']) is-active text-ink @endif">
                     <span class="font-mono text-[0.62rem] text-ink-soft/60 group-hover:text-accent-500">0{{ $i + 1 }}</span>
                     <span>{{ $link['label'] }}</span>
-                    <span class="kk-navlink-wipe pointer-events-none absolute inset-x-3.5 bottom-1 h-px origin-left bg-accent-500"></span>
+                    <span class="kk-navlink-wipe pointer-events-none absolute inset-x-3.5 bottom-1 h-px origin-left bg-secondary-400"></span>
                 </a>
             @endforeach
         </nav>
