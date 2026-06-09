@@ -28,7 +28,8 @@ class RoomsTable
                     ->numeric()
                     ->sortable(),
                 IconColumn::make('costs_included')
-                    ->boolean(),
+                    ->boolean()
+                    ->getStateUsing(fn ($record) => $record->costTypes->where('pivot.frequency', 'monthly')->isEmpty()),
                 TextColumn::make('surface_m2')
                     ->numeric()
                     ->sortable(),

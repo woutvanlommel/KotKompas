@@ -2,7 +2,16 @@
 
     {{-- Kenmerken --}}
     <div class="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
-        <h2 class="text-base font-semibold text-gray-900 mb-5">Kenmerken</h2>
+        <div class="flex items-center justify-between mb-5">
+            <h2 class="text-base font-semibold text-gray-900">Kenmerken</h2>
+            <button wire:click="mountAction('editKenmerken')"
+                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-gray-500 hover:bg-gray-100 transition">
+                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125" />
+                </svg>
+                Bewerken
+            </button>
+        </div>
         <dl class="space-y-4">
             @if ($room->surface_m2)
                 <div class="flex items-center justify-between">
@@ -41,7 +50,7 @@
                     Kosten inbegrepen
                 </dt>
                 <dd class="text-sm font-medium text-gray-900">
-                    @if ($room->costs_included)
+                    @if ($room->costTypes->where('pivot.frequency', 'monthly')->isEmpty())
                         <span class="inline-flex items-center gap-1 text-green-700">
                             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
                             Ja
@@ -67,25 +76,5 @@
         </dl>
     </div>
 
-    {{-- Prijs --}}
-    <div class="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
-        <h2 class="text-base font-semibold text-gray-900 mb-5">Prijs</h2>
-        <dl class="space-y-4">
-            <div class="flex items-center justify-between">
-                <dt class="text-sm text-gray-500">Huurprijs</dt>
-                <dd class="text-sm font-medium text-gray-900">€ {{ number_format($room->price_per_month, 2, ',', '.') }} / maand</dd>
-            </div>
-            @if ($room->costs_included)
-                <div class="flex items-center justify-between">
-                    <dt class="text-sm text-gray-500">Kosten</dt>
-                    <dd class="text-sm font-medium text-green-700">Inbegrepen</dd>
-                </div>
-            @endif
-            <div class="border-t border-gray-100 pt-4 flex items-center justify-between">
-                <dt class="text-sm font-semibold text-gray-700">Totaal</dt>
-                <dd class="text-base font-bold text-gray-900">€ {{ number_format($room->total_price, 2, ',', '.') }} / maand</dd>
-            </div>
-        </dl>
-    </div>
 
 </div>

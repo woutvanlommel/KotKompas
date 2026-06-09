@@ -9,10 +9,11 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
-#[Fillable(['building_id', 'tenant_id', 'bus', 'room_number', 'type', 'title', 'description', 'price_per_month', 'costs_included', 'extra_costs', 'surface_m2', 'is_furnished', 'available_from', 'status'])]
+#[Fillable(['building_id', 'tenant_id', 'bus', 'room_number', 'type', 'title', 'description', 'price_per_month', 'deposit_amount', 'costs_included', 'surface_m2', 'is_furnished', 'available_from', 'status'])]
 class Room extends Model implements HasMedia
 {
     /** @use HasFactory<RoomFactory> */
@@ -29,6 +30,22 @@ class Room extends Model implements HasMedia
     public function tenant(): BelongsTo
     {
         return $this->belongsTo(User::class, 'tenant_id');
+    }
+
+    /** @return BelongsToMany<Facility, $this> */
+    public function facilities(): BelongsToMany
+    {
+        return $this->belongsToMany(Facility::class)
+            ->withPivot('description')
+            ->withTimestamps();
+    }
+
+    /** @return BelongsToMany<CostType, $this> */
+    public function costTypes(): BelongsToMany
+    {
+        return $this->belongsToMany(CostType::class)
+            ->withPivot('amount', 'is_variable', 'frequency', 'description')
+            ->withTimestamps();
     }
 
     protected function fullAddress(): Attribute
@@ -72,23 +89,28 @@ class Room extends Model implements HasMedia
     {
         return [
             'price_per_month' => 'decimal:2',
-            'extra_costs' => 'json',
+            'deposit_amount' => 'decimal:2',
             'available_from' => 'date',
             'costs_included' => 'boolean',
             'is_furnished' => 'boolean',
         ];
     }
 
-    protected function totalPrice(): Attribute
+    protected function totalMonthlyPrice(): Attribute
     {
         return Attribute::make(
             get: function () {
-                $total = $this->price_per_month;
-                if ($this->extra_costs) {
-                    $total += array_sum((array) $this->extra_costs);
-                }
+                $total = (float) $this->price_per_month;
 
-                return $total;
+                $this->costTypes
+                    ->where('pivot.frequency', 'monthly')
+                    ->whereNotNull('pivot.amount')
+                    ->each(function (CostType $costType) use (&$total) {
+                        /** @phpstan-ignore-next-line */
+                        $total += (float) $costType->pivot->amount;
+                    });
+
+                return round($total, 2);
             },
         );
     }
