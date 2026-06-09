@@ -9,11 +9,11 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
-// Delete orphaned tmp-media files older than 2 hours.
+// Delete orphaned tmp-media files older than 24 hours.
 // These are uploads where the user abandoned the form before saving.
 Schedule::call(function () {
     $disk = Storage::disk('public');
-    $cutoff = now()->subHours(2)->timestamp;
+    $cutoff = now()->subHours(24)->timestamp;
 
     foreach ($disk->allFiles('tmp-media') as $file) {
         if ($disk->lastModified($file) < $cutoff) {
