@@ -106,6 +106,7 @@ class Room extends Model implements HasMedia
                     ->where('pivot.frequency', 'monthly')
                     ->whereNotNull('pivot.amount')
                     ->each(function (CostType $costType) use (&$total) {
+                        /** @phpstan-ignore-next-line */
                         $total += (float) $costType->pivot->amount;
                     });
 

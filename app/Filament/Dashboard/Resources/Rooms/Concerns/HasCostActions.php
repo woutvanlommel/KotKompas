@@ -90,8 +90,7 @@ trait HasCostActions
                                                 $set('cost_type_ids', array_values(
                                                     array_filter($current, fn ($v) => (string) $v !== (string) $id)
                                                 ));
-                                            })
-                                            ->columnSpanFull(),
+                                            }),
                                     ])
                                     ->columns(2)
                                     ->columnSpanFull();

@@ -3,6 +3,7 @@
 namespace App\Filament\Dashboard\Resources\Rooms\Pages;
 
 use App\Filament\Dashboard\Resources\Rooms\RoomResource;
+use App\Models\Room;
 use Filament\Resources\Pages\CreateRecord;
 
 class CreateRoom extends CreateRecord
@@ -69,12 +70,15 @@ class CreateRoom extends CreateRecord
 
     protected function afterCreate(): void
     {
+        /** @var Room $room */
+        $room = $this->record;
+
         if (! empty($this->pendingCostTypes)) {
-            $this->record->costTypes()->sync($this->pendingCostTypes);
+            $room->costTypes()->sync($this->pendingCostTypes);
         }
 
         if (! empty($this->pendingFacilities)) {
-            $this->record->facilities()->sync($this->pendingFacilities); // flat ID array
+            $room->facilities()->sync($this->pendingFacilities);
         }
     }
 }
