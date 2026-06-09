@@ -1,5 +1,267 @@
 @import "tailwindcss";
 
+/* Public palette — navy-FAMILY off-white, so it reads as one brand with the
+   dark/cerulean auth pages (NOT a warm-Swiss second identity). Never pure. */
+@theme {
+    --color-canvas: #edf0f4;        /* cool off-white, navy-family */
+    --color-canvas-deep: #e1e6ed;   /* cooler panel */
+    --color-ink: #0f1720;           /* near-navy off-black */
+    --color-ink-soft: #586573;      /* cool muted body / labels */
+    --color-hairline: #0f17201f;    /* ~12% ink for 1px seams */
+}
+
+/* ---- Auth-signature pill CTA (white pill + sliding arrow chip) ---- */
+@layer components {
+    .kk-cta {
+        display: inline-flex; align-items: center; gap: 0.5rem;
+        height: 2.75rem; padding: 0 0.35rem 0 1.25rem;
+        border: 0; border-radius: 4px; background-color: #fff;
+        color: #00101e; font-weight: 500; font-size: 0.8125rem;
+        letter-spacing: 0.04em; text-transform: uppercase;
+        text-decoration: none; cursor: pointer; transition: background-color 0.2s ease;
+    }
+    .kk-cta--ink { background-color: #00101e; color: #fff; }
+    .kk-cta-chip {
+        position: relative; display: inline-flex; height: 2rem; width: 2rem;
+        flex-shrink: 0; overflow: hidden; border-radius: 3px;
+        background-color: #ff6700; color: #fff;
+    }
+    .kk-cta--ink .kk-cta-chip { background-color: #ff6700; }
+    .kk-cta-arrow {
+        position: absolute; inset: 0; margin: auto; width: 0.85rem; height: auto;
+        transition: transform 0.5s cubic-bezier(0.65, 0, 0.35, 1);
+    }
+    .kk-cta-arrow--in { transform: translate(-220%, 220%); }
+    .kk-cta:hover .kk-cta-arrow--out { transform: translate(220%, -220%); }
+    .kk-cta:hover .kk-cta-arrow--in { transform: translate(0, 0); }
+}
+
+/* Adaptive nav: transparent (white) over a dark hero → solid canvas after scroll */
+.kk-nav[data-adaptive] {
+    background-color: transparent;
+    border-color: transparent;
+    color: #fff;
+}
+.kk-nav[data-adaptive] .kk-nav-link { color: rgba(255, 255, 255, 0.75); }
+.kk-nav[data-adaptive] .kk-nav-link:hover,
+.kk-nav[data-adaptive] .kk-nav-strong { color: #fff; }
+.kk-nav[data-adaptive].is-solid {
+    background-color: color-mix(in oklab, var(--color-canvas) 85%, transparent);
+    border-color: var(--color-hairline);
+    color: var(--color-ink);
+    backdrop-filter: blur(12px);
+}
+.kk-nav[data-adaptive].is-solid .kk-nav-link { color: var(--color-ink-soft); }
+.kk-nav[data-adaptive].is-solid .kk-nav-link:hover,
+.kk-nav[data-adaptive].is-solid .kk-nav-strong { color: var(--color-ink); }
+
+/* ---- Kinetic trust ribbon (track is duplicated → translateX(-50%) loops seamlessly) ---- */
+.kk-marquee-track {
+    animation: kk-marquee 38s linear infinite;
+    will-change: transform;
+}
+@keyframes kk-marquee {
+    to { transform: translateX(-50%); }
+}
+
+/* ---- Giant kinetic word (auth .kk-switch ported inline, white-on-navy) ---- */
+.kk-bigword {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3em;
+    padding-bottom: 0.1em;
+    border-bottom: 1.5px solid rgba(255, 255, 255, 0.25);
+    font-weight: 500;
+    font-size: clamp(2.5rem, 7vw, 6rem);
+    line-height: 0.95;
+    letter-spacing: -0.04em;
+    text-transform: uppercase;
+    text-decoration: none;
+}
+/* baseline rule wipes CERULEAN on hover — the auth .kk-switch signature (never orange) */
+.kk-bigword::after {
+    content: "";
+    position: absolute;
+    left: 0; right: 0; bottom: -1.5px;
+    height: 1.5px;
+    background-color: #89a7ca;
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.kk-bigword:hover::after,
+.kk-bigword:focus-visible::after { transform: scaleX(1); }
+.kk-bigword-word {
+    color: rgba(255, 255, 255, 0.7);
+    transition: color 0.3s ease;
+}
+.kk-bigword:hover .kk-bigword-word,
+.kk-bigword:focus-visible .kk-bigword-word { color: #fff; }
+/* arrow: recessive ↗ → rotates to → and warms to cerulean on hover (matches auth) */
+.kk-bigword-arrow {
+    width: 0.5em;
+    height: auto;
+    flex-shrink: 0;
+    color: rgba(255, 255, 255, 0.6);
+    transform: rotate(45deg);
+    transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), color 0.3s ease;
+}
+.kk-bigword:hover .kk-bigword-arrow,
+.kk-bigword:focus-visible .kk-bigword-arrow { transform: rotate(90deg); color: #89a7ca; }
+
+/* ---- Light-canvas switch-word (ink → solid, cerulean wipe) for light sections ---- */
+.kk-bigword--ink { border-bottom-color: rgba(15, 23, 32, 0.25); }
+.kk-bigword--ink .kk-bigword-word { color: rgba(15, 23, 32, 0.55); }
+.kk-bigword--ink:hover .kk-bigword-word,
+.kk-bigword--ink:focus-visible .kk-bigword-word { color: #0f1720; }
+.kk-bigword--ink::after { background-color: #2e5884; }
+.kk-bigword--ink .kk-bigword-arrow { color: rgba(15, 23, 32, 0.5); }
+.kk-bigword--ink:hover .kk-bigword-arrow,
+.kk-bigword--ink:focus-visible .kk-bigword-arrow { color: #2e5884; }
+
+/* ---- Type-forward underline input (the auth login field, on the public site) ---- */
+.kk-uline {
+    width: 100%;
+    border: 0;
+    border-radius: 0;
+    background-color: transparent;
+    box-shadow: inset 0 -1.5px 0 0 rgba(255, 255, 255, 0.45);
+    color: #fff;
+    font-size: clamp(1.15rem, 2vw, 1.5rem);
+    font-weight: 400;
+    letter-spacing: -0.015em;
+    padding: 0.35rem 0;
+    transition: box-shadow 200ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.kk-uline::placeholder { color: rgba(255, 255, 255, 0.5); }
+.kk-uline:focus { outline: 0; box-shadow: inset 0 -2px 0 0 #fff; }
+
+@media (prefers-reduced-motion: reduce) {
+    .kk-marquee-track { animation: none; }
+}
+
+/* ---- Hero: two-tone kinetic wordmark (ink + accent) ---- */
+.kk-hero-mark { font-feature-settings: "kern" 1; }
+.kk-hero-word { will-change: transform; }
+
+/* ---- Featured koten: scroll card-stack ----
+   Defaults = the no-JS / reduced-motion fallback (a plain stacked column).
+   app.ts adds .is-stacking to upgrade to sticky-pinned cards. */
+.kk-stack-item { position: relative; }
+.kk-stack:not(.is-stacking) .kk-stack-item { margin-top: 4rem; }
+.kk-stack:not(.is-stacking) .kk-stack-item:first-child { margin-top: 0; }
+.kk-stack.is-stacking .kk-stack-item {
+    position: sticky;
+    top: calc(8vh + var(--i) * 1.5rem);
+    margin-top: 6vh;
+}
+.kk-stack.is-stacking .kk-stack-inner {
+    transform-origin: top center;
+    will-change: transform;
+}
+
+/* ---- Pointer-following card label ([data-card-cursor]) ---- */
+.kk-card-cursor {
+    position: fixed;
+    top: 0; left: 0;
+    z-index: 60;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 0.85rem;
+    border-radius: 999px;
+    background-color: var(--color-ink);
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    pointer-events: none;
+    will-change: transform;
+}
+.kk-card-cursor svg { width: 0.8rem; height: auto; color: #ff6700; }
+
+@media (prefers-reduced-motion: reduce) {
+    .kk-hero-card { transition: none; }
+    .kk-card-cursor { display: none; }
+    .kk-stack .kk-stack-item { position: static; top: auto; margin-top: 4rem; }
+    .kk-stack .kk-stack-item:first-child { margin-top: 0; }
+}
+
+/* ════ Editorial top nav ════ */
+.kk-topnav { transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1); }
+.kk-topnav.is-hidden { transform: translateY(-100%); }
+
+/* Frosted bar appears once scrolled (solid state) */
+.kk-topnav.is-solid > div {
+    background-color: color-mix(in oklab, var(--color-canvas) 82%, transparent);
+    border-bottom: 1px solid var(--color-hairline);
+    backdrop-filter: blur(12px);
+}
+
+/* Link active/hover baseline wipe */
+.kk-navlink-wipe { transform: scaleX(0); transform-origin: left center; transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1); }
+.kk-navlink:hover .kk-navlink-wipe,
+.kk-navlink.is-active .kk-navlink-wipe { transform: scaleX(1); }
+
+/* Burger icon (→ X when open) */
+.kk-burger { position: relative; display: block; width: 1.15rem; height: 0.6rem; color: currentColor; }
+.kk-burger > span { position: absolute; left: 0; height: 1.5px; width: 100%; background-color: currentColor; border-radius: 2px; transition: transform 0.3s ease, top 0.3s ease; }
+.kk-burger > span:nth-child(1) { top: 0; }
+.kk-burger > span:nth-child(2) { top: calc(100% - 1.5px); }
+.kk-menu-toggle[aria-expanded="true"] .kk-burger > span:nth-child(1) { top: calc(50% - 0.75px); transform: rotate(45deg); }
+.kk-menu-toggle[aria-expanded="true"] .kk-burger > span:nth-child(2) { top: calc(50% - 0.75px); transform: rotate(-45deg); }
+
+/* Over-hero (white) treatment until the bar solidifies */
+.kk-topnav[data-over-hero]:not(.is-solid) .kk-topnav-mark span:first-child { color: #fff; }
+.kk-topnav[data-over-hero]:not(.is-solid) .kk-navlink { color: rgba(255, 255, 255, 0.82); }
+.kk-topnav[data-over-hero]:not(.is-solid) .kk-navlink:hover { color: #fff; }
+.kk-topnav[data-over-hero]:not(.is-solid) .kk-navlink > span:first-child { color: rgba(255, 255, 255, 0.5); }
+.kk-topnav[data-over-hero]:not(.is-solid) a[href$="/login"] { color: #fff; border-color: rgba(255, 255, 255, 0.35); }
+.kk-topnav[data-over-hero]:not(.is-solid) .kk-menu-toggle { color: #fff; border-color: rgba(255, 255, 255, 0.35); background-color: rgba(255, 255, 255, 0.08); }
+
+/* Fullscreen mobile overlay */
+.kk-menu { display: none; }
+.kk-menu.is-open { display: flex; }
+
+/* ---- Numeral + accent helpers — area-normal ONLY (no serif). The accent word
+   reads via a lighter weight + cerulean, not a different typeface. ---- */
+.kk-serif { font-family: inherit; }
+.kk-serif-it { font-family: inherit; font-style: normal; }
+.kk-num { font-family: inherit; font-feature-settings: "tnum" 1; line-height: 0.85; }
+
+/* ---- Frosted-glass panel — the auth login-form panel, carried to the public site ---- */
+.kk-glass {
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.32);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+}
+
+/* ---- Cross-document view transitions — a clearly visible "push up" between pages:
+   the new page slides up over the old, the old recedes + dims. Degrades gracefully. ---- */
+@view-transition { navigation: auto; }
+@media (prefers-reduced-motion: no-preference) {
+    ::view-transition-old(root) {
+        animation: kk-vt-out 0.6s cubic-bezier(0.76, 0, 0.24, 1) both;
+    }
+    ::view-transition-new(root) {
+        animation: kk-vt-in 0.6s cubic-bezier(0.76, 0, 0.24, 1) both;
+        box-shadow: 0 -30px 80px rgba(15, 23, 32, 0.3);
+    }
+    @keyframes kk-vt-out {
+        to { transform: translateY(-22%); opacity: 0.35; }
+    }
+    @keyframes kk-vt-in {
+        from { transform: translateY(100%); }
+        to { transform: translateY(0); }
+    }
+}
+
 @source '../views/**/*.blade.php';
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
