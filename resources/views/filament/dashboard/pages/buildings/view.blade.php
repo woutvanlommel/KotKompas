@@ -205,7 +205,7 @@
                                             Gemeubileerd
                                         </span>
                                     @endif
-                                    @if ($room->costs_included)
+                                    @if ($room->costTypes->where('pivot.frequency', 'monthly')->isEmpty())
                                         <span class="inline-flex items-center gap-1 text-xs text-gray-500">
                                             <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />

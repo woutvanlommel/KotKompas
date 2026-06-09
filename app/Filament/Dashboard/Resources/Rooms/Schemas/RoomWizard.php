@@ -6,6 +6,7 @@ use App\Models\Building;
 use App\Models\CostType;
 use App\Models\Facility;
 use Filament\Actions\Action;
+use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
@@ -13,6 +14,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Fieldset;
 use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Wizard;
 
@@ -103,60 +105,35 @@ class RoomWizard
                 ->schema([
                     Toggle::make('is_furnished')
                         ->label('Gemeubileerd'),
-                    Toggle::make('costs_included')
-                        ->label('Kosten inbegrepen'),
                     DatePicker::make('available_from')
                         ->label('Beschikbaar vanaf')
                         ->required(),
-                    TextInput::make('deposit_amount')
-                        ->label('Voorschot')
-                        ->numeric()
-                        ->prefix('€')
-                        ->placeholder('Optioneel'),
                 ]),
 
             Wizard\Step::make('Faciliteiten')
                 ->description('Welke faciliteiten zijn aanwezig?')
-                ->schema([
-                    Select::make('facility_ids')
-                        ->label('Faciliteiten')
-                        ->multiple()
-                        ->live()
-                        ->searchable()
-                        ->options(
-                            Facility::orderBy('category')->orderBy('name')
-                                ->get()
-                                ->groupBy('category')
-                                ->map(fn ($items) => $items->pluck('name', 'id'))
-                                ->toArray()
-                        )
-                        ->columnSpanFull(),
+                ->schema(
+                    Facility::orderBy('category')->orderBy('name')
+                        ->get()
+                        ->groupBy('category')
+                        ->map(function ($facilities, string $category) {
+                            $key = 'facility_cat_' . preg_replace('/[^a-z0-9]+/', '_', strtolower($category));
 
-                    Grid::make(1)
-                        ->schema(fn (Get $get) => collect($get('facility_ids') ?? [])
-                            ->map(function (int|string $id) {
-                                $facility = Facility::find($id);
-
-                                if (! $facility) {
-                                    return null;
-                                }
-
-                                return Fieldset::make($facility->name)
-                                    ->schema([
-                                        TextInput::make("facility_description_{$id}")
-                                            ->label('Opmerking (optioneel)')
-                                            ->maxLength(100)
-                                            ->placeholder('bv. "op verdieping 2", "gedeeld met 3 kamers"')
-                                            ->columnSpanFull(),
-                                    ])
-                                    ->columnSpanFull();
-                            })
-                            ->filter()
-                            ->values()
-                            ->toArray()
-                        )
-                        ->columnSpanFull(),
-                ]),
+                            return Section::make($category)
+                                ->schema([
+                                    CheckboxList::make($key)
+                                        ->hiddenLabel()
+                                        ->options($facilities->pluck('name', 'id')->toArray())
+                                        ->columns(2)
+                                        ->columnSpanFull(),
+                                ])
+                                ->collapsible()
+                                ->collapsed()
+                                ->columnSpanFull();
+                        })
+                        ->values()
+                        ->toArray()
+                ),
 
             Wizard\Step::make('Kosten')
                 ->description('Extra kosten bovenop de basishuur')

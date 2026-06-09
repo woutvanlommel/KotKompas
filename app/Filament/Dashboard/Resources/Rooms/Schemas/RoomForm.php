@@ -35,9 +35,6 @@ class RoomForm
                 TextInput::make('price_per_month')
                     ->required()
                     ->numeric(),
-                Toggle::make('costs_included')
-                    ->required(),
-                TextInput::make('extra_costs'),
                 TextInput::make('surface_m2')
                     ->numeric(),
                 Toggle::make('is_furnished')

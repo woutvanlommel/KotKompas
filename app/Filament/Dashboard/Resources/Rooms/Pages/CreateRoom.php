@@ -46,20 +46,19 @@ class CreateRoom extends CreateRecord
             array_map(fn ($id) => "description_{$id}", $costIds),
         );
 
-        // Faciliteiten
-        $facilityIds = $data['facility_ids'] ?? [];
+        // Faciliteiten — checkbox per categorie (facility_cat_* keys)
+        $facilityCatKeys = array_filter(array_keys($data), fn ($k) => str_starts_with($k, 'facility_cat_'));
+        $facilityIds = collect($data)
+            ->only($facilityCatKeys)
+            ->flatten()
+            ->filter()
+            ->unique()
+            ->values()
+            ->toArray();
 
-        foreach ($facilityIds as $id) {
-            $this->pendingFacilities[$id] = [
-                'description' => $data["facility_description_{$id}"] ?? null,
-            ];
-        }
+        $this->pendingFacilities = $facilityIds;
 
-        $keysToRemove = array_merge(
-            $keysToRemove,
-            ['facility_ids'],
-            array_map(fn ($id) => "facility_description_{$id}", $facilityIds),
-        );
+        $keysToRemove = array_merge($keysToRemove, $facilityCatKeys);
 
         foreach ($keysToRemove as $key) {
             unset($data[$key]);
@@ -75,7 +74,7 @@ class CreateRoom extends CreateRecord
         }
 
         if (! empty($this->pendingFacilities)) {
-            $this->record->facilities()->sync($this->pendingFacilities);
+            $this->record->facilities()->sync($this->pendingFacilities); // flat ID array
         }
     }
 }

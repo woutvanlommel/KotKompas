@@ -10,6 +10,7 @@ use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Fieldset;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
 
 trait HasCostActions
 {
@@ -18,25 +19,33 @@ trait HasCostActions
         $costTypeOptions = CostType::orderBy('category')->orderBy('name')
             ->get()
             ->groupBy('category')
-            ->map(fn($items) => $items->pluck('name', 'id'))
+            ->map(fn ($items) => $items->pluck('name', 'id'))
             ->toArray();
 
         return Action::make('editCosts')
             ->label('Bewerken')
             ->slideOver()
             ->form([
+                TextInput::make('deposit_amount')
+                    ->label('Voorschot')
+                    ->numeric()
+                    ->prefix('€')
+                    ->placeholder('Optioneel')
+                    ->default(fn () => $this->record->deposit_amount)
+                    ->columnSpanFull(),
+
                 Select::make('cost_type_ids')
-                    ->label('Kostensoorten')
+                    ->label('Kostensoorten toevoegen')
                     ->multiple()
                     ->live()
                     ->searchable()
                     ->options($costTypeOptions)
-                    ->default(fn() => $this->record->costTypes->pluck('id')->toArray())
+                    ->default(fn () => $this->record->costTypes->pluck('id')->toArray())
                     ->columnSpanFull(),
 
                 Grid::make(1)
                     ->schema(
-                        fn(Get $get) => collect($get('cost_type_ids') ?? [])
+                        fn (Get $get) => collect($get('cost_type_ids') ?? [])
                             ->map(function (int|string $id) {
                                 $costType = CostType::find($id);
 
@@ -54,22 +63,34 @@ trait HasCostActions
                                                 'one_time' => 'Eenmalig',
                                             ])
                                             ->required()
-                                            ->default(fn() => $this->record->costTypes->find($id)?->pivot->frequency ?? 'monthly'),
+                                            ->default(fn () => $this->record->costTypes->find($id)?->pivot->frequency ?? 'monthly'),
                                         TextInput::make("amount_{$id}")
                                             ->label('Bedrag')
                                             ->numeric()
                                             ->prefix('€')
                                             ->placeholder('Leeg laten indien variabel')
-                                            ->default(fn() => $this->record->costTypes->find($id)?->pivot->amount),
+                                            ->default(fn () => $this->record->costTypes->find($id)?->pivot->amount),
                                         Toggle::make("is_variable_{$id}")
                                             ->label('Variabel (geen vaste prijs)')
-                                            ->default(fn() => (bool) ($this->record->costTypes->find($id)?->pivot->is_variable ?? false))
+                                            ->default(fn () => (bool) ($this->record->costTypes->find($id)?->pivot->is_variable ?? false))
                                             ->columnSpanFull(),
                                         TextInput::make("description_{$id}")
                                             ->label('Opmerking')
                                             ->maxLength(100)
                                             ->placeholder('Optioneel')
-                                            ->default(fn() => $this->record->costTypes->find($id)?->pivot->description)
+                                            ->default(fn () => $this->record->costTypes->find($id)?->pivot->description)
+                                            ->columnSpanFull(),
+                                        Action::make("remove_cost_{$id}")
+                                            ->label('Verwijderen')
+                                            ->color('danger')
+                                            ->icon('heroicon-o-trash')
+                                            ->size('sm')
+                                            ->action(function (Set $set, Get $get) use ($id): void {
+                                                $current = $get('cost_type_ids') ?? [];
+                                                $set('cost_type_ids', array_values(
+                                                    array_filter($current, fn ($v) => (string) $v !== (string) $id)
+                                                ));
+                                            })
                                             ->columnSpanFull(),
                                     ])
                                     ->columns(2)
@@ -92,6 +113,10 @@ trait HasCostActions
                         'description' => $data["description_{$id}"] ?? null,
                     ];
                 }
+
+                $this->record->update([
+                    'deposit_amount' => $data['deposit_amount'] ?? null,
+                ]);
 
                 $this->record->costTypes()->sync($syncData);
                 $this->record->refresh();
