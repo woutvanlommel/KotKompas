@@ -3,13 +3,16 @@
 namespace App\Filament\Dashboard\Resources\Rooms\Schemas;
 
 use App\Models\Building;
-use App\Models\User;
+use App\Models\CostType;
+use App\Models\Facility;
 use Filament\Actions\Action;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Schemas\Components\Fieldset;
+use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Wizard;
 
@@ -64,11 +67,11 @@ class RoomWizard
                         ->label('Type')
                         ->options([
                             'studio' => 'Studio',
-                            'one_bedroom' => 'One bedroom',
-                            'two_bedroom' => 'Two bedroom',
-                            'three_bedroom' => 'Three bedroom',
-                            'four_bedroom' => 'Four bedroom',
-                            'five_plus_bedroom' => 'Five plus bedroom',
+                            'one_bedroom' => '1 slaapkamer',
+                            'two_bedroom' => '2 slaapkamers',
+                            'three_bedroom' => '3 slaapkamers',
+                            'four_bedroom' => '4 slaapkamers',
+                            'five_plus_bedroom' => '5+ slaapkamers',
                         ])
                         ->required(),
                     TextInput::make('price_per_month')
@@ -105,37 +108,115 @@ class RoomWizard
                     DatePicker::make('available_from')
                         ->label('Beschikbaar vanaf')
                         ->required(),
-                    // Select::make('status')
-                    //     ->label('Status')
-                    //     ->options([
-                    //         'available' => 'Beschikbaar',
-                    //         'rented' => 'Verhuurd',
-                    //         'maintenance' => 'Onderhoud',
-                    //         'archived' => 'Gearchiveerd',
-                    //     ])
-                    //     ->required()
-                    //     ->live(),
-                    // Select::make('tenant_id')
-                    //     ->label('Huurder')
-                    //     ->placeholder('Zoek op naam of e-mail…')
-                    //     ->searchable()
-                    //     ->getSearchResultsUsing(
-                    //         fn (string $search): array => User::role('huurder')
-                    //             ->where(fn ($q) => $q
-                    //                 ->where('name', 'like', "%{$search}%")
-                    //                 ->orWhere('email', 'like', "%{$search}%")
-                    //             )
-                    //             ->limit(20)
-                    //             ->get()
-                    //             ->mapWithKeys(fn (User $u) => [$u->id => "{$u->name} ({$u->email})"])
-                    //             ->all()
-                    //     )
-                    //     ->getOptionLabelUsing(
-                    //         fn ($value): ?string => User::find($value)?->name
-                    //     )
-                    //     ->nullable()
-                    //     ->visible(fn (Get $get): bool => $get('status') === 'rented'),
-                    // ...$extraLastStepFields,
+                    TextInput::make('deposit_amount')
+                        ->label('Voorschot')
+                        ->numeric()
+                        ->prefix('€')
+                        ->placeholder('Optioneel'),
+                ]),
+
+            Wizard\Step::make('Faciliteiten')
+                ->description('Welke faciliteiten zijn aanwezig?')
+                ->schema([
+                    Select::make('facility_ids')
+                        ->label('Faciliteiten')
+                        ->multiple()
+                        ->live()
+                        ->searchable()
+                        ->options(
+                            Facility::orderBy('category')->orderBy('name')
+                                ->get()
+                                ->groupBy('category')
+                                ->map(fn ($items) => $items->pluck('name', 'id'))
+                                ->toArray()
+                        )
+                        ->columnSpanFull(),
+
+                    Grid::make(1)
+                        ->schema(fn (Get $get) => collect($get('facility_ids') ?? [])
+                            ->map(function (int|string $id) {
+                                $facility = Facility::find($id);
+
+                                if (! $facility) {
+                                    return null;
+                                }
+
+                                return Fieldset::make($facility->name)
+                                    ->schema([
+                                        TextInput::make("facility_description_{$id}")
+                                            ->label('Opmerking (optioneel)')
+                                            ->maxLength(100)
+                                            ->placeholder('bv. "op verdieping 2", "gedeeld met 3 kamers"')
+                                            ->columnSpanFull(),
+                                    ])
+                                    ->columnSpanFull();
+                            })
+                            ->filter()
+                            ->values()
+                            ->toArray()
+                        )
+                        ->columnSpanFull(),
+                ]),
+
+            Wizard\Step::make('Kosten')
+                ->description('Extra kosten bovenop de basishuur')
+                ->schema([
+                    Select::make('cost_types_data')
+                        ->label('Kostensoorten')
+                        ->multiple()
+                        ->live()
+                        ->searchable()
+                        ->options(
+                            CostType::orderBy('category')->orderBy('name')
+                                ->get()
+                                ->groupBy('category')
+                                ->map(fn ($items) => $items->pluck('name', 'id'))
+                                ->toArray()
+                        )
+                        ->columnSpanFull(),
+
+                    Grid::make(1)
+                        ->schema(fn (Get $get) => collect($get('cost_types_data') ?? [])
+                            ->map(function (int|string $id) {
+                                $costType = CostType::find($id);
+
+                                if (! $costType) {
+                                    return null;
+                                }
+
+                                return Fieldset::make($costType->name)
+                                    ->schema([
+                                        Select::make("frequency_{$id}")
+                                            ->label('Frequentie')
+                                            ->options([
+                                                'monthly'  => 'Maandelijks',
+                                                'yearly'   => 'Jaarlijks',
+                                                'one_time' => 'Eenmalig',
+                                            ])
+                                            ->required()
+                                            ->default('monthly'),
+                                        TextInput::make("amount_{$id}")
+                                            ->label('Bedrag')
+                                            ->numeric()
+                                            ->prefix('€')
+                                            ->placeholder('Leeg laten indien variabel'),
+                                        Toggle::make("is_variable_{$id}")
+                                            ->label('Variabel (geen vaste prijs)')
+                                            ->columnSpanFull(),
+                                        TextInput::make("description_{$id}")
+                                            ->label('Opmerking')
+                                            ->maxLength(100)
+                                            ->placeholder('Optioneel')
+                                            ->columnSpanFull(),
+                                    ])
+                                    ->columns(2)
+                                    ->columnSpanFull();
+                            })
+                            ->filter()
+                            ->values()
+                            ->toArray()
+                        )
+                        ->columnSpanFull(),
                 ]),
         ])
             ->columnSpanFull()

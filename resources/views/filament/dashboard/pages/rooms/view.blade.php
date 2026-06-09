@@ -27,6 +27,8 @@
         @include('filament.dashboard.pages.rooms.partials.hero')
         @include('filament.dashboard.pages.rooms.partials.header')
         @include('filament.dashboard.pages.rooms.partials.details')
+        @include('filament.dashboard.pages.rooms.partials.costs')
+        @include('filament.dashboard.pages.rooms.partials.facilities')
         @include('filament.dashboard.pages.rooms.partials.status-tenant')
         @include('filament.dashboard.pages.rooms.partials.description')
         @include('filament.dashboard.pages.rooms.partials.gallery')

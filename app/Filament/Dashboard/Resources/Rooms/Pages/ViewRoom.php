@@ -3,6 +3,8 @@
 namespace App\Filament\Dashboard\Resources\Rooms\Pages;
 
 use App\Filament\Dashboard\Resources\Buildings\BuildingResource;
+use App\Filament\Dashboard\Resources\Rooms\Concerns\HasCostActions;
+use App\Filament\Dashboard\Resources\Rooms\Concerns\HasFacilityActions;
 use App\Filament\Dashboard\Resources\Rooms\Concerns\HasGalleryActions;
 use App\Filament\Dashboard\Resources\Rooms\Concerns\HasTenantActions;
 use App\Filament\Dashboard\Resources\Rooms\RoomResource;
@@ -16,6 +18,8 @@ use Filament\Resources\Pages\ViewRecord;
 /** @property Room $record */
 class ViewRoom extends ViewRecord
 {
+    use HasCostActions;
+    use HasFacilityActions;
     use HasGalleryActions;
     use HasTenantActions;
 

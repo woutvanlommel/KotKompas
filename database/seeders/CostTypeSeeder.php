@@ -11,6 +11,7 @@ class CostTypeSeeder extends Seeder
     {
         $costTypes = [
             // Nutsvoorzieningen
+            ['name' => 'Water / Gas / Elektriciteit', 'category' => 'Nutsvoorzieningen'],
             ['name' => 'Water', 'category' => 'Nutsvoorzieningen'],
             ['name' => 'Elektriciteit', 'category' => 'Nutsvoorzieningen'],
             ['name' => 'Aardgas', 'category' => 'Nutsvoorzieningen'],

@@ -9,6 +9,10 @@ class CreateRoom extends CreateRecord
 {
     protected static string $resource = RoomResource::class;
 
+    protected array $pendingCostTypes = [];
+
+    protected array $pendingFacilities = [];
+
     public function mount(): void
     {
         parent::mount();
@@ -17,6 +21,61 @@ class CreateRoom extends CreateRecord
             $this->form->fill([
                 'building_id' => request()->query('building_id'),
             ]);
+        }
+    }
+
+    protected function mutateFormDataBeforeCreate(array $data): array
+    {
+        // Kosten
+        $costIds = $data['cost_types_data'] ?? [];
+
+        foreach ($costIds as $id) {
+            $this->pendingCostTypes[$id] = [
+                'frequency'   => $data["frequency_{$id}"] ?? 'monthly',
+                'amount'      => $data["amount_{$id}"] ?? null,
+                'is_variable' => (bool) ($data["is_variable_{$id}"] ?? false),
+                'description' => $data["description_{$id}"] ?? null,
+            ];
+        }
+
+        $keysToRemove = array_merge(
+            ['cost_types_data'],
+            array_map(fn ($id) => "frequency_{$id}", $costIds),
+            array_map(fn ($id) => "amount_{$id}", $costIds),
+            array_map(fn ($id) => "is_variable_{$id}", $costIds),
+            array_map(fn ($id) => "description_{$id}", $costIds),
+        );
+
+        // Faciliteiten
+        $facilityIds = $data['facility_ids'] ?? [];
+
+        foreach ($facilityIds as $id) {
+            $this->pendingFacilities[$id] = [
+                'description' => $data["facility_description_{$id}"] ?? null,
+            ];
+        }
+
+        $keysToRemove = array_merge(
+            $keysToRemove,
+            ['facility_ids'],
+            array_map(fn ($id) => "facility_description_{$id}", $facilityIds),
+        );
+
+        foreach ($keysToRemove as $key) {
+            unset($data[$key]);
+        }
+
+        return $data;
+    }
+
+    protected function afterCreate(): void
+    {
+        if (! empty($this->pendingCostTypes)) {
+            $this->record->costTypes()->sync($this->pendingCostTypes);
+        }
+
+        if (! empty($this->pendingFacilities)) {
+            $this->record->facilities()->sync($this->pendingFacilities);
         }
     }
 }

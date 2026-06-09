@@ -67,25 +67,5 @@
         </dl>
     </div>
 
-    {{-- Prijs --}}
-    <div class="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
-        <h2 class="text-base font-semibold text-gray-900 mb-5">Prijs</h2>
-        <dl class="space-y-4">
-            <div class="flex items-center justify-between">
-                <dt class="text-sm text-gray-500">Huurprijs</dt>
-                <dd class="text-sm font-medium text-gray-900">€ {{ number_format($room->price_per_month, 2, ',', '.') }} / maand</dd>
-            </div>
-            @if ($room->costs_included)
-                <div class="flex items-center justify-between">
-                    <dt class="text-sm text-gray-500">Kosten</dt>
-                    <dd class="text-sm font-medium text-green-700">Inbegrepen</dd>
-                </div>
-            @endif
-            <div class="border-t border-gray-100 pt-4 flex items-center justify-between">
-                <dt class="text-sm font-semibold text-gray-700">Totaal</dt>
-                <dd class="text-base font-bold text-gray-900">€ {{ number_format($room->total_price, 2, ',', '.') }} / maand</dd>
-            </div>
-        </dl>
-    </div>
 
 </div>
