@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Room;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -43,7 +44,7 @@ class RoomController extends Controller
 
     /**
      * @param  array<string, mixed>  $filters
-     * @return \Illuminate\Database\Eloquent\Builder<Room>
+     * @return Builder<Room>
      */
     private function query(array $filters)
     {
