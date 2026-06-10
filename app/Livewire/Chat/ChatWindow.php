@@ -57,7 +57,7 @@ class ChatWindow extends Component
         $message = Message::create([
             'conversation_id' => $this->conversation->id,
             'sender_id' => auth()->id(),
-            'body' => $this->newMessage,
+            'body' => strip_tags($this->newMessage),
         ]);
 
         $this->conversation->update(['last_message_at' => now()]);
