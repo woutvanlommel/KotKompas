@@ -8,7 +8,7 @@
             <span class="inline-block h-px w-9 bg-accent-500"></span> Over dit kot
         </p>
         @if ($room->description ?? null)
-            <div class="leading-relaxed text-ink/75">
+            <div class="kk-richtext">
                 @richtext($room->description)
             </div>
         @else

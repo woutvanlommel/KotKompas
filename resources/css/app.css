@@ -367,6 +367,24 @@ select.kk-field {
 .kk-serif-it { font-family: inherit; font-style: normal; }
 .kk-num { font-family: inherit; font-feature-settings: "tnum" 1; line-height: 0.85; }
 
+/* ---- Richtext: gestileerde HTML-output van de Tiptap editor ---- */
+.kk-richtext { font-size: 0.9375rem; line-height: 1.75; color: color-mix(in oklab, var(--color-ink) 75%, transparent); }
+.kk-richtext p { margin-bottom: 0.85em; }
+.kk-richtext p:last-child { margin-bottom: 0; }
+.kk-richtext strong, .kk-richtext b { font-weight: 600; color: var(--color-ink); }
+.kk-richtext em, .kk-richtext i { font-style: italic; }
+.kk-richtext a { color: #ff6700; text-decoration: none; }
+.kk-richtext a:hover { text-decoration: underline; }
+.kk-richtext h1, .kk-richtext h2, .kk-richtext h3 { font-weight: 500; color: var(--color-ink); letter-spacing: -0.02em; margin-top: 1.4em; margin-bottom: 0.4em; }
+.kk-richtext h1 { font-size: 1.35rem; }
+.kk-richtext h2 { font-size: 1.15rem; }
+.kk-richtext h3 { font-size: 1rem; }
+.kk-richtext ul, .kk-richtext ol { padding-left: 1.25rem; margin-bottom: 0.85em; }
+.kk-richtext ul { list-style-type: disc; }
+.kk-richtext ol { list-style-type: decimal; }
+.kk-richtext li { margin-bottom: 0.25em; }
+.kk-richtext blockquote { border-left: 3px solid #ff6700; padding-left: 1rem; color: color-mix(in oklab, var(--color-ink) 55%, transparent); font-style: italic; margin: 1em 0; }
+
 /* ---- Frosted-glass panel — the auth login-form panel, carried to the public site ---- */
 .kk-glass {
     background-color: rgba(255, 255, 255, 0.1);

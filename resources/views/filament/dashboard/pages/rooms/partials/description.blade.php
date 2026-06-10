@@ -10,7 +10,7 @@
         </button>
     </div>
     @if ($room->description)
-        <div class="rich-content text-sm text-gray-600">
+        <div class="kk-richtext">
             @richtext($room->description)
         </div>
     @else
