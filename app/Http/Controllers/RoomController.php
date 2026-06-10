@@ -16,7 +16,7 @@ class RoomController extends Controller
 
     private const SORTS = ['newest', 'price_asc', 'price_desc', 'surface_desc'];
 
-    private const VIEWS = ['grid', 'list'];
+    private const VIEWS = ['grid', 'list', 'map'];
 
     public function index(Request $request): View
     {

@@ -86,7 +86,7 @@
                 {{-- Grid / lijst toggle — view leeft in de URL, paginatie reset --}}
                 @php $viewQuery = collect(request()->query())->except('page', 'view'); @endphp
                 <nav class="flex overflow-hidden rounded-lg border border-ink/15" aria-label="Weergave">
-                    @foreach (['grid' => 'Grid', 'list' => 'Lijst'] as $view => $label)
+                    @foreach (['grid' => 'Grid', 'list' => 'Lijst', 'map' => 'Kaart'] as $view => $label)
                         <a href="{{ route('rooms.index', $viewQuery->put('view', $view)->all()) }}"
                            @if ($filters['view'] === $view) aria-current="true" @endif
                            class="px-3.5 py-1.5 text-[0.7rem] font-medium uppercase tracking-[0.12em] transition-colors {{ $filters['view'] === $view ? 'bg-ink text-white' : 'bg-white text-ink-soft hover:text-ink' }}">
@@ -97,7 +97,12 @@
             </div>
         </div>
 
-        @if ($rooms->isNotEmpty())
+        @if ($filters['view'] === 'map')
+            {{-- Kaart als hoofdweergave: alle gefilterde koten, geen paginatie nodig --}}
+            <div class="overflow-hidden rounded-2xl border border-ink/10">
+                <x-rooms-map :buildings="$mapBuildings" default-city="hasselt" height="70vh" />
+            </div>
+        @elseif ($rooms->isNotEmpty())
             @if ($filters['view'] === 'list')
                 <div>
                     @foreach ($rooms as $room)
@@ -122,13 +127,15 @@
             </div>
         @endif
 
-        {{-- Kaart — altijd tonen, standaard België, markers worden gefilterd op viewport na slepen --}}
-        <div class="mt-16">
-            <p class="mb-4 inline-flex items-center gap-3 text-[0.625rem] font-medium uppercase tracking-[0.18em] text-ink/55">
-                <span class="inline-block h-px w-9 bg-accent-500"></span> Op de kaart
-            </p>
-            <x-rooms-map :buildings="$mapBuildings" default-city="hasselt" />
-        </div>
+        {{-- Kaart onderaan bij grid/lijst — in kaartweergave staat hij al bovenaan --}}
+        @if ($filters['view'] !== 'map')
+            <div class="mt-16">
+                <p class="mb-4 inline-flex items-center gap-3 text-[0.625rem] font-medium uppercase tracking-[0.18em] text-ink/55">
+                    <span class="inline-block h-px w-9 bg-accent-500"></span> Op de kaart
+                </p>
+                <x-rooms-map :buildings="$mapBuildings" default-city="hasselt" />
+            </div>
+        @endif
 
     </section>
 
