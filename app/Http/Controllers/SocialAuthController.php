@@ -64,15 +64,30 @@ class SocialAuthController extends Controller
 
         $user = User::where('provider', $provider)
             ->where('provider_id', $oauthUser->getId())
-            ->first()
-            ?? User::where('email', $oauthUser->getEmail())->first();
+            ->first();
+
+        if (! $user) {
+            $emailMatch = User::where('email', $oauthUser->getEmail())->first();
+
+            // Alleen koppelen aan een geverifieerd account. Een ongeverifieerd
+            // account kan door iemand anders met dit adres geregistreerd zijn —
+            // koppelen zou dan een account takeover zijn.
+            if ($emailMatch && $emailMatch->email_verified_at === null) {
+                return redirect()->to(filament()->getPanel('dashboard')->getLoginUrl())
+                    ->withErrors(['social' => 'Er bestaat al een account met dit e-mailadres. Log in met je wachtwoord.']);
+            }
+
+            $user = $emailMatch;
+        }
 
         if ($user) {
             // Link the social identity to an existing (or already-linked) account.
+            // De provider heeft het e-mailadres geverifieerd, dus dat mag hier ook.
             $user->forceFill([
                 'provider' => $provider,
                 'provider_id' => $oauthUser->getId(),
                 'avatar' => $user->avatar ?: $oauthUser->getAvatar(),
+                'email_verified_at' => $user->email_verified_at ?? now(),
             ])->save();
         } else {
             // Google returns first/last separately as given_name/family_name; fall back
@@ -87,8 +102,11 @@ class SocialAuthController extends Controller
                 'provider' => $provider,
                 'provider_id' => $oauthUser->getId(),
                 'avatar' => $oauthUser->getAvatar(),
-                'email_verified_at' => now(),
             ]);
+
+            // Niet via create(): email_verified_at staat bewust niet in #[Fillable],
+            // dus mass assignment liet dit veld stilletjes vallen.
+            $user->forceFill(['email_verified_at' => now()])->save();
         }
 
         Auth::login($user, remember: true);
