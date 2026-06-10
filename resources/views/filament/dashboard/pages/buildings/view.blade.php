@@ -55,7 +55,7 @@
             <p class="mt-1 text-gray-500 text-base">{{ $record->full_address }} &middot; {{ $record->country }}</p>
             @if ($record->description)
                 <div class="mt-4 prose prose-sm max-w-none text-gray-600">
-                    {!! $record->description !!}
+                    @richtext($record->description)
                 </div>
             @endif
         </div>
