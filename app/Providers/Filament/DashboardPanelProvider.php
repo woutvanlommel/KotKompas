@@ -132,6 +132,10 @@ class DashboardPanelProvider extends PanelProvider
             ->renderHook(
                 PanelsRenderHook::SIDEBAR_FOOTER,
                 fn () => view('components.filament.profile-nav-item'),
+            )
+            ->renderHook(
+                PanelsRenderHook::HEAD_END,
+                fn (): HtmlString => new HtmlString(app(\Illuminate\Foundation\Vite::class)(['resources/js/app.js'])),
             );
     }
 }

@@ -3,6 +3,7 @@
 @source '../../../../app/Filament/Dashboard/**/*';
 @source '../../../../resources/views/filament/dashboard/**/*';
 @source '../../../../resources/views/components/**/*';
+@source '../../../../resources/views/livewire/**/*';
 @source '../../../../resources/views/vendor/filament-panels/**/*';
 
 /* Single source of truth for brand colours: the project Tailwind config. */

@@ -10,6 +10,10 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 #[Fillable(['tenant_id', 'landlord_id', 'building_id', 'last_message_at', 'notification_sent_at'])]
 class Conversation extends Model
 {
+    protected $casts = [
+        'last_message_at'    => 'datetime',
+        'notification_sent_at' => 'datetime',
+    ];
     public function tenant(): BelongsTo
     {
         return $this->belongsTo(User::class, 'tenant_id');

@@ -37,7 +37,7 @@ class ChatWindow extends Component
                 'id'         => $m->id,
                 'body'       => $m->body,
                 'sender_id'  => $m->sender_id,
-                'sender_name' => $m->sender->name,
+                'sender_name' => trim($m->sender->name.' '.$m->sender->lastname),
                 'created_at' => $m->created_at->toISOString(),
                 'is_mine'    => $m->sender_id === auth()->id(),
             ])
@@ -61,6 +61,15 @@ class ChatWindow extends Component
         $this->conversation->update(['last_message_at' => now()]);
 
         MessageSent::dispatch($message->load('sender'));
+
+        $this->messages[] = [
+            'id'          => $message->id,
+            'body'        => $message->body,
+            'sender_id'   => $message->sender_id,
+            'sender_name' => trim(auth()->user()->name.' '.auth()->user()->lastname),
+            'created_at'  => $message->created_at->toISOString(),
+            'is_mine'     => true,
+        ];
 
         $this->newMessage = '';
     }
