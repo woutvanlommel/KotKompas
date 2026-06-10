@@ -17,9 +17,10 @@
         <form method="GET" action="{{ route('rooms.index') }}"
               class="mb-12 grid grid-cols-1 gap-5 rounded-2xl border border-ink/10 bg-white/60 p-5 sm:grid-cols-2 lg:grid-cols-4">
 
-            <label class="lg:col-span-2">
+            <label class="lg:col-span-2" data-suggest-anchor>
                 <span class="mb-2 block text-[0.625rem] font-medium uppercase tracking-[0.14em] text-ink/55">Waar zoek je?</span>
                 <input type="text" name="q" value="{{ $filters['q'] }}" placeholder="Stad, postcode of trefwoord…"
+                       data-suggest data-suggest-url="{{ route('rooms.suggestions') }}"
                        class="w-full rounded-lg border border-ink/15 bg-white px-3 py-2 text-sm outline-none focus:border-ink/40">
             </label>
 

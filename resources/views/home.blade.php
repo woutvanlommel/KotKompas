@@ -32,9 +32,10 @@
             {{-- Frosted search panel — the auth login-form panel, carried onto the hero --}}
             <form method="GET" action="{{ route('rooms.index') }}" class="kk-glass mt-11 max-w-2xl p-5 sm:p-6" data-reveal>
                 <div class="flex items-end gap-5">
-                    <label class="min-w-0 flex-1">
+                    <label class="min-w-0 flex-1" data-suggest-anchor>
                         <span class="mb-2 block text-[0.625rem] font-medium uppercase tracking-[0.14em] text-white/55">Waar zoek je?</span>
-                        <input type="text" name="q" placeholder="Stad of buurt…" aria-label="Zoek op stad of buurt" class="kk-uline">
+                        <input type="text" name="q" placeholder="Stad of buurt…" aria-label="Zoek op stad of buurt" class="kk-uline"
+                               data-suggest data-suggest-theme="dark" data-suggest-url="{{ route('rooms.suggestions') }}">
                     </label>
                     <button type="submit" data-magnetic="0.25" class="kk-cta kk-cta--ink mb-1 shrink-0" aria-label="Zoek koten">
                         Zoek

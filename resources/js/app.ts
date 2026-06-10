@@ -2,6 +2,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { SplitText } from 'gsap/SplitText';
 import Lenis from 'lenis';
+import { initSearchSuggest } from './search-suggest';
 
 gsap.registerPlugin(ScrollTrigger, SplitText);
 
@@ -336,3 +337,6 @@ if (faqSearch) {
         if (emptyMsg) emptyMsg.hidden = anyShown || !q;
     });
 }
+
+/* ---- Zoeksuggesties op home-hero en kotenpagina ---- */
+initSearchSuggest();
