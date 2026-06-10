@@ -29,13 +29,8 @@ class RoomStatsOverview extends StatsOverviewWidget
         $averagePrice = (clone $rooms)->whereNot('status', 'archived')->avg('price_per_month');
 
         return [
-            Stat::make('Totaal koten', $total)
-                ->description('Alle koten in jouw gebouwen'),
-            Stat::make('Beschikbaar', $available)
-                ->description('Klaar voor verhuur')
-                ->color('success'),
-            Stat::make('Verhuurd', $rented)
-                ->description('Momenteel bewoond')
+            Stat::make('Koten verhuurd', "{$rented} van {$total}")
+                ->description("{$available} nog beschikbaar")
                 ->color('info'),
             Stat::make('Gem. basishuur', $averagePrice !== null ? Number::currency((float) $averagePrice, 'EUR', 'nl_BE') : '—')
                 ->description('Per maand, excl. vaste kosten'),

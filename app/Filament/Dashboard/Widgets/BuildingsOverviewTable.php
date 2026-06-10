@@ -46,16 +46,14 @@ class BuildingsOverviewTable extends TableWidget
                 TextColumn::make('city')
                     ->label('Plaats')
                     ->sortable(),
-                TextColumn::make('rooms_count')
-                    ->label('Koten')
-                    ->sortable(),
-                TextColumn::make('available_rooms_count')
-                    ->label('Beschikbaar')
-                    ->badge()
-                    ->color(fn ($state) => $state > 0 ? 'success' : 'gray')
-                    ->sortable(),
                 TextColumn::make('rented_rooms_count')
-                    ->label('Verhuurd')
+                    ->label('Koten verhuurd')
+                    ->state(fn ($record) => $record->rooms_count > 0
+                        ? "{$record->rented_rooms_count} van {$record->rooms_count}"
+                        : null)
+                    ->placeholder('Geen koten')
+                    ->badge()
+                    ->color(fn ($record) => $record->available_rooms_count > 0 ? 'success' : 'gray')
                     ->sortable(),
                 TextColumn::make('average_price')
                     ->label('Gem. basishuur')
