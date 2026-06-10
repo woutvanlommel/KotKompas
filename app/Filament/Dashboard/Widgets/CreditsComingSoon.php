@@ -6,7 +6,8 @@ class CreditsComingSoon extends ComingSoonWidget
 {
     protected static ?int $sort = 3;
 
-    protected static string $requiredRole = 'huurder';
+    /** @var string|array<string> */
+    protected static string|array $requiredRole = 'huurder';
 
     protected string $comingSoonHeading = 'Credits';
 

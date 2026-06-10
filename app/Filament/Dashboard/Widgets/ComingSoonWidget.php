@@ -8,7 +8,8 @@ abstract class ComingSoonWidget extends Widget
 {
     protected string $view = 'filament.dashboard.widgets.coming-soon';
 
-    protected static string $requiredRole = 'verhuurder';
+    /** @var string|array<string> */
+    protected static string|array $requiredRole = 'verhuurder';
 
     protected string $comingSoonHeading;
 
