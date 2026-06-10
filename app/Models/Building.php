@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\MediaLibrary\HasMedia;
 
@@ -20,6 +21,12 @@ class Building extends Model implements HasMedia
     public function rooms(): HasMany
     {
         return $this->hasMany(Room::class);
+    }
+
+    /** @return BelongsTo<User, $this> */
+    public function landlord(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'landlord_id');
     }
 
     protected function casts(): array
