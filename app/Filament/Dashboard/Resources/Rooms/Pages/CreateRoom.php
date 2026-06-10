@@ -39,6 +39,10 @@ class CreateRoom extends CreateRecord
             ];
         }
 
+        // costs_included = true als er maandelijkse kostensoorten zijn
+        $data['costs_included'] = collect($this->pendingCostTypes)
+            ->contains(fn ($ct) => ($ct['frequency'] ?? '') === 'monthly');
+
         $keysToRemove = array_merge(
             ['cost_types_data'],
             array_map(fn ($id) => "frequency_{$id}", $costIds),

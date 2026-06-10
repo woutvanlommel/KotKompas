@@ -23,7 +23,7 @@
 
 {{-- Display card: image-dominant, square. City top-left · price top-right · pixel glyph
      bottom-left · spec tags reveal on hover (always shown on touch). --}}
-<a href="{{ route('contact') }}" data-card-cursor
+<a href="{{ route('rooms.show', $room) }}" data-card-cursor
    class="kk-koten group relative block aspect-square overflow-hidden rounded-[1.25rem] bg-primary-900">
 
     @if ($photo)

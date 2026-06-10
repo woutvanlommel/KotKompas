@@ -98,6 +98,14 @@
             </div>
         @endif
 
+        {{-- Kaart — altijd tonen, standaard België, markers worden gefilterd op viewport na slepen --}}
+        <div class="mt-16">
+            <p class="mb-4 inline-flex items-center gap-3 text-[0.625rem] font-medium uppercase tracking-[0.18em] text-ink/55">
+                <span class="inline-block h-px w-9 bg-accent-500"></span> Op de kaart
+            </p>
+            <x-rooms-map :buildings="$mapBuildings" default-city="hasselt" />
+        </div>
+
     </section>
 
     <x-footer />

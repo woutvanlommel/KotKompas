@@ -3,8 +3,10 @@
 namespace App\Models;
 
 use App\Concerns\HasImages;
+use App\Observers\BuildingObserver;
 use Database\Factories\BuildingFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -13,6 +15,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\MediaLibrary\HasMedia;
 
 #[Fillable(['landlord_id', 'name', 'description', 'street', 'house_number', 'box', 'postal_code', 'city', 'country', 'longitude', 'latitude'])]
+#[ObservedBy(BuildingObserver::class)]
 class Building extends Model implements HasMedia
 {
     /** @use HasFactory<BuildingFactory> */
