@@ -39,7 +39,7 @@ class Chat extends Page
 
             if ($room) {
                 $conversation = Conversation::firstOrCreate([
-                    'tenant_id'   => auth()->id(),
+                    'tenant_id' => auth()->id(),
                     'landlord_id' => $room->building->landlord_id,
                     'building_id' => $room->building_id,
                 ]);

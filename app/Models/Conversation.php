@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -12,22 +14,23 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property int $tenant_id
  * @property int $landlord_id
  * @property int $building_id
- * @property \Carbon\Carbon|null $last_message_at
- * @property \Carbon\Carbon|null $notification_sent_at
- * @property \Carbon\Carbon $created_at
- * @property \Carbon\Carbon $updated_at
- * @property-read \App\Models\User $tenant
- * @property-read \App\Models\User $landlord
- * @property-read \App\Models\Building $building
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Message> $messages
+ * @property Carbon|null $last_message_at
+ * @property Carbon|null $notification_sent_at
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
+ * @property-read User $tenant
+ * @property-read User $landlord
+ * @property-read Building $building
+ * @property-read Collection<int, Message> $messages
  */
 #[Fillable(['tenant_id', 'landlord_id', 'building_id', 'last_message_at', 'notification_sent_at'])]
 class Conversation extends Model
 {
     protected $casts = [
-        'last_message_at'    => 'datetime',
+        'last_message_at' => 'datetime',
         'notification_sent_at' => 'datetime',
     ];
+
     public function tenant(): BelongsTo
     {
         return $this->belongsTo(User::class, 'tenant_id');

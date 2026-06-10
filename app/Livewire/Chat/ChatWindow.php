@@ -11,7 +11,9 @@ use Livewire\Component;
 class ChatWindow extends Component
 {
     public ?Conversation $conversation = null;
+
     public string $newMessage = '';
+
     public array $messages = [];
 
     public function mount(?int $conversationId = null): void
@@ -34,12 +36,12 @@ class ChatWindow extends Component
             ->orderBy('created_at')
             ->get()
             ->map(fn ($m) => [
-                'id'         => $m->id,
-                'body'       => $m->body,
-                'sender_id'  => $m->sender_id,
+                'id' => $m->id,
+                'body' => $m->body,
+                'sender_id' => $m->sender_id,
                 'sender_name' => trim($m->sender->name.' '.$m->sender->lastname),
                 'created_at' => $m->created_at->toISOString(),
-                'is_mine'    => $m->sender_id === auth()->id(),
+                'is_mine' => $m->sender_id === auth()->id(),
             ])
             ->toArray();
     }
@@ -54,8 +56,8 @@ class ChatWindow extends Component
 
         $message = Message::create([
             'conversation_id' => $this->conversation->id,
-            'sender_id'       => auth()->id(),
-            'body'            => $this->newMessage,
+            'sender_id' => auth()->id(),
+            'body' => $this->newMessage,
         ]);
 
         $this->conversation->update(['last_message_at' => now()]);
@@ -63,12 +65,12 @@ class ChatWindow extends Component
         MessageSent::dispatch($message->load('sender'));
 
         $this->messages[] = [
-            'id'          => $message->id,
-            'body'        => $message->body,
-            'sender_id'   => $message->sender_id,
+            'id' => $message->id,
+            'body' => $message->body,
+            'sender_id' => $message->sender_id,
             'sender_name' => trim(auth()->user()->name.' '.auth()->user()->lastname),
-            'created_at'  => $message->created_at->toISOString(),
-            'is_mine'     => true,
+            'created_at' => $message->created_at->toISOString(),
+            'is_mine' => true,
         ];
 
         $this->newMessage = '';

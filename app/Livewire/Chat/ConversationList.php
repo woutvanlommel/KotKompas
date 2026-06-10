@@ -12,7 +12,9 @@ use Livewire\Component;
 class ConversationList extends Component
 {
     public ?int $activeConversationId = null;
+
     public ?int $selectedBuildingId = null;
+
     public string $broadcastMessage = '';
 
     public function selectConversation(int $conversationId): void
@@ -24,7 +26,7 @@ class ConversationList extends Component
     public function sendToAll(): void
     {
         $this->validate([
-            'broadcastMessage'  => 'required|string|max:5000',
+            'broadcastMessage' => 'required|string|max:5000',
             'selectedBuildingId' => 'required|exists:buildings,id',
         ]);
 
@@ -35,9 +37,9 @@ class ConversationList extends Component
         foreach ($conversations as $conversation) {
             $message = Message::create([
                 'conversation_id' => $conversation->id,
-                'sender_id'       => auth()->id(),
-                'body'            => $this->broadcastMessage,
-                'is_broadcast'    => true,
+                'sender_id' => auth()->id(),
+                'body' => $this->broadcastMessage,
+                'is_broadcast' => true,
             ]);
 
             $conversation->update(['last_message_at' => now()]);
@@ -61,12 +63,12 @@ class ConversationList extends Component
             ->orderByDesc('last_message_at')
             ->get()
             ->map(fn (Conversation $c) => [
-                'id'             => $c->id,
-                'tenant_name'    => trim($c->tenant->name.' '.$c->tenant->lastname),
-                'building_name'  => $c->building->name,
-                'last_message'   => $c->messages->first()?->body,
+                'id' => $c->id,
+                'tenant_name' => trim($c->tenant->name.' '.$c->tenant->lastname),
+                'building_name' => $c->building->name,
+                'last_message' => $c->messages->first()?->body,
                 'last_message_at' => $c->last_message_at?->diffForHumans(),
-                'unread'         => $c->unreadFor(auth()->id()),
+                'unread' => $c->unreadFor(auth()->id()),
             ]);
 
         $buildings = Building::where('landlord_id', auth()->id())->get();

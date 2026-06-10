@@ -22,6 +22,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
+use Illuminate\Foundation\Vite;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\HtmlString;
@@ -43,7 +44,7 @@ class DashboardPanelProvider extends PanelProvider
             ->passwordReset(RequestPasswordReset::class, ResetPassword::class)
             ->renderHook(
                 PanelsRenderHook::HEAD_END,
-                fn (): HtmlString => new HtmlString(app(\Illuminate\Foundation\Vite::class)(['resources/js/echo.ts'])),
+                fn (): HtmlString => new HtmlString(app(Vite::class)(['resources/js/echo.ts'])),
             )
             ->renderHook(
                 PanelsRenderHook::BODY_END,
@@ -135,7 +136,7 @@ class DashboardPanelProvider extends PanelProvider
             )
             ->renderHook(
                 PanelsRenderHook::HEAD_END,
-                fn (): HtmlString => new HtmlString(app(\Illuminate\Foundation\Vite::class)(['resources/js/app.js'])),
+                fn (): HtmlString => new HtmlString(app(Vite::class)(['resources/js/app.js'])),
             );
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -11,12 +12,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $conversation_id
  * @property int $sender_id
  * @property string $body
- * @property \Carbon\Carbon|null $read_at
+ * @property Carbon|null $read_at
  * @property bool $is_broadcast
- * @property \Carbon\Carbon $created_at
- * @property \Carbon\Carbon $updated_at
- * @property-read \App\Models\User $sender
- * @property-read \App\Models\Conversation $conversation
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
+ * @property-read User $sender
+ * @property-read Conversation $conversation
  */
 #[Fillable(['conversation_id', 'sender_id', 'body', 'read_at', 'is_broadcast'])]
 class Message extends Model

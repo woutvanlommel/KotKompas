@@ -45,7 +45,7 @@ Broadcast::channel('conversation.{conversationId}', function (User $user, int $c
     return Conversation::where('id', $conversationId)
         ->where(function ($query) use ($user) {
             $query->where('tenant_id', $user->id)
-                  ->orWhere('landlord_id', $user->id);
+                ->orWhere('landlord_id', $user->id);
         })
         ->exists();
 });
