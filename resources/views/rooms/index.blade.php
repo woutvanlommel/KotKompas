@@ -73,13 +73,6 @@
             </div>
         </form>
 
-        {{-- Kaart --}}
-        @if ($mapBuildings->isNotEmpty())
-            <div class="mb-12">
-                <x-rooms-map :buildings="$mapBuildings" />
-            </div>
-        @endif
-
         {{-- Resultaten --}}
         <div class="mb-6 flex items-center justify-between">
             <p class="text-sm text-ink/55">{{ $rooms->total() }} {{ \Illuminate\Support\Str::plural('kot', $rooms->total()) }} gevonden</p>
@@ -102,6 +95,16 @@
             <div class="rounded-2xl border border-dashed border-ink/15 py-20 text-center">
                 <p class="text-lg font-medium">Geen koten gevonden</p>
                 <p class="mt-2 text-sm text-ink/55">Pas je filters aan of zoek in een andere stad.</p>
+            </div>
+        @endif
+
+        {{-- Kaart — toont dezelfde gebouwen als de gefilterde kamerlijst --}}
+        @if ($mapBuildings->isNotEmpty())
+            <div class="mt-16">
+                <p class="mb-4 inline-flex items-center gap-3 text-[0.625rem] font-medium uppercase tracking-[0.18em] text-ink/55">
+                    <span class="inline-block h-px w-9 bg-accent-500"></span> Op de kaart
+                </p>
+                <x-rooms-map :buildings="$mapBuildings" />
             </div>
         @endif
 
