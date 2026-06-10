@@ -4,7 +4,7 @@ namespace App\Filament\Dashboard\Widgets;
 
 class MessagesComingSoon extends ComingSoonWidget
 {
-    protected static ?int $sort = 6;
+    protected static ?int $sort = 8;
 
     /** @var string|array<string> */
     protected static string|array $requiredRole = ['huurder', 'verhuurder'];
