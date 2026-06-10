@@ -5,7 +5,7 @@
      - Popup: 1 kamer → naam, prijs, link; meerdere kamers → lijst.
      Gebruik: <x-rooms-map :buildings="$mapBuildings" default-city="hasselt" /> --}}
 
-@props(['buildings', 'defaultCity' => 'belgie'])
+@props(['buildings', 'defaultCity' => 'belgie', 'height' => '500px'])
 
 @php
     // Standaard locaties voor Belgische steden — aanpasbaar via de defaultCity prop.
@@ -31,7 +31,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 
 <style>
-    #kk-map { height: 500px; width: 100%; background: #f8fafc; }
+    #kk-map { height: {{ $height }}; width: 100%; background: #f8fafc; }
     .kk-pin-out { opacity: 0.25; transition: opacity .3s; }
     .kk-pin-in  { opacity: 1;    transition: opacity .3s; }
     .kk-popup .leaflet-popup-content-wrapper {

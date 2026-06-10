@@ -2,6 +2,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { SplitText } from 'gsap/SplitText';
 import Lenis from 'lenis';
+import { initSearchSuggest } from './search-suggest';
 
 gsap.registerPlugin(ScrollTrigger, SplitText);
 
@@ -334,5 +335,18 @@ if (faqSearch) {
             cat.hidden = !Array.from(cat.querySelectorAll<HTMLElement>('[data-faq-item]')).some((i) => !i.hidden);
         });
         if (emptyMsg) emptyMsg.hidden = anyShown || !q;
+    });
+}
+
+/* ---- Zoeksuggesties op home-hero en kotenpagina ---- */
+initSearchSuggest();
+
+/* ---- Filterpaneel-toggle op mobiel (kotenpagina) ---- */
+const filtersToggle = document.querySelector<HTMLButtonElement>('[data-filters-toggle]');
+const filtersPanel = document.querySelector<HTMLElement>('[data-filters-panel]');
+if (filtersToggle && filtersPanel) {
+    filtersToggle.addEventListener('click', () => {
+        const collapsed = filtersPanel.toggleAttribute('data-collapsed');
+        filtersToggle.setAttribute('aria-expanded', String(!collapsed));
     });
 }

@@ -6,11 +6,28 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\OnboardingController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\SocialAuthController;
+use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
+use Illuminate\Cookie\Middleware\EncryptCookies;
+use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
+use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\Facades\Route;
+use Illuminate\View\Middleware\ShareErrorsFromSession;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::get('/koten', [RoomController::class, 'index'])->name('rooms.index');
+// Stateless JSON-lookup: sessie/cookies overslaan scheelt remote DB-roundtrips
+// (sessies en cache leven in de database) — suggesties moeten snappy zijn.
+Route::get('/koten/suggesties', [RoomController::class, 'suggestions'])
+    ->withoutMiddleware([
+        StartSession::class,
+        ShareErrorsFromSession::class,
+        EncryptCookies::class,
+        AddQueuedCookiesToResponse::class,
+        PreventRequestForgery::class,
+    ])
+    ->middleware('throttle:60,1')
+    ->name('rooms.suggestions');
 Route::get('/koten/{room}', [RoomController::class, 'show'])->name('rooms.show');
 
 Route::get('/contact', [ContactController::class, 'show'])->name('contact');
