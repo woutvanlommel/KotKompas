@@ -46,8 +46,8 @@ class ViewBuilding extends ViewRecord
 
                     foreach ($costIds as $id) {
                         $pendingCostTypes[$id] = [
-                            'frequency'   => $data["frequency_{$id}"] ?? 'monthly',
-                            'amount'      => $data["amount_{$id}"] ?? null,
+                            'frequency' => $data["frequency_{$id}"] ?? 'monthly',
+                            'amount' => $data["amount_{$id}"] ?? null,
                             'is_variable' => (bool) ($data["is_variable_{$id}"] ?? false),
                             'description' => $data["description_{$id}"] ?? null,
                         ];

@@ -5,6 +5,7 @@
 
 namespace App\Services;
 
+use App\Models\Building;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -64,7 +65,7 @@ class GeocodingService
      *
      * @return array{latitude: float, longitude: float}|null
      */
-    public function geocodeBuilding(\App\Models\Building $building): ?array
+    public function geocodeBuilding(Building $building): ?array
     {
         $bus = $building->bus ? " bus {$building->bus}" : '';
 

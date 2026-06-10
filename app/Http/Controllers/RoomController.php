@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Building;
 use App\Models\Room;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
