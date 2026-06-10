@@ -141,7 +141,7 @@
                             @endforeach
                         </div>
                         <div class="mt-10">
-                            {{ $rooms->links() }}
+                            {{ $rooms->links('components.kk-pagination') }}
                         </div>
                     @else
                         <div class="rounded-2xl border border-dashed border-ink/15 py-20 text-center">
@@ -167,7 +167,7 @@
             @endif
 
             <div class="mt-12">
-                {{ $rooms->links() }}
+                {{ $rooms->links('components.kk-pagination') }}
             </div>
         @else
             <div class="rounded-2xl border border-dashed border-ink/15 py-20 text-center">
