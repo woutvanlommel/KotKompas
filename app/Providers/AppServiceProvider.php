@@ -15,7 +15,7 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->singleton(HtmlSanitizer::class, function () {
-            $config = (new HtmlSanitizerConfig())
+            $config = (new HtmlSanitizerConfig)
                 ->allowSafeElements();
 
             return new HtmlSanitizer($config);
