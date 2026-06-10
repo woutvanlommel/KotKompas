@@ -7,6 +7,7 @@ use App\Filament\Dashboard\Resources\Rooms\Schemas\RoomWizard;
 use App\Models\Building;
 use App\Models\Room;
 use App\Services\FilamentNotificationService;
+use App\Services\GeocodingService;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
@@ -48,6 +49,36 @@ class ViewBuilding extends ViewRecord
                     );
                 })
                 ->successRedirectUrl(fn () => route('filament.dashboard.resources.buildings.view', $this->record)),
+            Action::make('geocode')
+                ->label('Locatie herberekenen')
+                ->icon('heroicon-o-map-pin')
+                ->color('gray')
+                ->requiresConfirmation()
+                ->modalHeading('Locatie herberekenen')
+                ->modalDescription('Dit herberekent de coördinaten van dit gebouw via het adres. Doorgaan?')
+                ->modalSubmitActionLabel('Herbereken')
+                ->action(function () {
+                    $coordinates = app(GeocodingService::class)->geocodeBuilding($this->record);
+
+                    if ($coordinates) {
+                        $this->record->update([
+                            'latitude' => $coordinates['latitude'],
+                            'longitude' => $coordinates['longitude'],
+                        ]);
+
+                        FilamentNotificationService::success(
+                            'Locatie bijgewerkt',
+                            "Coördinaten van {$this->record->name} zijn bijgewerkt.",
+                            icon: 'heroicon-o-map-pin'
+                        );
+                    } else {
+                        FilamentNotificationService::danger(
+                            'Locatie niet gevonden',
+                            'Het adres kon niet worden geocodeerd. Controleer het adres.',
+                            icon: 'heroicon-o-map-pin'
+                        );
+                    }
+                }),
             EditAction::make()
                 ->label('Bewerken')
                 ->slideOver()

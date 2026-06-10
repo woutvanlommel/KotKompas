@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::get('/koten', [RoomController::class, 'index'])->name('rooms.index');
+Route::get('/koten/{room}', [RoomController::class, 'show'])->name('rooms.show');
 
 Route::get('/contact', [ContactController::class, 'show'])->name('contact');
 Route::post('/contact', [ContactController::class, 'store'])->name('contact.send');

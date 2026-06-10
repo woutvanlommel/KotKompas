@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Building;
 use App\Models\Room;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
@@ -19,11 +20,39 @@ class RoomController extends Controller
 
         $rooms = $this->query($filters)->paginate(12)->withQueryString();
 
+        $mapBuildings = Building::query()
+            ->whereNotNull('latitude')
+            ->whereNotNull('longitude')
+            ->whereHas('rooms', fn ($q) => $q->where('status', 'available'))
+            ->with(['rooms' => fn ($q) => $q->where('status', 'available')->select('id', 'building_id', 'title', 'price_per_month', 'type')])
+            ->select('id', 'name', 'street', 'house_number', 'postal_code', 'city', 'latitude', 'longitude')
+            ->get()
+            ->map(fn (Building $b) => [
+                'lat' => (float) $b->latitude,
+                'lng' => (float) $b->longitude,
+                'name' => $b->name,
+                'address' => "{$b->street} {$b->house_number}, {$b->postal_code} {$b->city}",
+                'rooms' => $b->rooms->map(fn (Room $r) => [
+                    'id' => $r->id,
+                    'title' => $r->title,
+                    'price' => (float) $r->price_per_month,
+                    'url' => route('rooms.show', $r),
+                ])->values(),
+            ]);
+
         return view('rooms.index', [
             'rooms' => $rooms,
             'filters' => $filters,
             'types' => self::TYPES,
+            'mapBuildings' => $mapBuildings,
         ]);
+    }
+
+    public function show(Room $room): View
+    {
+        $room->load(['building', 'media', 'facilities', 'costTypes']);
+
+        return view('rooms.show', compact('room'));
     }
 
     /**

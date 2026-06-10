@@ -73,6 +73,13 @@
             </div>
         </form>
 
+        {{-- Kaart --}}
+        @if ($mapBuildings->isNotEmpty())
+            <div class="mb-12">
+                <x-rooms-map :buildings="$mapBuildings" />
+            </div>
+        @endif
+
         {{-- Resultaten --}}
         <div class="mb-6 flex items-center justify-between">
             <p class="text-sm text-ink/55">{{ $rooms->total() }} {{ \Illuminate\Support\Str::plural('kot', $rooms->total()) }} gevonden</p>
