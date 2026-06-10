@@ -134,7 +134,7 @@ class DashboardPanelProvider extends PanelProvider
             )
             ->renderHook(
                 PanelsRenderHook::HEAD_END,
-                fn (): HtmlString => new HtmlString(app(Vite::class)(['resources/js/app.js'])),
+                fn (): HtmlString => new HtmlString(app(Vite::class)(['resources/js/echo.ts'])),
             );
     }
 }
