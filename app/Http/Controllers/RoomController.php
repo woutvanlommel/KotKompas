@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Building;
 use App\Models\Room;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\View\View;
 
 class RoomController extends Controller
@@ -51,6 +54,61 @@ class RoomController extends Controller
             'filters' => $filters,
             'types' => self::TYPES,
             'mapBuildings' => $mapBuildings,
+        ]);
+    }
+
+    /**
+     * Zoeksuggesties terwijl de gebruiker typt: steden (met aantal beschikbare
+     * koten) en kot-titels. Alleen beschikbare koten tellen mee.
+     */
+    public function suggestions(Request $request): JsonResponse
+    {
+        $validator = Validator::make($request->query->all(), [
+            'q' => ['required', 'string', 'min:2', 'max:60'],
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['suggestions' => [], 'errors' => $validator->errors()], 422);
+        }
+
+        $q = trim(strip_tags($validator->validated()['q']));
+
+        if (mb_strlen($q) < 2) {
+            return response()->json(['suggestions' => []]);
+        }
+
+        $cities = Building::query()
+            ->whereHas('rooms', fn (Builder $query) => $query->where('status', 'available'))
+            ->where(fn (Builder $query) => $query
+                ->where('city', 'like', "{$q}%")
+                ->orWhere('postal_code', 'like', "{$q}%"))
+            ->withCount(['rooms as available_count' => fn (Builder $query) => $query->where('status', 'available')])
+            ->get()
+            ->groupBy('city')
+            ->map(fn ($buildings, $city) => [
+                'type' => 'stad',
+                'label' => $city,
+                'detail' => $buildings->sum('available_count').' beschikbaar',
+                'url' => route('rooms.index', ['q' => $city]),
+            ])
+            ->values()
+            ->take(4);
+
+        $rooms = Room::query()
+            ->where('status', 'available')
+            ->where('title', 'like', "%{$q}%")
+            ->with('building')
+            ->limit(4)
+            ->get()
+            ->map(fn (Room $room) => [
+                'type' => 'kot',
+                'label' => $room->title,
+                'detail' => $room->building->city.' · € '.number_format((float) $room->price_per_month, 0, ',', '.').'/maand',
+                'url' => route('rooms.show', $room),
+            ]);
+
+        return response()->json([
+            'suggestions' => $cities->concat($rooms)->values(),
         ]);
     }
 
