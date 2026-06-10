@@ -55,7 +55,7 @@ class ConversationList extends Component
             ->with('tenant')
             ->get()
             ->map(fn (Room $room) => [
-                'id'   => (int) $room->tenant_id,
+                'id' => (int) $room->tenant_id,
                 'name' => $room->tenant
                     ? trim($room->tenant->getAttribute('name').' '.$room->tenant->getAttribute('lastname'))
                     : '',
@@ -112,12 +112,12 @@ class ConversationList extends Component
             ->orderByDesc('last_message_at')
             ->get()
             ->map(fn (Conversation $c) => [
-                'id'             => $c->id,
-                'tenant_name'    => trim($c->tenant->name.' '.$c->tenant->lastname),
-                'building_name'  => $c->building->name,
-                'last_message'   => $c->messages->first()?->body,
+                'id' => $c->id,
+                'tenant_name' => trim($c->tenant->name.' '.$c->tenant->lastname),
+                'building_name' => $c->building->name,
+                'last_message' => $c->messages->first()?->body,
                 'last_message_at' => $c->last_message_at?->diffForHumans(),
-                'unread'         => (int) $c->getAttribute('unread_count'),
+                'unread' => (int) $c->getAttribute('unread_count'),
             ]);
 
         $buildings = Building::where('landlord_id', auth()->id())->get();
