@@ -1,45 +1,69 @@
 {{-- Leaflet kaartcomponent voor de koten-overzichtspagina.
-     Toont alle gebouwen met beschikbare kamers als custom pins op een OpenStreetMap kaart.
-     Popup: 1 kamer → directe weergave met naam, prijs en link; meerdere kamers → lijst.
-     Gebruik: <x-rooms-map :buildings="$mapBuildings" /> --}}
+     Toont alle gefilterde gebouwen als custom pins op een OpenStreetMap kaart.
+     - Standaard gecentreerd op $defaultCity (zie variabelen hieronder).
+     - Markers buiten het zichtbare viewport worden gedimmed na het slepen (met debounce).
+     - Popup: 1 kamer → naam, prijs, link; meerdere kamers → lijst.
+     Gebruik: <x-rooms-map :buildings="$mapBuildings" default-city="hasselt" /> --}}
 
-@props(['buildings'])
+@props(['buildings', 'defaultCity' => 'belgie'])
 
 @php
-    $mapData = $buildings->toJson();
+    // Standaard locaties voor Belgische steden — aanpasbaar via de defaultCity prop.
+    $cities = [
+        'belgie'    => ['lat' => 50.641,  'lng' => 4.668,  'zoom' => 8],
+        'hasselt'   => ['lat' => 50.9307, 'lng' => 5.3384, 'zoom' => 13],
+        'leuven'    => ['lat' => 50.8798, 'lng' => 4.7005, 'zoom' => 13],
+        'gent'      => ['lat' => 51.0543, 'lng' => 3.7174, 'zoom' => 13],
+        'antwerpen' => ['lat' => 51.2213, 'lng' => 4.4051, 'zoom' => 13],
+        'brussel'   => ['lat' => 50.8503, 'lng' => 4.3517, 'zoom' => 13],
+        'brugge'    => ['lat' => 51.2093, 'lng' => 3.2247, 'zoom' => 13],
+        'mechelen'  => ['lat' => 51.0259, 'lng' => 4.4776, 'zoom' => 13],
+        'kortrijk'  => ['lat' => 50.8283, 'lng' => 3.2650, 'zoom' => 13],
+        'aalst'     => ['lat' => 50.9368, 'lng' => 4.0404, 'zoom' => 13],
+        'genk'      => ['lat' => 50.9651, 'lng' => 5.4990, 'zoom' => 13],
+        'roeselare' => ['lat' => 50.9443, 'lng' => 3.1229, 'zoom' => 13],
+    ];
+
+    $center = $cities[strtolower($defaultCity)] ?? $cities['belgie'];
 @endphp
 
-{{-- Leaflet map: buildings als custom pins, popup met kamerlijst --}}
+{{-- Leaflet CSS --}}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+
+<style>
+    #kk-map { height: 500px; width: 100%; background: #f8fafc; }
+    .kk-pin-out { opacity: 0.25; transition: opacity .3s; }
+    .kk-pin-in  { opacity: 1;    transition: opacity .3s; }
+    .kk-popup .leaflet-popup-content-wrapper {
+        border-radius: 12px;
+        box-shadow: 0 8px 24px rgba(0,0,0,.12);
+        padding: 0;
+        overflow: hidden;
+    }
+    .kk-popup .leaflet-popup-content { margin: 14px 16px; }
+    .kk-popup .leaflet-popup-tip-container { margin-top: -1px; }
+</style>
+
 <div class="relative overflow-hidden rounded-2xl border border-ink/10">
-    <div id="kk-map" class="h-[420px] w-full bg-primary-900/5 sm:h-[520px]" aria-label="Kaart met beschikbare koten"></div>
+    <div id="kk-map" aria-label="Kaart met beschikbare koten"></div>
 </div>
 
-@once
-    @push('head')
-        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-              integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
-    @endpush
-@endonce
-
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV/XN2GqnY=" crossorigin=""></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 
 <script>
 (function () {
-    const buildings = @json($buildings);
+    const BUILDINGS = @json($buildings);
+    const DEFAULT   = { lat: {{ $center['lat'] }}, lng: {{ $center['lng'] }}, zoom: {{ $center['zoom'] }} };
 
-    const map = L.map('kk-map', {
-        scrollWheelZoom: false,
-        zoomControl: true,
-    });
+    // ── Map init ──────────────────────────────────────────────────────────────
+    const map = L.map('kk-map', { scrollWheelZoom: true });
 
-    // OpenStreetMap tiles
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
         maxZoom: 19,
     }).addTo(map);
 
-    // Custom pin icon
+    // ── Custom pin ────────────────────────────────────────────────────────────
     function makeIcon(count) {
         const label = count > 1 ? String(count) : '';
         return L.divIcon({
@@ -47,87 +71,77 @@
             iconSize: [36, 44],
             iconAnchor: [18, 44],
             popupAnchor: [0, -46],
-            html: `
-                <div style="position:relative;width:36px;height:44px;">
-                    <svg viewBox="0 0 36 44" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:36px;height:44px;filter:drop-shadow(0 2px 4px rgba(0,0,0,.25))">
-                        <path d="M18 0C8.059 0 0 8.059 0 18c0 12.5 18 26 18 26S36 30.5 36 18C36 8.059 27.941 0 18 0Z" fill="#0f172a"/>
-                        <circle cx="18" cy="18" r="8" fill="#f59e0b"/>
-                    </svg>
-                    ${label ? `<span style="position:absolute;top:5px;left:50%;transform:translateX(-50%);font-size:10px;font-weight:700;color:#fff;line-height:1;">${label}</span>` : ''}
-                </div>`,
+            html: `<div style="position:relative;width:36px;height:44px;">
+                <svg viewBox="0 0 36 44" fill="none" xmlns="http://www.w3.org/2000/svg"
+                     style="width:36px;height:44px;filter:drop-shadow(0 2px 4px rgba(0,0,0,.25))">
+                    <path d="M18 0C8.059 0 0 8.059 0 18c0 12.5 18 26 18 26S36 30.5 36 18C36 8.059 27.941 0 18 0Z" fill="#0f172a"/>
+                    <circle cx="18" cy="18" r="8" fill="#f59e0b"/>
+                </svg>
+                ${label ? `<span style="position:absolute;top:5px;left:50%;transform:translateX(-50%);font-size:10px;font-weight:700;color:#fff;line-height:1;">${label}</span>` : ''}
+            </div>`,
         });
     }
 
-    // Build popup HTML
-    function buildPopup(building) {
-        const rooms = building.rooms;
-
-        if (rooms.length === 1) {
-            const r = rooms[0];
-            return `
-                <div style="min-width:180px;font-family:inherit;">
-                    <p style="font-size:0.75rem;color:#64748b;margin:0 0 2px;">${building.address}</p>
-                    <p style="font-size:1rem;font-weight:600;margin:0 0 6px;color:#0f172a;">${r.title}</p>
-                    <p style="font-size:0.9rem;color:#0f172a;margin:0 0 10px;">€${r.price.toLocaleString('nl-BE')}<span style="font-size:0.65rem;color:#94a3b8;">/m</span></p>
-                    <a href="${r.url}" style="display:inline-flex;align-items:center;gap:6px;font-size:0.78rem;font-weight:600;color:#fff;background:#0f172a;padding:6px 14px;border-radius:8px;text-decoration:none;">
-                        Bekijk kot →
-                    </a>
-                </div>`;
+    // ── Popup HTML ────────────────────────────────────────────────────────────
+    function buildPopup(b) {
+        if (b.rooms.length === 1) {
+            const r = b.rooms[0];
+            return `<div style="min-width:180px;font-family:inherit;">
+                <p style="font-size:.75rem;color:#64748b;margin:0 0 2px">${b.address}</p>
+                <p style="font-size:1rem;font-weight:600;margin:0 0 6px;color:#0f172a">${r.title}</p>
+                <p style="font-size:.9rem;color:#0f172a;margin:0 0 10px">€${r.price.toLocaleString('nl-BE')}<span style="font-size:.65rem;color:#94a3b8">/m</span></p>
+                <a href="${r.url}" style="display:inline-flex;align-items:center;gap:6px;font-size:.78rem;font-weight:600;color:#fff;background:#0f172a;padding:6px 14px;border-radius:8px;text-decoration:none;">Bekijk kot →</a>
+            </div>`;
         }
 
-        const listItems = rooms.map(r => `
-            <li style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:7px 0;border-bottom:1px solid #f1f5f9;">
-                <span style="font-size:0.82rem;font-weight:500;color:#0f172a;">${r.title}</span>
-                <span style="font-size:0.82rem;color:#0f172a;white-space:nowrap;">€${r.price.toLocaleString('nl-BE')}/m</span>
-                <a href="${r.url}" style="font-size:0.75rem;font-weight:600;color:#0f172a;text-decoration:underline;white-space:nowrap;">Bekijk →</a>
+        const items = b.rooms.map(r => `
+            <li style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px solid #f1f5f9;">
+                <span style="font-size:.82rem;font-weight:500;color:#0f172a;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.title}</span>
+                <span style="font-size:.82rem;color:#0f172a;white-space:nowrap">€${r.price.toLocaleString('nl-BE')}/m</span>
+                <a href="${r.url}" style="font-size:.75rem;font-weight:600;color:#0f172a;text-decoration:underline;white-space:nowrap">Bekijk →</a>
             </li>`).join('');
 
-        return `
-            <div style="min-width:240px;font-family:inherit;">
-                <p style="font-size:0.78rem;font-weight:700;color:#0f172a;margin:0 0 2px;">${building.name}</p>
-                <p style="font-size:0.72rem;color:#64748b;margin:0 0 8px;">${building.address}</p>
-                <ul style="list-style:none;margin:0;padding:0;">
-                    ${listItems}
-                </ul>
-            </div>`;
+        return `<div style="min-width:260px;font-family:inherit;">
+            <p style="font-size:.82rem;font-weight:700;color:#0f172a;margin:0 0 2px">${b.name}</p>
+            <p style="font-size:.72rem;color:#64748b;margin:0 0 8px">${b.address}</p>
+            <ul style="list-style:none;margin:0;padding:0">${items}</ul>
+        </div>`;
     }
 
-    if (buildings.length === 0) {
-        // Default view Belgium if no markers
-        map.setView([50.85, 4.35], 8);
-        return;
-    }
-
-    const markers = buildings.map(building => {
-        const marker = L.marker([building.lat, building.lng], {
-            icon: makeIcon(building.rooms.length),
-            title: building.name,
-        });
-
-        marker.bindPopup(buildPopup(building), {
-            maxWidth: 300,
-            className: 'kk-popup',
-        });
-
-        return marker;
+    // ── Markers ───────────────────────────────────────────────────────────────
+    const markers = BUILDINGS.map(b => {
+        const m = L.marker([b.lat, b.lng], { icon: makeIcon(b.rooms.length), title: b.name });
+        m.bindPopup(buildPopup(b), { maxWidth: 320, className: 'kk-popup' });
+        m.addTo(map);
+        return m;
     });
 
-    const group = L.featureGroup(markers).addTo(map);
-    map.fitBounds(group.getBounds().pad(0.15), { maxZoom: 14 });
+    // ── Initiële view ─────────────────────────────────────────────────────────
+    if (markers.length > 0) {
+        const group = L.featureGroup(markers);
+        map.fitBounds(group.getBounds().pad(0.15), { maxZoom: 14 });
+    } else {
+        map.setView([DEFAULT.lat, DEFAULT.lng], DEFAULT.zoom);
+    }
+
+    // ── Viewport filtering met debounce ───────────────────────────────────────
+    let debounceTimer = null;
+
+    function updateMarkerVisibility() {
+        const bounds = map.getBounds();
+        markers.forEach((m, i) => {
+            const inView = bounds.contains(L.latLng(BUILDINGS[i].lat, BUILDINGS[i].lng));
+            const el = m.getElement();
+            if (el) {
+                el.classList.toggle('kk-pin-out', !inView);
+                el.classList.toggle('kk-pin-in', inView);
+            }
+        });
+    }
+
+    map.on('moveend', function () {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(updateMarkerVisibility, 300);
+    });
 })();
 </script>
-
-<style>
-    .kk-popup .leaflet-popup-content-wrapper {
-        border-radius: 12px;
-        box-shadow: 0 8px 24px rgba(0,0,0,.12);
-        padding: 0;
-        overflow: hidden;
-    }
-    .kk-popup .leaflet-popup-content {
-        margin: 14px 16px;
-    }
-    .kk-popup .leaflet-popup-tip-container {
-        margin-top: -1px;
-    }
-</style>
