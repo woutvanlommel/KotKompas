@@ -340,3 +340,13 @@ if (faqSearch) {
 
 /* ---- Zoeksuggesties op home-hero en kotenpagina ---- */
 initSearchSuggest();
+
+/* ---- Filterpaneel-toggle op mobiel (kotenpagina) ---- */
+const filtersToggle = document.querySelector<HTMLButtonElement>('[data-filters-toggle]');
+const filtersPanel = document.querySelector<HTMLElement>('[data-filters-panel]');
+if (filtersToggle && filtersPanel) {
+    filtersToggle.addEventListener('click', () => {
+        const collapsed = filtersPanel.toggleAttribute('data-collapsed');
+        filtersToggle.setAttribute('aria-expanded', String(!collapsed));
+    });
+}
