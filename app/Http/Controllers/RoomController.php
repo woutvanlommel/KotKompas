@@ -38,7 +38,7 @@ class RoomController extends Controller
                     'address' => "{$building->street} {$building->house_number}, {$building->postal_code} {$building->city}",
                     'rooms' => $rooms->map(fn (Room $r) => [
                         'id' => $r->id,
-                        'title' => $r->title,
+                        'title' => $r->title ?? '',
                         'price' => (float) $r->price_per_month,
                         'url' => route('rooms.show', $r),
                     ])->values(),

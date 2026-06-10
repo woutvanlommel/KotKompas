@@ -55,7 +55,7 @@ class ViewBuilding extends ViewRecord
 
                     // costs_included = true als er maandelijkse kostensoorten zijn
                     $data['costs_included'] = collect($pendingCostTypes)
-                        ->contains(fn ($ct) => ($ct['frequency'] ?? '') === 'monthly');
+                        ->contains(fn ($ct) => $ct['frequency'] === 'monthly');
 
                     // ── Faciliteiten ─────────────────────────────────────────
                     $facilityCatKeys = array_filter(array_keys($data), fn ($k) => str_starts_with($k, 'facility_cat_'));
