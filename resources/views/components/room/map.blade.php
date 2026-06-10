@@ -6,12 +6,9 @@
     </p>
     <h2 class="mb-6 text-xl font-medium tracking-[-0.02em]">Wat ligt er in de buurt?</h2>
 
-    <div class="flex h-64 items-center justify-center overflow-hidden rounded-2xl border border-dashed border-hairline bg-canvas-deep">
+    <div class="flex h-56 items-center justify-center overflow-hidden rounded-2xl border border-dashed border-hairline bg-canvas-deep sm:h-64">
         <div class="text-center text-ink/40">
-            <svg class="mx-auto h-10 w-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" aria-hidden="true">
-                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7Z" stroke-linecap="round" stroke-linejoin="round"/>
-                <circle cx="12" cy="9" r="2.5"/>
-            </svg>
+            <x-heroicon-o-map-pin class="mx-auto h-10 w-10" aria-hidden="true" />
             <p class="mt-3 text-sm font-medium">Kaart beschikbaar binnenkort</p>
             <p class="mt-1 text-xs text-ink/35">Nabijgelegen voorzieningen worden hier getoond</p>
         </div>

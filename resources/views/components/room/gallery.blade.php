@@ -1,7 +1,7 @@
 @props(['room'])
 
 @php
-    $cover       = $room->getFirstMedia('cover') ?? $room->getFirstMedia('rooms');
+    $cover        = $room->getFirstMedia('cover') ?? $room->getFirstMedia('rooms');
     $galleryMedia = $room->getMedia('gallery');
 
     $allMedia = $cover
@@ -22,11 +22,7 @@
 @if ($total === 0)
     <div class="mt-8 flex h-64 items-center justify-center rounded-2xl border border-dashed border-hairline bg-canvas-deep">
         <div class="text-center text-ink/40">
-            <svg class="mx-auto h-10 w-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" aria-hidden="true">
-                <rect x="3" y="3" width="18" height="18" rx="2"/>
-                <circle cx="8.5" cy="8.5" r="1.5"/>
-                <polyline points="21 15 16 10 5 21"/>
-            </svg>
+            <x-heroicon-o-photo class="mx-auto h-10 w-10" aria-hidden="true" />
             <p class="mt-3 text-sm font-medium">Geen foto's beschikbaar</p>
         </div>
     </div>
@@ -75,18 +71,14 @@
             @endfor
         </div>
 
-        {{-- Mobiel: cover + knop --}}
+        {{-- Mobiel --}}
         <div class="relative overflow-hidden rounded-2xl md:hidden" style="height:18rem;">
             <img src="{{ $photos[0]['url'] }}" alt="{{ $photos[0]['alt'] }}" loading="eager"
                  class="absolute inset-0 h-full w-full object-cover">
             @if ($total > 1)
                 <button type="button" @click="openAt(0)"
                         class="absolute bottom-4 right-4 inline-flex items-center gap-2 rounded-xl bg-black/60 px-4 py-2 text-sm font-medium text-white backdrop-blur-sm">
-                    <svg class="h-4 w-4" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                        <rect x="1.5" y="3.5" width="13" height="9" rx="1.5" stroke="currentColor" stroke-width="1.3"/>
-                        <circle cx="5.5" cy="7.5" r="1" fill="currentColor"/>
-                        <path d="M1.5 10.5l3-3 2.5 2.5 3-4 4 4.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
+                    <x-heroicon-o-photo class="h-4 w-4 shrink-0" aria-hidden="true" />
                     Bekijk alle {{ $total }} foto's
                 </button>
             @endif
@@ -105,41 +97,37 @@
 
             {{-- Teller --}}
             <div class="absolute left-1/2 top-5 -translate-x-1/2 rounded-full bg-white/10 px-3 py-1 text-sm text-white backdrop-blur-sm">
-                <span x-text="current + 1"></span>&nbsp;/&nbsp;<span x-text="photos.length"></span>
+                <span x-text="current + 1"></span>&thinsp;/&thinsp;<span x-text="photos.length"></span>
             </div>
 
             {{-- Sluiten --}}
             <button type="button" @click="close()"
-                    class="absolute right-5 top-5 flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-sm transition-colors hover:bg-white/25"
+                    class="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-sm transition-colors hover:bg-white/25"
                     aria-label="Sluiten">
-                <svg class="h-5 w-5" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                    <path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-                </svg>
+                <x-heroicon-o-x-mark class="h-5 w-5" aria-hidden="true" />
             </button>
 
             {{-- Afbeelding --}}
             <img :src="photos[current]?.url" :alt="photos[current]?.alt"
                  class="max-h-[88vh] max-w-[88vw] select-none object-contain">
 
-            {{-- Navigatie --}}
+            {{-- Vorige --}}
             <button type="button" @click.stop="prev()" x-show="photos.length > 1"
-                    class="absolute left-4 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-sm transition-colors hover:bg-white/25"
+                    class="absolute left-3 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-sm transition-colors hover:bg-white/25 sm:left-4"
                     aria-label="Vorige foto">
-                <svg class="h-5 w-5" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                    <path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
+                <x-heroicon-o-chevron-left class="h-5 w-5" aria-hidden="true" />
             </button>
+
+            {{-- Volgende --}}
             <button type="button" @click.stop="next()" x-show="photos.length > 1"
-                    class="absolute right-4 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-sm transition-colors hover:bg-white/25"
+                    class="absolute right-3 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-sm transition-colors hover:bg-white/25 sm:right-4"
                     aria-label="Volgende foto">
-                <svg class="h-5 w-5" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                    <path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
+                <x-heroicon-o-chevron-right class="h-5 w-5" aria-hidden="true" />
             </button>
 
             {{-- Thumbnail strip --}}
             @if ($total > 1)
-                <div class="absolute bottom-5 left-1/2 flex -translate-x-1/2 gap-1.5 overflow-x-auto px-4"
+                <div class="absolute bottom-4 left-1/2 flex -translate-x-1/2 gap-1.5 overflow-x-auto px-4"
                      style="max-width: min(100vw - 2rem, 40rem);">
                     @foreach ($photos as $i => $photo)
                         <button type="button" @click.stop="current = {{ $i }}"
@@ -151,6 +139,7 @@
                     @endforeach
                 </div>
             @endif
+
         </div>
 
     </div>

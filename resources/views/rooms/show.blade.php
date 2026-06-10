@@ -35,7 +35,7 @@
 
                 <x-room.gallery :room="$room" />
 
-                <div class="mt-16 space-y-16">
+                <div class="mt-10 space-y-12 md:mt-16 md:space-y-16">
                     <x-room.description :room="$room" />
                     <x-room.facilities :room="$room" />
                     <x-room.map :room="$room" />

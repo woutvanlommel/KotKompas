@@ -30,11 +30,11 @@
             </div>
             <div class="space-y-2 border-t border-hairline pt-4 text-sm text-ink/70">
                 <div class="flex items-center gap-2">
-                    <svg class="h-4 w-4 shrink-0 text-ink/40" viewBox="0 0 16 16" fill="none"><path d="M2 4h12v9H2V4Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M2 4l6 5 6-5" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
+                    <x-heroicon-o-envelope class="h-4 w-4 shrink-0 text-ink/40" aria-hidden="true" />
                     <span>verhuurder@email.be</span>
                 </div>
                 <div class="flex items-center gap-2">
-                    <svg class="h-4 w-4 shrink-0 text-ink/40" viewBox="0 0 16 16" fill="none"><path d="M3 2h3l1.5 4L6 7.5a9 9 0 0 0 2.5 2.5L10 8.5 14 10v3a1 1 0 0 1-1 1A11 11 0 0 1 2 3a1 1 0 0 1 1-1Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
+                    <x-heroicon-o-phone class="h-4 w-4 shrink-0 text-ink/40" aria-hidden="true" />
                     <span>+32 4xx xxx xxx</span>
                 </div>
             </div>
@@ -46,11 +46,7 @@
         {{-- Lock overlay --}}
         <div class="absolute inset-0 flex flex-col items-center justify-center gap-2 rounded-2xl bg-canvas/70 text-center backdrop-blur-[2px]">
             <div class="flex h-10 w-10 items-center justify-center rounded-full bg-primary-900/10">
-                <svg class="h-5 w-5 text-primary-900" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                    <rect x="3" y="7" width="10" height="7" rx="1.5" stroke="currentColor" stroke-width="1.3"/>
-                    <path d="M5 7V5a3 3 0 1 1 6 0v2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
-                    <circle cx="8" cy="10.5" r="1" fill="currentColor"/>
-                </svg>
+                <x-heroicon-o-lock-closed class="h-5 w-5 text-primary-900" aria-hidden="true" />
             </div>
             <p class="text-sm font-medium text-ink">Verhuurdergegevens</p>
             <p class="max-w-[14rem] text-xs leading-relaxed text-ink/55">Beschikbaar via KotKompas — binnenkort te ontsluiten.</p>

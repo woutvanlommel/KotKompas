@@ -19,7 +19,7 @@
         <dl class="divide-y divide-hairline">
 
             {{-- Basishuur --}}
-            <div class="flex items-center justify-between gap-4 px-6 py-4">
+            <div class="flex items-center justify-between gap-3 px-4 py-3.5 sm:gap-4 sm:px-6 sm:py-4">
                 <dt class="text-sm text-ink/70">Basishuur</dt>
                 <dd class="text-sm font-medium tabular-nums text-ink">
                     €{{ number_format((float) ($room->price_per_month ?? 0), 2, ',', '.') }}
@@ -29,7 +29,7 @@
 
             {{-- Waarborg --}}
             @if ($room->deposit_amount ?? null)
-                <div class="flex items-center justify-between gap-4 px-6 py-4">
+                <div class="flex items-center justify-between gap-3 px-4 py-3.5 sm:gap-4 sm:px-6 sm:py-4">
                     <dt class="text-sm text-ink/70">Waarborg</dt>
                     <dd class="text-sm font-medium tabular-nums text-ink">
                         €{{ number_format((float) $room->deposit_amount, 2, ',', '.') }}
@@ -40,11 +40,11 @@
 
             {{-- Maandelijkse kosten --}}
             @if ($monthly->isNotEmpty())
-                <div class="bg-canvas-deep px-6 py-3">
+                <div class="bg-canvas-deep px-4 py-2.5 sm:px-6 sm:py-3">
                     <p class="text-[0.625rem] font-medium uppercase tracking-[0.14em] text-ink/55">Maandelijks</p>
                 </div>
                 @foreach ($monthly as $cost)
-                    <div class="flex items-center justify-between gap-4 px-6 py-4">
+                    <div class="flex items-center justify-between gap-3 px-4 py-3.5 sm:gap-4 sm:px-6 sm:py-4">
                         <dt class="flex flex-wrap items-center gap-1.5 text-sm text-ink/70">
                             {{ $cost->name ?? '—' }}
                             @if ($cost->pivot?->description ?? null)
@@ -67,11 +67,11 @@
 
             {{-- Jaarlijkse kosten --}}
             @if ($yearly->isNotEmpty())
-                <div class="bg-canvas-deep px-6 py-3">
+                <div class="bg-canvas-deep px-4 py-2.5 sm:px-6 sm:py-3">
                     <p class="text-[0.625rem] font-medium uppercase tracking-[0.14em] text-ink/55">Jaarlijks</p>
                 </div>
                 @foreach ($yearly as $cost)
-                    <div class="flex items-center justify-between gap-4 px-6 py-4">
+                    <div class="flex items-center justify-between gap-3 px-4 py-3.5 sm:gap-4 sm:px-6 sm:py-4">
                         <dt class="flex flex-wrap items-center gap-1.5 text-sm text-ink/70">
                             {{ $cost->name ?? '—' }}
                             @if ($cost->pivot?->description ?? null)
@@ -94,11 +94,11 @@
 
             {{-- Eenmalige kosten --}}
             @if ($oneTime->isNotEmpty())
-                <div class="bg-canvas-deep px-6 py-3">
+                <div class="bg-canvas-deep px-4 py-2.5 sm:px-6 sm:py-3">
                     <p class="text-[0.625rem] font-medium uppercase tracking-[0.14em] text-ink/55">Eenmalig</p>
                 </div>
                 @foreach ($oneTime as $cost)
-                    <div class="flex items-center justify-between gap-4 px-6 py-4">
+                    <div class="flex items-center justify-between gap-3 px-4 py-3.5 sm:gap-4 sm:px-6 sm:py-4">
                         <dt class="flex flex-wrap items-center gap-1.5 text-sm text-ink/70">
                             {{ $cost->name ?? '—' }}
                             @if ($cost->pivot?->description ?? null)
@@ -119,7 +119,7 @@
             @endif
 
             {{-- Totaal --}}
-            <div class="flex items-center justify-between gap-4 bg-primary-900 px-6 py-5">
+            <div class="flex items-center justify-between gap-3 bg-primary-900 px-4 py-4 sm:px-6 sm:py-5">
                 <dt class="text-sm font-medium text-white/80">
                     Totaal / maand
                     <span class="block text-[0.7rem] font-normal text-white/45">excl. variabele kosten</span>
