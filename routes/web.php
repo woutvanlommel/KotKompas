@@ -6,7 +6,12 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\OnboardingController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\SocialAuthController;
+use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
+use Illuminate\Cookie\Middleware\EncryptCookies;
+use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
+use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\Facades\Route;
+use Illuminate\View\Middleware\ShareErrorsFromSession;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -15,11 +20,11 @@ Route::get('/koten', [RoomController::class, 'index'])->name('rooms.index');
 // (sessies en cache leven in de database) — suggesties moeten snappy zijn.
 Route::get('/koten/suggesties', [RoomController::class, 'suggestions'])
     ->withoutMiddleware([
-        \Illuminate\Session\Middleware\StartSession::class,
-        \Illuminate\View\Middleware\ShareErrorsFromSession::class,
-        \Illuminate\Cookie\Middleware\EncryptCookies::class,
-        \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
-        \Illuminate\Foundation\Http\Middleware\PreventRequestForgery::class,
+        StartSession::class,
+        ShareErrorsFromSession::class,
+        EncryptCookies::class,
+        AddQueuedCookiesToResponse::class,
+        PreventRequestForgery::class,
     ])
     ->middleware('throttle:60,1')
     ->name('rooms.suggestions');
