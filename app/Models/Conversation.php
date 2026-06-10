@@ -7,6 +7,20 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @property int $id
+ * @property int $tenant_id
+ * @property int $landlord_id
+ * @property int $building_id
+ * @property \Carbon\Carbon|null $last_message_at
+ * @property \Carbon\Carbon|null $notification_sent_at
+ * @property \Carbon\Carbon $created_at
+ * @property \Carbon\Carbon $updated_at
+ * @property-read \App\Models\User $tenant
+ * @property-read \App\Models\User $landlord
+ * @property-read \App\Models\Building $building
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Message> $messages
+ */
 #[Fillable(['tenant_id', 'landlord_id', 'building_id', 'last_message_at', 'notification_sent_at'])]
 class Conversation extends Model
 {

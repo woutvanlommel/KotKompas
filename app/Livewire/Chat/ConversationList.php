@@ -60,7 +60,7 @@ class ConversationList extends Component
             ->with(['tenant', 'building', 'messages' => fn ($q) => $q->latest()->limit(1)])
             ->orderByDesc('last_message_at')
             ->get()
-            ->map(fn ($c) => [
+            ->map(fn (Conversation $c) => [
                 'id'             => $c->id,
                 'tenant_name'    => trim($c->tenant->name.' '.$c->tenant->lastname),
                 'building_name'  => $c->building->name,
