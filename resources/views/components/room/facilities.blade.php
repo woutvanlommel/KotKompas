@@ -10,16 +10,6 @@
         'five_plus_bedroom' => '5+ slaapkamers',
     ];
 
-    // Kosten/maand: kijk naar werkelijke costTypes, niet enkel de boolean
-    $fixedMonthlyCosts = ($room->costTypes ?? collect())
-        ->where('pivot.frequency', 'monthly')
-        ->where('pivot.is_variable', false)
-        ->whereNotNull('pivot.amount');
-
-    $costsLabel = $fixedMonthlyCosts->isNotEmpty()
-        ? 'Excl. variabelen kosten'
-        : (($room->costs_included ?? false) ? 'Inbegrepen' : 'Niet inbegrepen');
-
     $specs = array_filter([
         ($room->surface_m2 ?? null) ? [
             'label' => 'Oppervlakte',
@@ -36,12 +26,7 @@
             'value' => ($room->is_furnished ?? false) ? 'Gemeubeld' : 'Ongemeubeld',
             'icon'  => 'archive-box',
         ],
-        [
-            'label' => 'Kosten/maand',
-            'value' => $costsLabel,
-            'icon'  => 'banknotes',
-        ],
-        ($room->available_from ?? null) ? [
+($room->available_from ?? null) ? [
             'label' => 'Beschikbaar',
             'value' => $room->available_from->format('d/m/Y'),
             'icon'  => 'calendar-days',

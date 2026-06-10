@@ -22,14 +22,8 @@
     $totalPrice = (float) ($room->total_monthly_price ?? $basePrice);
     $extraCosts = round($totalPrice - $basePrice, 2);
 
-    // Vaste maandelijkse kosten naast de basishuur
-    $fixedMonthlyCosts = ($room->costTypes ?? collect())
-        ->where('pivot.frequency', 'monthly')
-        ->where('pivot.is_variable', false)
-        ->whereNotNull('pivot.amount');
-
-    // Kosten inbegrepen: enkel "inbegrepen" als costs_included=true én er geen aparte maandkost staat
-    $costsIncluded = ($room->costs_included ?? false) && $fixedMonthlyCosts->isEmpty();
+    $monthlyCosts       = ($room->costTypes ?? collect())->where('pivot.frequency', 'monthly');
+    $hasMonthlyVariable = $monthlyCosts->where('pivot.is_variable', true)->isNotEmpty();
 @endphp
 
 <div class="flex flex-wrap items-start justify-between gap-x-6 gap-y-4">
@@ -61,27 +55,23 @@
         </p>
         <p class="mt-1 text-sm text-ink/55">per maand</p>
 
-        {{-- Uitsplitsing als er vaste extra kosten zijn --}}
-        @if ($extraCosts > 0)
+        {{-- Uitsplitsing --}}
+        @if ($extraCosts > 0 && $hasMonthlyVariable)
             <p class="mt-1.5 text-xs text-ink/50">
                 €{{ number_format($basePrice, 0, ',', '.') }} huur
                 + €{{ number_format($extraCosts, 0, ',', '.') }} vaste kosten
+                + variabele kosten / maand
             </p>
-        @endif
-
-        {{-- Badge: kosten inbegrepen of niet --}}
-        @if ($costsIncluded)
-            <span class="mt-2 inline-block rounded-full bg-secondary-600/10 px-2.5 py-1 text-xs font-medium text-secondary-600">
-                Kosten inbegrepen
-            </span>
-        @elseif (!$fixedMonthlyCosts->isEmpty())
-            <span class="mt-2 inline-block rounded-full bg-ink/5 px-2.5 py-1 text-xs font-medium text-ink/50">
-                Excl. variabelen kosten
-            </span>
-        @else
-            <span class="mt-2 inline-block rounded-full bg-ink/5 px-2.5 py-1 text-xs font-medium text-ink/50">
-                Kosten niet inbegrepen
-            </span>
+        @elseif ($extraCosts > 0)
+            <p class="mt-1.5 text-xs text-ink/50">
+                €{{ number_format($basePrice, 0, ',', '.') }} huur
+                + €{{ number_format($extraCosts, 0, ',', '.') }} vaste kosten / maand
+            </p>
+        @elseif ($hasMonthlyVariable)
+            <p class="mt-1.5 text-xs text-ink/50">
+                €{{ number_format($basePrice, 0, ',', '.') }} huur
+                + variabele kosten / maand
+            </p>
         @endif
     </div>
 

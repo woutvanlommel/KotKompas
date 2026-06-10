@@ -1,12 +1,13 @@
 @props(['room'])
 
 @php
-    $costTypes = $room->costTypes ?? collect();
-    $monthly   = $costTypes->where('pivot.frequency', 'monthly');
-    $yearly    = $costTypes->where('pivot.frequency', 'yearly');
-    $oneTime   = $costTypes->where('pivot.frequency', 'one_time');
-    $hasVariable = $monthly->where('pivot.is_variable', true)->isNotEmpty()
-                || $yearly->where('pivot.is_variable', true)->isNotEmpty();
+    $costTypes   = $room->costTypes ?? collect();
+    $monthly     = $costTypes->where('pivot.frequency', 'monthly');
+    $yearly      = $costTypes->where('pivot.frequency', 'yearly');
+    $oneTime     = $costTypes->where('pivot.frequency', 'one_time');
+    $hasExtra           = $yearly->isNotEmpty() || $oneTime->isNotEmpty();
+    $hasVariable        = $costTypes->where('pivot.is_variable', true)->isNotEmpty();
+    $hasMonthlyVariable = $monthly->where('pivot.is_variable', true)->isNotEmpty();
 @endphp
 
 <div>
@@ -53,17 +54,30 @@
                         </dt>
                         <dd class="shrink-0 text-sm font-medium tabular-nums">
                             @if ($cost->pivot?->is_variable ?? false)
-                                <span class="text-amber-600">Variabel</span>
+                                <span class="text-amber-600">Variabel *</span>
                             @elseif ($cost->pivot?->amount ?? null)
                                 <span class="text-ink">€{{ number_format((float) $cost->pivot->amount, 2, ',', '.') }}</span>
                                 <span class="text-xs font-normal text-ink/45">/ maand</span>
                             @else
-                                <span class="text-ink/30">—</span>
+                                <span class="text-ink/30">Nader te bepalen</span>
                             @endif
                         </dd>
                     </div>
                 @endforeach
             @endif
+
+            {{-- Totaal / maand --}}
+            <div class="flex items-center justify-between gap-3 bg-primary-900 px-4 py-4 sm:px-6 sm:py-5">
+                <dt class="text-sm font-medium text-white/80">
+                    Totaal / maand
+                    @if ($hasMonthlyVariable)
+                        <span class="block text-[0.7rem] font-normal text-white/45">excl. variabele kosten</span>
+                    @endif
+                </dt>
+                <dd class="text-xl font-medium tabular-nums text-white">
+                    €{{ number_format((float) ($room->total_monthly_price ?? $room->price_per_month ?? 0), 2, ',', '.') }}
+                </dd>
+            </div>
 
             {{-- Jaarlijkse kosten --}}
             @if ($yearly->isNotEmpty())
@@ -80,12 +94,12 @@
                         </dt>
                         <dd class="shrink-0 text-sm font-medium tabular-nums">
                             @if ($cost->pivot?->is_variable ?? false)
-                                <span class="text-amber-600">Variabel</span>
+                                <span class="text-amber-600">Variabel *</span>
                             @elseif ($cost->pivot?->amount ?? null)
                                 <span class="text-ink">€{{ number_format((float) $cost->pivot->amount, 2, ',', '.') }}</span>
                                 <span class="text-xs font-normal text-ink/45">/ jaar</span>
                             @else
-                                <span class="text-ink/30">—</span>
+                                <span class="text-ink/30">Nader te bepalen</span>
                             @endif
                         </dd>
                     </div>
@@ -107,34 +121,23 @@
                         </dt>
                         <dd class="shrink-0 text-sm font-medium tabular-nums">
                             @if ($cost->pivot?->is_variable ?? false)
-                                <span class="text-amber-600">Variabel</span>
+                                <span class="text-amber-600">Variabel *</span>
                             @elseif ($cost->pivot?->amount ?? null)
                                 <span class="text-ink">€{{ number_format((float) $cost->pivot->amount, 2, ',', '.') }}</span>
                             @else
-                                <span class="text-ink/30">—</span>
+                                <span class="text-ink/30">Nader te bepalen</span>
                             @endif
                         </dd>
                     </div>
                 @endforeach
             @endif
 
-            {{-- Totaal --}}
-            <div class="flex items-center justify-between gap-3 bg-primary-900 px-4 py-4 sm:px-6 sm:py-5">
-                <dt class="text-sm font-medium text-white/80">
-                    Totaal / maand
-                    <span class="block text-[0.7rem] font-normal text-white/45">excl. variabele kosten</span>
-                </dt>
-                <dd class="text-xl font-medium tabular-nums text-white">
-                    €{{ number_format((float) ($room->total_monthly_price ?? $room->price_per_month ?? 0), 2, ',', '.') }}
-                </dd>
-            </div>
-
         </dl>
     </div>
 
     @if ($hasVariable)
         <p class="mt-3 text-xs text-ink/45">
-            * Variabele kosten (bv. verbruik) worden apart afgerekend en zijn niet inbegrepen in het totaal.
+            * Variabele kosten hebben geen vaste prijs en worden apart afgerekend op basis van de werkelijke kost.
         </p>
     @endif
 </div>
