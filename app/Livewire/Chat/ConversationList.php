@@ -54,9 +54,11 @@ class ConversationList extends Component
             ->whereNotNull('tenant_id')
             ->with('tenant')
             ->get()
-            ->map(fn ($room) => [
-                'id'   => $room->tenant->id,
-                'name' => trim($room->tenant->name.' '.$room->tenant->lastname),
+            ->map(fn (Room $room) => [
+                'id'   => (int) $room->tenant_id,
+                'name' => $room->tenant
+                    ? trim($room->tenant->getAttribute('name').' '.$room->tenant->getAttribute('lastname'))
+                    : '',
             ])
             ->toArray();
     }
@@ -84,7 +86,7 @@ class ConversationList extends Component
         }
 
         $conversation = Conversation::firstOrCreate([
-            'tenant_id'   => $this->filterTenantId,
+            'tenant_id' => $this->filterTenantId,
             'landlord_id' => auth()->id(),
             'building_id' => $this->filterBuildingId,
         ]);
@@ -105,7 +107,7 @@ class ConversationList extends Component
             ->with(['tenant', 'building', 'messages' => fn ($q) => $q->latest()->limit(1)])
             ->withCount(['messages as unread_count' => fn ($q) => $q
                 ->whereNull('read_at')
-                ->where('sender_id', '!=', auth()->id())
+                ->where('sender_id', '!=', auth()->id()),
             ])
             ->orderByDesc('last_message_at')
             ->get()
@@ -114,8 +116,8 @@ class ConversationList extends Component
                 'tenant_name'    => trim($c->tenant->name.' '.$c->tenant->lastname),
                 'building_name'  => $c->building->name,
                 'last_message'   => $c->messages->first()?->body,
-                'last_message_at'=> $c->last_message_at?->diffForHumans(),
-                'unread'         => $c->unread_count,
+                'last_message_at' => $c->last_message_at?->diffForHumans(),
+                'unread'         => (int) $c->getAttribute('unread_count'),
             ]);
 
         $buildings = Building::where('landlord_id', auth()->id())->get();
