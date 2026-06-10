@@ -11,7 +11,7 @@
     </div>
     @if ($room->description)
         <div class="rich-content text-sm text-gray-600">
-            {!! $room->description !!}
+            @richtext($room->description)
         </div>
     @else
         <p class="text-sm text-gray-400 italic">Geen beschrijving toegevoegd.</p>
