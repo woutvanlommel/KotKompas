@@ -28,7 +28,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Blade::directive('richtext', function (string $expression): string {
-            return "<?php echo app(\Symfony\Component\HtmlSanitizer\HtmlSanitizer::class)->sanitize($expression); ?>";
+            return "<?php echo e(strip_tags(app(\Symfony\Component\HtmlSanitizer\HtmlSanitizer::class)->sanitize($expression))); ?>";
         });
     }
 }

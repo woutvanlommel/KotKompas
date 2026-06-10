@@ -23,7 +23,7 @@
         </p>
 
         @if ($room->description)
-            <p class="mt-6 max-w-2xl text-ink/75 leading-relaxed">{{ $room->description }}</p>
+            <p class="mt-6 max-w-2xl text-ink/75 leading-relaxed">@richtext($room->description)</p>
         @endif
 
     </section>
