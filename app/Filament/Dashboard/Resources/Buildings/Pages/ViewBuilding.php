@@ -40,7 +40,57 @@ class ViewBuilding extends ViewRecord
                     ]),
                 ])
                 ->action(function (array $data) {
-                    Room::create($data);
+                    // ── Kosten ──────────────────────────────────────────────
+                    $costIds = $data['cost_types_data'] ?? [];
+                    $pendingCostTypes = [];
+
+                    foreach ($costIds as $id) {
+                        $pendingCostTypes[$id] = [
+                            'frequency'   => $data["frequency_{$id}"] ?? 'monthly',
+                            'amount'      => $data["amount_{$id}"] ?? null,
+                            'is_variable' => (bool) ($data["is_variable_{$id}"] ?? false),
+                            'description' => $data["description_{$id}"] ?? null,
+                        ];
+                    }
+
+                    // costs_included = true als er maandelijkse kostensoorten zijn
+                    $data['costs_included'] = collect($pendingCostTypes)
+                        ->contains(fn ($ct) => ($ct['frequency'] ?? '') === 'monthly');
+
+                    // ── Faciliteiten ─────────────────────────────────────────
+                    $facilityCatKeys = array_filter(array_keys($data), fn ($k) => str_starts_with($k, 'facility_cat_'));
+                    $pendingFacilities = collect($data)
+                        ->only($facilityCatKeys)
+                        ->flatten()
+                        ->filter()
+                        ->unique()
+                        ->values()
+                        ->toArray();
+
+                    // ── Verwijder wizard-specifieke keys vóór Room::create ───
+                    $keysToRemove = array_merge(
+                        ['cost_types_data'],
+                        array_map(fn ($id) => "frequency_{$id}", $costIds),
+                        array_map(fn ($id) => "amount_{$id}", $costIds),
+                        array_map(fn ($id) => "is_variable_{$id}", $costIds),
+                        array_map(fn ($id) => "description_{$id}", $costIds),
+                        $facilityCatKeys,
+                    );
+
+                    foreach ($keysToRemove as $key) {
+                        unset($data[$key]);
+                    }
+
+                    // ── Kamer aanmaken en pivots synchroniseren ──────────────
+                    $room = Room::create(array_merge($data, ['building_id' => $this->record->id]));
+
+                    if (! empty($pendingCostTypes)) {
+                        $room->costTypes()->sync($pendingCostTypes);
+                    }
+
+                    if (! empty($pendingFacilities)) {
+                        $room->facilities()->sync($pendingFacilities);
+                    }
 
                     FilamentNotificationService::success(
                         'Kamer toegevoegd',
