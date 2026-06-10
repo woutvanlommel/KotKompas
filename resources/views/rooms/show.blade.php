@@ -1,5 +1,6 @@
-{{-- Detailpagina voor een individuele kamer/kot.
-     Momenteel een minimale weergave. Verder uitbreiden met foto's, faciliteiten, contactformulier, etc. --}}
+{{-- Detailpagina voor een individueel kot.
+     Componenten staan in resources/views/components/room/.
+     Alpine skeleton: <x-room.skeleton> zichtbaar tot Alpine opstart → fade naar content. --}}
 
 <x-layout :title="($room->title ?? 'Kot') . ' — KotKompas'" body-class="bg-canvas text-ink">
 
@@ -8,23 +9,42 @@
     <section class="mx-auto w-full max-w-[88rem] px-5 pb-24 pt-32 sm:px-8">
 
         <a href="{{ route('rooms.index') }}"
-           class="mb-8 inline-flex items-center gap-2 text-sm text-ink/55 hover:text-ink">
-            ← Terug naar overzicht
+           class="mb-10 inline-flex items-center gap-2 text-sm text-ink/55 transition-colors hover:text-ink">
+            <svg class="h-4 w-4" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Terug naar overzicht
         </a>
 
-        <h1 class="text-[clamp(2rem,4vw,3.5rem)] font-medium leading-[0.9] tracking-[-0.04em]">
-            {{ $room->title ?? 'Kot' }}
-        </h1>
+        {{-- Alpine wrapper: skeleton tot x-init vuurt --}}
+        <div x-data="{ ready: false }" x-init="$nextTick(() => ready = true)">
 
-        <p class="mt-3 text-ink/60">{{ $room->building?->full_address }}</p>
+            {{-- Skeleton: zichtbaar zolang ready = false --}}
+            <div x-show="!ready">
+                <x-room.skeleton />
+            </div>
 
-        <p class="mt-8 text-2xl font-medium">
-            €{{ number_format((float) $room->price_per_month, 0, ',', '.') }}<span class="ml-1 text-sm font-normal text-ink/55">/maand</span>
-        </p>
+            {{-- Echte content: style="display:none" zodat Alpine dit zelf managed
+                 (x-cloak vereist de CSS-regel; inline style is betrouwbaarder) --}}
+            <div style="display:none" x-show="ready"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0"
+                 x-transition:enter-end="opacity-100">
 
-        @if ($room->description)
-            <p class="mt-6 max-w-2xl text-ink/75 leading-relaxed">@richtext($room->description)</p>
-        @endif
+                <x-room.header :room="$room" />
+
+                <x-room.gallery :room="$room" />
+
+                <div class="mt-10 space-y-12 md:mt-16 md:space-y-16">
+                    <x-room.description :room="$room" />
+                    <x-room.facilities :room="$room" />
+                    <x-room.map :room="$room" />
+                    <x-room.pricing :room="$room" />
+                </div>
+
+            </div>
+
+        </div>
 
     </section>
 
