@@ -2,7 +2,7 @@
 
     <x-public-nav />
 
-    <section class="mx-auto w-full max-w-[88rem] px-5 pb-24 pt-32 sm:px-8">
+    <section class="mx-auto w-full max-w-352 px-5 pb-24 pt-32 sm:px-8">
 
         <header class="mb-10">
             <p class="mb-4 inline-flex items-center gap-3 text-[0.625rem] font-medium uppercase tracking-[0.18em] text-ink/55">
@@ -98,9 +98,32 @@
         </div>
 
         @if ($filters['view'] === 'map')
-            {{-- Kaart als hoofdweergave: alle gefilterde koten, geen paginatie nodig --}}
-            <div class="overflow-hidden rounded-2xl border border-ink/10">
-                <x-rooms-map :buildings="$mapBuildings" default-city="hasselt" height="70vh" />
+            {{-- Kaartweergave: kaart links (sticky), koten ernaast. Markers tonen
+                 álle gefilterde koten; de kolom ernaast pagineert gewoon mee. --}}
+            <div class="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+                <div class="lg:sticky lg:top-24 lg:self-start">
+                    <div class="overflow-hidden rounded-2xl border border-ink/10">
+                        <x-rooms-map :buildings="$mapBuildings" default-city="hasselt" height="clamp(24rem, calc(100vh - 9rem), 56rem)" />
+                    </div>
+                </div>
+
+                <div>
+                    @if ($rooms->isNotEmpty())
+                        <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+                            @foreach ($rooms as $room)
+                                <x-koten-card :room="$room" />
+                            @endforeach
+                        </div>
+                        <div class="mt-10">
+                            {{ $rooms->links() }}
+                        </div>
+                    @else
+                        <div class="rounded-2xl border border-dashed border-ink/15 py-20 text-center">
+                            <p class="text-lg font-medium">Geen koten gevonden</p>
+                            <p class="mt-2 text-sm text-ink/55">Pas je filters aan of zoek in een andere stad.</p>
+                        </div>
+                    @endif
+                </div>
             </div>
         @elseif ($rooms->isNotEmpty())
             @if ($filters['view'] === 'list')
