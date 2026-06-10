@@ -1,7 +1,7 @@
-# Chat Page Responsive Design
+# Chat Page — Responsive Design & Functional Improvements
 
 **Date:** 2026-06-10  
-**Scope:** Improve responsiveness of the chat page for phones (≤640px) and tablets (768–1024px)
+**Scope:** Responsive layout for phones/tablets + four functional improvements to the chat components
 
 ---
 
@@ -120,3 +120,80 @@ User taps back button in chat header
 ## Why no duplicate Livewire instances
 
 Only one `<livewire:chat.conversation-list>` and one `<livewire:chat.chat-window>` are rendered. Alpine manages visibility with `hidden` / `md:block` on the wrapper divs, not by conditionally rendering separate components. This avoids duplicate Echo channel subscriptions and duplicate DB queries.
+
+---
+
+## Functional Improvements
+
+### F1 — Debug & fix: messages not appearing without a page refresh
+
+**Symptom:** When the other party sends a message, it often does not appear in the chat window until the page is refreshed.
+
+**Suspected cause:** The Echo listener in `chat-window.blade.php` calls `$wire.dispatch('message-received', { message })`, which triggers the PHP `messageReceived()` method that appends to `$this->messages`. However, Livewire may not be re-rendering the component after the array append, or the Echo subscription may be silently failing.
+
+**Debugging approach:** A dedicated debugging subagent should:
+1. Verify Echo is connecting and receiving events (check console errors, channel auth, `MessageSent` event structure).
+2. Verify `$wire.dispatch('message-received', ...)` actually calls the PHP method (add temporary logging).
+3. Verify Livewire re-renders after `$this->messages[] = $message` — if not, switch to `$this->dispatch` followed by a full `loadMessages()` reload, or use `$this->js(...)` to trigger a client-side scroll after re-render.
+4. Fix root cause and confirm messages appear in real time without a refresh.
+
+### F2 — Auto-scroll to bottom on new message
+
+**Current state:** `x-on:message-received.window="$nextTick(() => $el.scrollTop = $el.scrollHeight)"` in the messages container. This fires when the Livewire event reaches the browser window, but Livewire's DOM update may not yet be complete when the scroll runs, so the new message is outside the scroll area.
+
+**Fix:** After F1's root cause is established, ensure the scroll fires reliably AFTER the DOM update. Options in priority order:
+- If Livewire re-renders the component, use `x-on:livewire:updated` scoped to the messages container, guarded by a flag set when a new message arrives.
+- Or dispatch a dedicated `scroll-to-bottom` browser event from inside `messageReceived()` PHP method using `$this->js("document.dispatchEvent(new CustomEvent('scroll-to-bottom'))")` — this fires after the Livewire re-render cycle.
+
+### F3 — "Stuur naar alle huurders" becomes a pinned broadcast tab
+
+**Current state:** A broadcast form (building selector + message input + send button) sits at the top of the conversation list sidebar. It takes up permanent space and is visually disconnected from the chat UX.
+
+**New behaviour:**
+- Remove the broadcast form section from the top of `conversation-list.blade.php`.
+- Add a pinned entry at the very top of the conversation list (above the scrollable list, visually separated by a thin divider below it). This entry looks like a regular conversation row but uses a group/megaphone icon and the label "Alle huurders". It is always present regardless of the conversation list.
+- When this pinned entry is clicked, `selectConversation` is called with a special sentinel value (e.g. `'broadcast'` or `0`).
+- In `ChatWindow`, detect this sentinel value and render a **broadcast mode** view instead of a regular conversation: show a building selector dropdown and a message textarea with a send button. On submit, call the existing `sendToAll` logic (move it from `ConversationList` to `ChatWindow`, or keep it in `ConversationList` and dispatch an event).
+- The back button (responsive) and desktop panel layout work identically — broadcast mode is just another "active view" in the chat window.
+
+**Data flow:**
+```
+User clicks "Alle huurders" pinned entry
+  → ConversationList::selectConversation('broadcast')
+  → dispatch('conversation-selected', conversationId: 'broadcast')
+  → ChatWindow receives event, sets $isBroadcastMode = true, $conversation = null
+  → Chat window renders broadcast UI
+
+User submits broadcast form
+  → ChatWindow::sendBroadcast(buildingId, message)
+  → Same logic as current ConversationList::sendToAll()
+```
+
+**Model/PHP changes needed:**
+- `ConversationList.php`: remove `sendToAll`, `broadcastMessage`, `selectedBuildingId`. Add pinned "broadcast" entry to the rendered conversations data (or render it statically in the blade).
+- `ChatWindow.php`: add `$isBroadcastMode`, `$broadcastBuildingId`, `$broadcastMessage` properties. Add `sendBroadcast()` method with the same logic as the removed `sendToAll()`. Load buildings list in `mount()` or `render()` for broadcast mode.
+- `conversation-selected` event payload: `conversationId` is currently `int`; update type to `int|string` and handle `'broadcast'` sentinel.
+
+### F4 — Auto-expanding textarea for message input
+
+**Current state:** `<input type="text">` for the message input — text overflows horizontally without wrapping.
+
+**Fix:** Replace the `<input>` with a `<textarea>` that auto-expands vertically as the user types, capped at a max height.
+
+- Use Alpine.js to resize: `x-on:input="$el.style.height = 'auto'; $el.style.height = Math.min($el.scrollHeight, 160) + 'px'"`.
+- Default height: single line (`rows="1"`, `resize-none`).
+- Max height: ~160px (approx 6 lines) — beyond this the textarea scrolls internally.
+- Submit behaviour: **Enter** sends, **Shift+Enter** inserts a newline. Handle with `@keydown.enter.prevent="if (!$event.shiftKey) { $wire.sendMessage(); $el.style.height = 'auto' }"`.
+- After `sendMessage()` the `newMessage` model clears — also reset height via the keydown handler.
+- The `wire:submit` form handler continues to work for button-click submission.
+- Styling: match existing `rounded-full` input — switch to `rounded-2xl` since `rounded-full` looks odd on multi-line. Keep `border`, `bg`, `px-5 py-2.5`, `text-sm`, `focus:ring` classes. Add `overflow-y-auto` so internal scroll works when capped.
+
+---
+
+## Implementation order
+
+1. **F1 (debug messages)** — must be first; F2 depends on knowing the correct re-render hook.
+2. **F2 (auto-scroll)** — depends on F1's outcome.
+3. **F3 (broadcast tab)** — independent of F1/F2.
+4. **F4 (textarea)** — independent, purely frontend.
+5. **Responsive layout** — independent, purely frontend.
