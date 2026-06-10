@@ -75,19 +75,42 @@
         </form>
 
         {{-- Resultaten --}}
-        <div class="mb-6 flex items-center justify-between">
-            <p class="text-sm text-ink/55">{{ $rooms->total() }} {{ \Illuminate\Support\Str::plural('kot', $rooms->total()) }} gevonden</p>
-            @if ($filters['q'] || $filters['type'] || $filters['price_min'] || $filters['price_max'] || $filters['surface_min'] || $filters['furnished'])
-                <a href="{{ route('rooms.index') }}" class="text-sm text-ink/55 underline hover:text-ink">Filters wissen</a>
-            @endif
+        <div class="mb-6 flex flex-wrap items-center justify-between gap-4">
+            <p class="text-sm text-ink/55">{{ $rooms->total() }} {{ $rooms->total() === 1 ? 'kot' : 'koten' }} gevonden</p>
+
+            <div class="flex items-center gap-5">
+                @if ($filters['q'] || $filters['type'] || $filters['price_min'] || $filters['price_max'] || $filters['surface_min'] || $filters['furnished'])
+                    <a href="{{ route('rooms.index') }}" class="text-sm text-ink/55 underline hover:text-ink">Filters wissen</a>
+                @endif
+
+                {{-- Grid / lijst toggle — view leeft in de URL, paginatie reset --}}
+                @php $viewQuery = collect(request()->query())->except('page', 'view'); @endphp
+                <nav class="flex overflow-hidden rounded-lg border border-ink/15" aria-label="Weergave">
+                    @foreach (['grid' => 'Grid', 'list' => 'Lijst'] as $view => $label)
+                        <a href="{{ route('rooms.index', $viewQuery->put('view', $view)->all()) }}"
+                           @if ($filters['view'] === $view) aria-current="true" @endif
+                           class="px-3.5 py-1.5 text-[0.7rem] font-medium uppercase tracking-[0.12em] transition-colors {{ $filters['view'] === $view ? 'bg-ink text-white' : 'bg-white text-ink-soft hover:text-ink' }}">
+                            {{ $label }}
+                        </a>
+                    @endforeach
+                </nav>
+            </div>
         </div>
 
         @if ($rooms->isNotEmpty())
-            <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                @foreach ($rooms as $room)
-                    <x-koten-card :room="$room" />
-                @endforeach
-            </div>
+            @if ($filters['view'] === 'list')
+                <div>
+                    @foreach ($rooms as $room)
+                        <x-koten-row :room="$room" />
+                    @endforeach
+                </div>
+            @else
+                <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                    @foreach ($rooms as $room)
+                        <x-koten-card :room="$room" />
+                    @endforeach
+                </div>
+            @endif
 
             <div class="mt-12">
                 {{ $rooms->links() }}

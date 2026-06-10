@@ -16,6 +16,8 @@ class RoomController extends Controller
 
     private const SORTS = ['newest', 'price_asc', 'price_desc', 'surface_desc'];
 
+    private const VIEWS = ['grid', 'list'];
+
     public function index(Request $request): View
     {
         $filters = $this->filters($request);
@@ -132,6 +134,7 @@ class RoomController extends Controller
             'surface_min' => $request->integer('surface_min') ?: null,
             'furnished' => $request->boolean('furnished') ?: null,
             'sort' => in_array($request->input('sort'), self::SORTS, true) ? $request->input('sort') : 'newest',
+            'view' => in_array($request->input('view'), self::VIEWS, true) ? $request->input('view') : 'grid',
         ];
     }
 
