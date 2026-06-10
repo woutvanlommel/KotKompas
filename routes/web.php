@@ -49,3 +49,4 @@ Route::middleware('auth')->group(function () {
 Route::view('/privacy', 'privacy')->name('privacy');
 Route::view('/cookies', 'cookies')->name('cookies');
 Route::view('/algemene-voorwaarden', 'algemene-voorwaarden')->name('algemene-voorwaarden');
+Route::view('/gegevens-verwijderen', 'gegevens-verwijderen')->name('gegevens-verwijderen');

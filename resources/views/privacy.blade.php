@@ -29,7 +29,7 @@
                 <li>Telefoonnummer (optioneel)</li>
                 <li>Geboortedatum</li>
                 <li>Profielfoto</li>
-                <li>Gegevens gekoppeld aan een Google-account bij inloggen via Google</li>
+                <li>Gegevens gekoppeld aan een Google- of Facebook-account bij inloggen via Google of Facebook</li>
                 <li>Berichten verstuurd via het contactformulier</li>
             </ul>
         </div>

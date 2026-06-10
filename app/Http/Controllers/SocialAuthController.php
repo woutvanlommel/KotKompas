@@ -14,7 +14,7 @@ class SocialAuthController extends Controller
     /**
      * Providers we accept. Anything else 404s.
      */
-    private const PROVIDERS = ['google'];
+    private const PROVIDERS = ['google', 'facebook'];
 
     public function redirect(string $provider): SymfonyRedirectResponse
     {
@@ -46,6 +46,13 @@ class SocialAuthController extends Controller
 
             return redirect()->to(filament()->getPanel('dashboard')->getLoginUrl())
                 ->withErrors(['social' => 'Aanmelden met '.ucfirst($provider).' is mislukt. Probeer opnieuw.']);
+        }
+
+        // Facebook-accounts aangemaakt met enkel een telefoonnummer hebben geen
+        // e-mailadres; onze accounts zijn e-mail-gebaseerd, dus netjes weigeren.
+        if (! $oauthUser->getEmail()) {
+            return redirect()->to(filament()->getPanel('dashboard')->getLoginUrl())
+                ->withErrors(['social' => 'Je '.ucfirst($provider).'-account heeft geen e-mailadres. Registreer met je e-mailadres.']);
         }
 
         // A soft-deleted account still holds the unique email slot — refuse a fresh
