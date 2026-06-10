@@ -28,7 +28,12 @@ class ChatWindow extends Component
     public function mount(?int $conversationId = null): void
     {
         if ($conversationId) {
-            $this->conversation = Conversation::findOrFail($conversationId);
+            $this->conversation = Conversation::where('id', $conversationId)
+                ->where(fn ($q) => $q
+                    ->where('landlord_id', auth()->id())
+                    ->orWhere('tenant_id', auth()->id())
+                )
+                ->firstOrFail();
             $this->loadMessages();
             $this->markAsRead();
         }
@@ -143,7 +148,12 @@ class ChatWindow extends Component
     public function conversationSelected(int $conversationId): void
     {
         $this->isBroadcastMode = false;
-        $this->conversation = Conversation::findOrFail($conversationId);
+        $this->conversation = Conversation::where('id', $conversationId)
+            ->where(fn ($q) => $q
+                ->where('landlord_id', auth()->id())
+                ->orWhere('tenant_id', auth()->id())
+            )
+            ->firstOrFail();
         $this->loadMessages();
         $this->markAsRead();
         $this->dispatch('scroll-to-bottom');

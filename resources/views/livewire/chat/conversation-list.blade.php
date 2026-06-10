@@ -18,6 +18,31 @@
         </button>
     </div>
 
+    {{-- Tenant finder --}}
+    <div class="px-3 py-3 border-b border-gray-200 dark:border-gray-700 space-y-2 shrink-0">
+        <select
+            wire:model.live="filterBuildingId"
+            class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+        >
+            <option value="">Selecteer gebouw...</option>
+            @foreach($buildings as $building)
+                <option value="{{ $building->id }}">{{ $building->name }}</option>
+            @endforeach
+        </select>
+
+        @if($availableTenants)
+            <select
+                wire:model.live="filterTenantId"
+                class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+            >
+                <option value="">Selecteer huurder...</option>
+                @foreach($availableTenants as $tenant)
+                    <option value="{{ $tenant['id'] }}">{{ $tenant['name'] }}</option>
+                @endforeach
+            </select>
+        @endif
+    </div>
+
     {{-- Conversation list --}}
     <div class="flex-1 overflow-y-auto divide-y divide-gray-100 dark:divide-gray-700">
         @forelse($conversations as $convo)
