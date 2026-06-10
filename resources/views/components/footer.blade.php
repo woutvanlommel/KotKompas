@@ -80,6 +80,7 @@
                         <li><a href="{{ route('privacy') }}" class="inline-block transition-colors hover:text-secondary-600">Privacybeleid</a></li>
                         <li><a href="{{ route('cookies') }}" class="inline-block transition-colors hover:text-secondary-600">Cookiebeleid</a></li>
                         <li><a href="{{ route('algemene-voorwaarden') }}" class="inline-block transition-colors hover:text-secondary-600">Algemene voorwaarden</a></li>
+                        <li><a href="{{ route('gegevens-verwijderen') }}" class="inline-block transition-colors hover:text-secondary-600">Gegevens verwijderen</a></li>
                     </ul>
                 </div>
 
