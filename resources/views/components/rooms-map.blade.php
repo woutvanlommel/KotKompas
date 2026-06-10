@@ -64,21 +64,30 @@
         maxZoom: 20,
     }).addTo(map);
 
-    // ── Custom pin ────────────────────────────────────────────────────────────
-    function makeIcon(count) {
-        const label = count > 1 ? String(count) : '';
+    // ── Pill marker ───────────────────────────────────────────────────────────
+    function makeIcon(b) {
+        const label = b.rooms.length === 1
+            ? `€${b.rooms[0].price.toLocaleString('nl-BE')}`
+            : `${b.rooms.length} koten`;
+
         return L.divIcon({
             className: '',
-            iconSize: [36, 44],
-            iconAnchor: [18, 44],
-            popupAnchor: [0, -46],
-            html: `<div style="position:relative;width:36px;height:44px;">
-                <svg viewBox="0 0 36 44" fill="none" xmlns="http://www.w3.org/2000/svg"
-                     style="width:36px;height:44px;filter:drop-shadow(0 2px 4px rgba(0,0,0,.25))">
-                    <path d="M18 0C8.059 0 0 8.059 0 18c0 12.5 18 26 18 26S36 30.5 36 18C36 8.059 27.941 0 18 0Z" fill="#0f172a"/>
-                    <circle cx="18" cy="18" r="8" fill="#f59e0b"/>
-                </svg>
-                ${label ? `<span style="position:absolute;top:5px;left:50%;transform:translateX(-50%);font-size:10px;font-weight:700;color:#fff;line-height:1;">${label}</span>` : ''}
+            iconAnchor: [0, 32],
+            popupAnchor: [0, -34],
+            html: `<div style="display:flex;flex-direction:column;align-items:center;transform:translateX(-50%);cursor:pointer;">
+                <div style="
+                    display:inline-flex;align-items:center;
+                    background:#0f172a;color:#fff;
+                    font-size:12px;font-weight:700;font-family:inherit;
+                    padding:5px 10px;border-radius:999px;white-space:nowrap;
+                    box-shadow:0 2px 8px rgba(0,0,0,.3);
+                ">${label}</div>
+                <div style="
+                    width:0;height:0;
+                    border-left:5px solid transparent;
+                    border-right:5px solid transparent;
+                    border-top:6px solid #0f172a;
+                "></div>
             </div>`,
         });
     }
@@ -111,7 +120,7 @@
 
     // ── Markers ───────────────────────────────────────────────────────────────
     const markers = BUILDINGS.map(b => {
-        const m = L.marker([b.lat, b.lng], { icon: makeIcon(b.rooms.length), title: b.name });
+        const m = L.marker([b.lat, b.lng], { icon: makeIcon(b), title: b.name });
         m.bindPopup(buildPopup(b), { maxWidth: 320, className: 'kk-popup' });
         m.addTo(map);
         return m;
