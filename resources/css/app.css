@@ -163,7 +163,42 @@ select.kk-field {
     background-position: right 0.1rem center;
     background-size: 0.9rem;
 }
-.kk-check { accent-color: var(--color-ink); }
+/* Checkbox in de auth-taal: vierkante outline, een dash die naar een cirkel
+   morpht bij aanvinken (zie .fi-checkbox-input in het dashboard-theme) —
+   hier in ink op het lichte canvas i.p.v. wit op navy. */
+.kk-check {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 1rem;
+    height: 1rem;
+    border: 1.5px solid color-mix(in oklab, var(--color-ink) 30%, transparent);
+    border-radius: 3px;
+    background-color: transparent;
+    cursor: pointer;
+    flex-shrink: 0;
+    position: relative;
+    transition: border-color 160ms ease;
+}
+.kk-check:checked { border-color: var(--color-ink); }
+.kk-check::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 2px;
+    height: 58%;
+    transform: translate(-50%, -50%);
+    border-radius: 1px;
+    background-color: var(--color-ink);
+    transition: width 280ms cubic-bezier(0.22, 1, 0.36, 1),
+                height 280ms cubic-bezier(0.22, 1, 0.36, 1),
+                border-radius 280ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.kk-check:checked::after {
+    width: 0.55rem;
+    height: 0.55rem;
+    border-radius: 50%;
+}
 
 /* ---- Filterpaneel: inklapbaar op mobiel (toggle-knop), altijd open op lg+ ---- */
 @media (max-width: 63.9rem) {

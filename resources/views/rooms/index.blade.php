@@ -87,7 +87,7 @@
 
             <div class="flex flex-wrap items-end justify-between gap-4 sm:col-span-2 lg:col-span-1">
                 <label class="inline-flex cursor-pointer items-center gap-2.5 pb-1 text-sm text-ink">
-                    <input type="checkbox" name="furnished" value="1" @checked($filters['furnished']) class="kk-check h-4 w-4 rounded border-ink/30">
+                    <input type="checkbox" name="furnished" value="1" @checked($filters['furnished']) class="kk-check">
                     Gemeubeld
                 </label>
                 <button type="submit" data-magnetic="0.2" class="kk-cta kk-cta--ink">
