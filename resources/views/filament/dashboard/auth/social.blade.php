@@ -1,4 +1,4 @@
-{{-- Social sign-in row — wired to Laravel Socialite (Google). --}}
+{{-- Social sign-in row — wired to Laravel Socialite (Google + Facebook). --}}
 <div class="mt-4">
     <div class="mb-[0.7rem] flex items-center gap-[0.7rem] text-[0.625rem] font-semibold uppercase tracking-[0.12em] text-white/60 before:h-px before:flex-1 before:bg-white/30 before:content-[''] after:h-px after:flex-1 after:bg-white/30 after:content-['']"><span>of ga verder met</span></div>
     <div class="flex gap-2">
@@ -10,6 +10,13 @@
                 <path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303c-.792 2.237-2.231 4.166-4.087 5.571l6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"/>
             </svg>
             <span class="text-[0.8125rem] font-medium text-white">Google</span>
+        </a>
+        <a href="{{ route('social.redirect', 'facebook') }}" class="flex h-[2.4rem] flex-1 items-center justify-center gap-2 rounded-md border border-white/30 bg-white/20 transition-colors duration-150 hover:border-secondary-300 hover:bg-white/30 [&_svg]:block" aria-label="Doorgaan met Facebook">
+            <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+                <circle cx="12" cy="12" r="12" fill="#1877F2"/>
+                <path fill="#fff" d="M16.671 15.469 17.203 12h-3.328V9.749c0-.949.465-1.874 1.956-1.874h1.513V4.922s-1.374-.234-2.686-.234c-2.741 0-4.533 1.66-4.533 4.668V12H7.078v3.469h3.047v8.385a12.09 12.09 0 0 0 3.75 0v-8.385h2.796Z"/>
+            </svg>
+            <span class="text-[0.8125rem] font-medium text-white">Facebook</span>
         </a>
     </div>
 </div>
