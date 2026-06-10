@@ -11,7 +11,16 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::get('/koten', [RoomController::class, 'index'])->name('rooms.index');
+// Stateless JSON-lookup: sessie/cookies overslaan scheelt remote DB-roundtrips
+// (sessies en cache leven in de database) — suggesties moeten snappy zijn.
 Route::get('/koten/suggesties', [RoomController::class, 'suggestions'])
+    ->withoutMiddleware([
+        \Illuminate\Session\Middleware\StartSession::class,
+        \Illuminate\View\Middleware\ShareErrorsFromSession::class,
+        \Illuminate\Cookie\Middleware\EncryptCookies::class,
+        \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
+        \Illuminate\Foundation\Http\Middleware\PreventRequestForgery::class,
+    ])
     ->middleware('throttle:60,1')
     ->name('rooms.suggestions');
 Route::get('/koten/{room}', [RoomController::class, 'show'])->name('rooms.show');

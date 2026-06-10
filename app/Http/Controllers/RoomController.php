@@ -66,7 +66,7 @@ class RoomController extends Controller
     public function suggestions(Request $request): JsonResponse
     {
         $validator = Validator::make($request->query->all(), [
-            'q' => ['required', 'string', 'min:2', 'max:60'],
+            'q' => ['required', 'string', 'min:1', 'max:60'],
         ]);
 
         if ($validator->fails()) {
@@ -75,7 +75,7 @@ class RoomController extends Controller
 
         $q = trim(strip_tags($validator->validated()['q']));
 
-        if (mb_strlen($q) < 2) {
+        if ($q === '') {
             return response()->json(['suggestions' => []]);
         }
 

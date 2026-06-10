@@ -62,8 +62,16 @@ class RoomSuggestionsTest extends TestCase
     public function test_it_validates_the_query(): void
     {
         $this->getJson('/koten/suggesties')->assertUnprocessable();
-        $this->getJson('/koten/suggesties?q=a')->assertUnprocessable();
         $this->getJson('/koten/suggesties?q='.str_repeat('a', 61))->assertUnprocessable();
+    }
+
+    public function test_it_suggests_from_the_first_character(): void
+    {
+        $this->makeRoom();
+
+        $this->getJson('/koten/suggesties?q=H')
+            ->assertOk()
+            ->assertJsonPath('suggestions.0.label', 'Hasselt');
     }
 
     public function test_it_strips_html_from_the_query(): void

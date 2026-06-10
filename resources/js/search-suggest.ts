@@ -1,7 +1,7 @@
 /**
  * Zoeksuggesties (combobox) voor inputs met [data-suggest].
  *
- * - Debounce: pas een request als de gebruiker ~300ms stopt met typen.
+ * - Debounce: pas een request als de gebruiker ~150ms stopt met typen.
  * - AbortController: een nieuwe aanslag annuleert het vorige request.
  * - Toegankelijk: role=combobox/listbox, pijltjes + Enter + Escape.
  * - Thema via data-suggest-theme="dark" (hero) of default licht.
@@ -14,8 +14,8 @@ type Suggestion = {
     url: string;
 };
 
-const DEBOUNCE_MS = 300;
-const MIN_CHARS = 2;
+const DEBOUNCE_MS = 150;
+const MIN_CHARS = 1;
 
 export function initSearchSuggest(): void {
     document.querySelectorAll<HTMLInputElement>('input[data-suggest]').forEach(setup);
@@ -48,6 +48,7 @@ function setup(input: HTMLInputElement): void {
     let active = -1;
     let timer = 0;
     let controller: AbortController | null = null;
+    const cache = new Map<string, Suggestion[]>();
 
     const close = (): void => {
         list.hidden = true;
@@ -95,6 +96,14 @@ function setup(input: HTMLInputElement): void {
     };
 
     const fetchSuggestions = async (q: string): Promise<void> => {
+        const cached = cache.get(q);
+        if (cached) {
+            items = cached;
+            highlight(-1);
+            render();
+            return;
+        }
+
         controller?.abort();
         controller = new AbortController();
         try {
@@ -105,6 +114,9 @@ function setup(input: HTMLInputElement): void {
             if (!res.ok) return close();
             const data = (await res.json()) as { suggestions: Suggestion[] };
             items = data.suggestions ?? [];
+            cache.set(q, items);
+            // alleen renderen als de input intussen niet verder getypt is
+            if (input.value.trim() !== q) return;
             highlight(-1);
             render();
         } catch (e) {
@@ -118,6 +130,11 @@ function setup(input: HTMLInputElement): void {
         if (q.length < MIN_CHARS) {
             controller?.abort();
             close();
+            return;
+        }
+        // cache-hit rendert direct, zonder debounce-wachttijd
+        if (cache.has(q)) {
+            void fetchSuggestions(q);
             return;
         }
         timer = window.setTimeout(() => void fetchSuggestions(q), DEBOUNCE_MS);
