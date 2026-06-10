@@ -3,8 +3,11 @@
 namespace App\Livewire\Chat;
 
 use App\Events\MessageSent;
+use App\Models\Building;
 use App\Models\Conversation;
 use App\Models\Message;
+use Filament\Notifications\Notification;
+use Illuminate\Validation\Rule;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
@@ -16,10 +19,21 @@ class ChatWindow extends Component
 
     public array $messages = [];
 
+    public bool $isBroadcastMode = false;
+
+    public ?int $broadcastBuildingId = null;
+
+    public string $broadcastMessage = '';
+
     public function mount(?int $conversationId = null): void
     {
         if ($conversationId) {
-            $this->conversation = Conversation::findOrFail($conversationId);
+            $this->conversation = Conversation::where('id', $conversationId)
+                ->where(fn ($q) => $q
+                    ->where('landlord_id', auth()->id())
+                    ->orWhere('tenant_id', auth()->id())
+                )
+                ->firstOrFail();
             $this->loadMessages();
             $this->markAsRead();
         }
@@ -74,6 +88,40 @@ class ChatWindow extends Component
         ];
 
         $this->newMessage = '';
+        $this->dispatch('scroll-to-bottom');
+    }
+
+    public function sendBroadcast(): void
+    {
+        $this->validate([
+            'broadcastMessage' => 'required|string|max:5000',
+            'broadcastBuildingId' => ['required', Rule::exists('buildings', 'id')->where('landlord_id', auth()->id())],
+        ]);
+
+        $conversations = Conversation::where('building_id', $this->broadcastBuildingId)
+            ->where('landlord_id', auth()->id())
+            ->get();
+
+        foreach ($conversations as $conversation) {
+            $message = Message::create([
+                'conversation_id' => $conversation->id,
+                'sender_id' => auth()->id(),
+                'body' => strip_tags($this->broadcastMessage),
+                'is_broadcast' => true,
+            ]);
+
+            $conversation->update(['last_message_at' => now()]);
+
+            MessageSent::dispatch($message->load('sender'));
+        }
+
+        $this->broadcastMessage = '';
+        $this->broadcastBuildingId = null;
+
+        Notification::make()
+            ->title('Bericht verstuurd naar alle huurders')
+            ->success()
+            ->send();
     }
 
     public function markAsRead(): void
@@ -88,30 +136,45 @@ class ChatWindow extends Component
             ->update(['read_at' => now()]);
     }
 
-    /**
-     * Called from the Echo listener in the blade via $wire.dispatch().
-     * Appends the incoming message to the local array without a full re-render.
-     */
     #[On('message-received')]
     public function messageReceived(array $message): void
     {
         $this->messages[] = $message;
         $this->markAsRead();
+        $this->dispatch('scroll-to-bottom');
     }
 
-    /**
-     * Fired by ConversationList when the verhuurder selects a different conversation.
-     */
     #[On('conversation-selected')]
     public function conversationSelected(int $conversationId): void
     {
-        $this->conversation = Conversation::findOrFail($conversationId);
+        $this->isBroadcastMode = false;
+        $this->conversation = Conversation::where('id', $conversationId)
+            ->where(fn ($q) => $q
+                ->where('landlord_id', auth()->id())
+                ->orWhere('tenant_id', auth()->id())
+            )
+            ->firstOrFail();
         $this->loadMessages();
         $this->markAsRead();
+        $this->dispatch('scroll-to-bottom');
+    }
+
+    #[On('broadcast-selected')]
+    public function broadcastSelected(): void
+    {
+        $this->isBroadcastMode = true;
+        $this->conversation = null;
+        $this->messages = [];
+        $this->broadcastMessage = '';
+        $this->broadcastBuildingId = null;
     }
 
     public function render()
     {
-        return view('livewire.chat.chat-window');
+        $buildings = $this->isBroadcastMode
+            ? Building::where('landlord_id', auth()->id())->get()
+            : collect();
+
+        return view('livewire.chat.chat-window', compact('buildings'));
     }
 }

@@ -1,35 +1,46 @@
 <div class="flex flex-col h-full">
 
-    {{-- Send to all --}}
-    <div class="p-4 border-b border-gray-200 dark:border-gray-700">
-        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
-            Stuur naar alle huurders
-        </p>
-        <form wire:submit="sendToAll" class="space-y-2">
+    {{-- Pinned broadcast entry --}}
+    <div class="border-b border-gray-200 dark:border-gray-700 shrink-0">
+        <button
+            wire:click="selectBroadcast"
+            class="w-full text-left px-4 py-3.5 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors {{ $broadcastActive ? 'bg-primary-50 dark:bg-primary-900/20 border-l-2 border-primary-600' : 'border-l-2 border-transparent' }}"
+        >
+            <div class="flex items-center gap-3">
+                <div class="flex items-center justify-center w-10 h-10 rounded-full bg-accent-100 dark:bg-accent-900/40 text-accent-700 dark:text-accent-300 shrink-0">
+                    <x-heroicon-o-megaphone class="w-5 h-5" />
+                </div>
+                <div class="min-w-0">
+                    <p class="font-medium text-sm text-gray-900 dark:text-white truncate">Alle huurders</p>
+                    <p class="text-xs text-gray-400 mt-0.5">Stuur een bericht naar iedereen</p>
+                </div>
+            </div>
+        </button>
+    </div>
+
+    {{-- Tenant finder --}}
+    <div class="px-3 py-3 border-b border-gray-200 dark:border-gray-700 space-y-2 shrink-0">
+        <select
+            wire:model.live="filterBuildingId"
+            class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+        >
+            <option value="">Selecteer gebouw...</option>
+            @foreach($buildings as $building)
+                <option value="{{ $building->id }}">{{ $building->name }}</option>
+            @endforeach
+        </select>
+
+        @if($availableTenants)
             <select
-                wire:model="selectedBuildingId"
+                wire:model.live="filterTenantId"
                 class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
             >
-                <option value="">Selecteer gebouw...</option>
-                @foreach($buildings as $building)
-                    <option value="{{ $building->id }}">{{ $building->name }}</option>
+                <option value="">Selecteer huurder...</option>
+                @foreach($availableTenants as $tenant)
+                    <option value="{{ $tenant['id'] }}">{{ $tenant['name'] }}</option>
                 @endforeach
             </select>
-            <div class="flex gap-2">
-                <input
-                    wire:model="broadcastMessage"
-                    type="text"
-                    placeholder="Bericht voor alle huurders..."
-                    class="flex-1 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
-                />
-                <button
-                    type="submit"
-                    class="rounded-lg bg-accent-500 px-3 py-2 text-white text-sm font-medium hover:bg-accent-600 transition"
-                >
-                    Verstuur
-                </button>
-            </div>
-        </form>
+        @endif
     </div>
 
     {{-- Conversation list --}}
