@@ -8,6 +8,8 @@ abstract class ComingSoonWidget extends Widget
 {
     protected string $view = 'filament.dashboard.widgets.coming-soon';
 
+    protected static string $requiredRole = 'verhuurder';
+
     protected string $comingSoonHeading;
 
     protected string $comingSoonDescription;
@@ -16,7 +18,7 @@ abstract class ComingSoonWidget extends Widget
 
     public static function canView(): bool
     {
-        return auth()->user()?->hasRole('verhuurder') ?? false;
+        return auth()->user()?->hasRole(static::$requiredRole) ?? false;
     }
 
     protected function getViewData(): array
