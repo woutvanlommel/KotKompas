@@ -44,7 +44,7 @@ class KotScoreServiceTest extends TestCase
             'score_hygiene' => 5, 'score_size' => 5, 'score_value' => 5,
         ]);
 
-        // (1 × 2 + 2 × 5) / 3 — de oude review telt op half gewicht.
+        // (1 × 2 + 2 × 5) / 3 — the old review counts at half weight.
         $this->assertSame(4.0, $room->refresh()->score);
     }
 

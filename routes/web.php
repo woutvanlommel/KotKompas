@@ -17,8 +17,8 @@ use Illuminate\View\Middleware\ShareErrorsFromSession;
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::get('/koten', [RoomController::class, 'index'])->name('rooms.index');
-// Stateless JSON-lookup: sessie/cookies overslaan scheelt remote DB-roundtrips
-// (sessies en cache leven in de database) — suggesties moeten snappy zijn.
+// Stateless JSON lookup: skipping session/cookies saves remote DB roundtrips
+// (sessions and cache live in the database) — suggestions should be snappy.
 Route::get('/koten/suggesties', [RoomController::class, 'suggestions'])
     ->withoutMiddleware([
         StartSession::class,

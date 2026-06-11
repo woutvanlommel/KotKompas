@@ -9,14 +9,14 @@ use App\Models\User;
 use Illuminate\Support\Collection;
 
 /**
- * Berekent en cachet alle scores uit room_reviews.
+ * Computes and caches all scores from room_reviews.
  *
- * - Recency: beoordelingen jonger dan 2 jaar tellen dubbel.
- * - Kotscore = gewogen gemiddelde van de room_scores (hygiëne/grootte/prijs-kwaliteit).
- * - Gebouwscore = gewogen gemiddelde over alle beoordelingen van zijn koten.
- * - Verhuurderscore = 50% kot-kwaliteit + 50% communicatie, over al zijn beoordelingen.
- * - score_bayesian trekt de score richting het platformgemiddelde tot er genoeg
- *   beoordelingen zijn — alleen voor ranking/filtering, nooit voor weergave.
+ * - Recency: reviews younger than 2 years count double.
+ * - Room score = weighted average of room_scores (hygiene/size/value).
+ * - Building score = weighted average across all reviews of its rooms.
+ * - Landlord score = 50% room quality + 50% communication, across all their reviews.
+ * - score_bayesian pulls the score toward the platform mean until enough
+ *   reviews exist — only for ranking/filtering, never for display.
  */
 class KotScoreService
 {
@@ -126,9 +126,9 @@ class KotScoreService
     }
 
     /**
-     * Gewogen gemiddelden per criterium, voor de score-sectie op de
-     * detailpagina. Zelfde recency-gewichten als de kotscore zelf, zodat
-     * de breakdown en het totaal elkaar nooit tegenspreken.
+     * Weighted averages per criterion, for the score section on the
+     * detail page. Same recency weights as the room score itself, so
+     * the breakdown and total never contradict each other.
      *
      * @return array{hygiene: float, size: float, value: float, communication: float}|null
      */

@@ -32,9 +32,9 @@ class RoomResource extends Resource
     }
 
     /**
-     * Eigenaar-scope op resource-niveau: geldt voor de lijst én voor de
-     * record-binding van view/edit — anders is /dashboard/rooms/{id} van
-     * een andere verhuurder gewoon via de URL bereikbaar.
+     * Owner scope at resource level: applies to the list and to
+     * view/edit record binding — otherwise /dashboard/rooms/{id} of
+     * another landlord is reachable simply via the URL.
      */
     public static function getEloquentQuery(): Builder
     {

@@ -12,11 +12,10 @@ return new class extends Migration
             $table->id();
             $table->foreignId('room_id')->constrained()->cascadeOnDelete();
 
-            // Snapshot van de verhuurder op het moment van beoordelen: de
-            // verhuurderscore mag niet verschuiven als een gebouw van eigenaar wisselt.
+            // Landlord snapshot at review time: the landlord score must
+            // not shift when a building changes ownership.
             $table->foreignId('landlord_id')->constrained('users');
-
-            // Intern, voor dedup en fraudecontrole — wordt nooit getoond.
+            // Internal, for dedup and fraud control — never displayed.
             $table->foreignId('tenant_id')->nullable()->constrained('users')->nullOnDelete();
 
             $table->unsignedTinyInteger('score_hygiene');
@@ -26,8 +25,8 @@ return new class extends Migration
 
             $table->timestamps();
 
-            // Eén beoordeling per huurder per kot tot er een echt
-            // huurperiode-model bestaat (Sprint 2) — dan kan dit per periode.
+            // One review per tenant per room until a proper
+            // rental-period model exists (Sprint 2) — then per period.
             $table->unique(['room_id', 'tenant_id']);
         });
     }

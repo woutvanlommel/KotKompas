@@ -11,8 +11,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 /**
- * De kotscore-enquête achter de token-link. Anoniem voor de buitenwereld:
- * tenant_id wordt alleen intern opgeslagen (dedup en fraudecontrole).
+ * The room score survey behind the token link. Anonymous to the outside world:
+ * tenant_id is only stored internally (dedup and fraud control).
  */
 class RoomReviewController extends Controller
 {

@@ -1,10 +1,10 @@
 <?php
 
-// Observer op Room: een huur is stopgezet zodra tenant_id wijzigt weg van een
-// huurder — bij ontkoppelen én bij een wissel ("Huurder wijzigen"). Dat is hét
-// moment voor de enquête-uitnodiging, ongeacht via welke actie het gebeurde.
-// De mail die de link verstuurt hangt aan "Template mail" (#28); tot die er is
-// deelt de verhuurder de link via het dashboard (Status & Huurder).
+// Observer on Room: a rental ends when tenant_id changes away from a
+// tenant — whether via unlinking or a swap ("Change tenant"). That is the
+// moment for the review invitation, regardless of which action triggered it.
+// The email that sends the link depends on "Template mail" (#28); until then
+// the landlord shares the link via the dashboard (Status & Tenant).
 
 namespace App\Observers;
 
