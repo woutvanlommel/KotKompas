@@ -38,6 +38,7 @@
                 <div class="mt-10 space-y-12 md:mt-16 md:space-y-16">
                     <x-room.description :room="$room" />
                     <x-room.facilities :room="$room" />
+                    <x-room.score :room="$room" :breakdown="$scoreBreakdown" />
                     <x-room.map :room="$room" />
                     <x-room.pricing :room="$room" />
                 </div>

@@ -126,6 +126,36 @@ class KotScoreService
     }
 
     /**
+     * Gewogen gemiddelden per criterium, voor de score-sectie op de
+     * detailpagina. Zelfde recency-gewichten als de kotscore zelf, zodat
+     * de breakdown en het totaal elkaar nooit tegenspreken.
+     *
+     * @return array{hygiene: float, size: float, value: float, communication: float}|null
+     */
+    public function criteriaBreakdown(Room $room): ?array
+    {
+        // Via de relatie-property: een al geladen reviews-relatie wordt
+        // hergebruikt i.p.v. een tweede query af te vuren.
+        $reviews = $room->reviews;
+
+        if ($reviews->isEmpty()) {
+            return null;
+        }
+
+        [$hygiene] = $this->weightedAverage($reviews, fn (RoomReview $r) => (float) $r->score_hygiene);
+        [$size] = $this->weightedAverage($reviews, fn (RoomReview $r) => (float) $r->score_size);
+        [$value] = $this->weightedAverage($reviews, fn (RoomReview $r) => (float) $r->score_value);
+        [$communication] = $this->weightedAverage($reviews, fn (RoomReview $r) => (float) $r->score_communication);
+
+        return [
+            'hygiene' => (float) $hygiene,
+            'size' => (float) $size,
+            'value' => (float) $value,
+            'communication' => (float) $communication,
+        ];
+    }
+
+    /**
      * @param  Collection<int, RoomReview>  $reviews
      * @param  callable(RoomReview): float  $value
      * @return array{0: float|null, 1: float} [gewogen gemiddelde, totaalgewicht]

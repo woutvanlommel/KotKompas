@@ -37,8 +37,9 @@
             <x-heroicon-o-map-pin class="h-4 w-4 shrink-0" aria-hidden="true" />
             {{ $room->building?->full_address ?? '—' }}
         </p>
-        @if (count($badges))
+        @if (count($badges) || $room->reviews_count > 0)
             <div class="mt-4 flex flex-wrap gap-2">
+                <x-score-badge :score="$room->score" :count="$room->reviews_count" />
                 @foreach ($badges as $badge)
                     <span class="inline-block rounded-full border border-hairline bg-canvas-deep px-3 py-1 text-[0.7rem] font-medium uppercase tracking-[0.1em] text-ink/70">
                         {{ $badge }}

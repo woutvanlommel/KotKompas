@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Building;
 use App\Models\Room;
+use App\Services\KotScoreService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -114,11 +115,13 @@ class RoomController extends Controller
         ]);
     }
 
-    public function show(Room $room): View
+    public function show(Room $room, KotScoreService $kotScoreService): View
     {
         $room->load(['building', 'media', 'facilities', 'costTypes']);
 
-        return view('rooms.show', compact('room'));
+        $scoreBreakdown = $room->reviews_count > 0 ? $kotScoreService->criteriaBreakdown($room) : null;
+
+        return view('rooms.show', compact('room', 'scoreBreakdown'));
     }
 
     /**
