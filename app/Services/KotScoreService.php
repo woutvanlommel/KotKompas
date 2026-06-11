@@ -26,15 +26,15 @@ class KotScoreService
 
     private const OLD_WEIGHT = 1.0;
 
-    // "Gewicht" van het platformgemiddelde in de Bayesiaanse score —
-    // vergelijkbaar met ~2,5 recente beoordelingen.
+    // "Weight" of the platform mean in the Bayesian score —
+    // comparable to ~2.5 recent reviews.
     private const BAYES_CONFIDENCE = 5.0;
 
-    // Startwaarde zolang het platform nog geen enkele beoordeling heeft.
+    // Starting value while the platform has no reviews at all.
     private const DEFAULT_PLATFORM_MEAN = 3.5;
 
-    // Eén keer berekend per recompute-operatie; observers en de dagelijkse
-    // command resetten dit aan het begin zodat de waarde nooit stale is.
+    // Computed once per recompute operation; observers and the daily
+    // cron reset this at the start so the value is never stale.
     private ?float $cachedPlatformMean = null;
 
     public function recomputeForReview(RoomReview $review): void
@@ -51,8 +51,8 @@ class KotScoreService
             $this->recomputeBuilding($room->building);
         }
 
-        // withTrashed: reviews van een soft-deleted verhuurder kunnen nog
-        // wijzigen; zijn cache moet kloppen als de account ge-restored wordt.
+        // withTrashed: reviews of a soft-deleted landlord may still
+        // change; their cache must be correct when the account is restored.
         if ($landlord = User::withTrashed()->find($landlordId)) {
             $this->recomputeLandlord($landlord);
         }
@@ -62,16 +62,16 @@ class KotScoreService
     {
         $this->cachedPlatformMean = null;
 
-        // De or-voorwaarde moet gegroepeerd blijven: lazyById voegt zelf
-        // "id > ?" toe en een losse OR zou die cursor omzeilen.
+        // The OR clause must stay grouped: lazyById appends its own
+        // "id > ?" and a loose OR would bypass that cursor.
         Room::query()
             ->where(fn ($query) => $query->where('reviews_count', '>', 0)->orHas('reviews'))
             ->lazyById()
             ->each(fn (Room $room) => $this->recomputeRoom($room));
 
-        // Gebouwen apart itereren (niet via hun koten): zo geneest ook een
-        // gebouw waarvan het laatste beoordeelde kot verwijderd is — de
-        // DB-cascade op room_reviews vuurt geen observer af.
+        // Iterate buildings separately (not via their rooms): this also heals
+        // a building whose last reviewed room was deleted — the
+        // DB cascade on room_reviews does not fire an observer.
         Building::query()
             ->where(fn ($query) => $query->where('reviews_count', '>', 0)->orHas('rooms.reviews'))
             ->lazyById()
@@ -83,8 +83,8 @@ class KotScoreService
             ->each(fn (User $landlord) => $this->recomputeLandlord($landlord));
     }
 
-    // De drie entiteit-recomputes zijn privé: alleen recomputeFor/recomputeAll
-    // resetten het gememoizede platformgemiddelde, dus alleen zij zijn een
+    // The three entity recompute methods are private: only recomputeFor/recomputeAll
+    // reset the memoized platform mean, so only they are a safe
     // veilig instappunt.
     private function recomputeRoom(Room $room): void
     {
@@ -134,8 +134,8 @@ class KotScoreService
      */
     public function criteriaBreakdown(Room $room): ?array
     {
-        // Via de relatie-property: een al geladen reviews-relatie wordt
-        // hergebruikt i.p.v. een tweede query af te vuren.
+        // Via the relationship property: an already loaded reviews relation
+        // is reused instead of firing a second query.
         $reviews = $room->reviews;
 
         if ($reviews->isEmpty()) {
@@ -171,8 +171,8 @@ class KotScoreService
         $weightedSum = 0.0;
 
         foreach ($reviews as $review) {
-            // created_at kan null zijn bij rijen die buiten Eloquent om zijn
-            // aangemaakt (imports, bulk inserts) — die tellen als "oud".
+            // created_at may be null for rows created outside Eloquent
+            // (imports, bulk inserts) — those count as "old".
             $recent = $review->created_at !== null && $review->created_at->greaterThanOrEqualTo($cutoff);
             $weight = $recent ? self::RECENT_WEIGHT : self::OLD_WEIGHT;
             $totalWeight += $weight;
@@ -195,7 +195,7 @@ class KotScoreService
     private function platformMean(): float
     {
         // Eén aggregatie in SQL — de tabel mag nooit gehydrateerd worden
-        // voor dit gemiddelde, dit pad loopt in de request van elke submit.
+        // for this average; this path runs during every submit request.
         $cutoff = now()->subYears(self::RECENT_YEARS);
         $weight = 'CASE WHEN created_at >= ? THEN ? ELSE ? END';
 

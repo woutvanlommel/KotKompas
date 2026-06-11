@@ -30,7 +30,7 @@ class RoomReviewModelTest extends TestCase
             'score_hygiene' => 4,
             'score_size' => 3,
             'score_value' => 5,
-            'score_communication' => 1, // telt niet mee in de kotscore
+            'score_communication' => 1, // not counted in the room score
         ]);
 
         $this->assertSame(4.0, $review->room_score);

@@ -25,7 +25,7 @@ class RoomReviewController extends Controller
 
     public function store(Request $request, ReviewInvitation $invitation): RedirectResponse
     {
-        // Verlopen of al ingevuld: de create-pagina toont de juiste status.
+        // Expired or already completed: the create page shows the right status.
         if (! $invitation->isOpen()) {
             return redirect()->route('reviews.create', $invitation);
         }
@@ -44,9 +44,9 @@ class RoomReviewController extends Controller
 
         try {
             DB::transaction(function () use ($invitation, $validated) {
-                // Atomaire claim vóór de insert: bij twee gelijktijdige
-                // submits wint er precies één — de unique index op
-                // room_reviews beschermt niet wanneer tenant_id null is.
+                // Atomic claim before the insert: with two concurrent
+                // submits exactly one wins — the unique index on
+                // room_reviews does not protect when tenant_id is null.
                 $claimed = ReviewInvitation::query()
                     ->whereKey($invitation->id)
                     ->whereNull('completed_at')
@@ -64,8 +64,8 @@ class RoomReviewController extends Controller
                 ]);
             });
         } catch (UniqueConstraintViolationException) {
-            // Oude tweede uitnodiging: er bestaat al een beoordeling van deze
-            // huurder voor dit kot — de uitnodiging is dan alsnog voldaan.
+            // Old second invitation: a review from this tenant for this
+            // room already exists — the invitation is still marked fulfilled.
             $invitation->forceFill(['completed_at' => now()])->save();
         }
 

@@ -58,8 +58,8 @@ trait HasTenantActions
                     ->required(),
             ])
             ->action(function (array $data): void {
-                // In één transactie: een wissel A→B stopt de huur van A, dus de
-                // RoomObserver maakt hier ook een enquête-uitnodiging voor A aan.
+                // In one transaction: a swap A→B ends A's rental, so the
+                // RoomObserver also creates a survey invitation for A here.
                 DB::transaction(fn () => $this->record->update([
                     'tenant_id' => $data['tenant_id'],
                     'status' => 'rented',
@@ -80,8 +80,8 @@ trait HasTenantActions
             ->action(function (): void {
                 $tenant = $this->record->tenant;
 
-                // In één transactie met de uitnodiging (RoomObserver): faalt
-                // die, dan blijft de huurder gekoppeld en kan het opnieuw.
+                // In one transaction with the invitation (RoomObserver): if
+                // that fails, the tenant stays linked and can retry.
                 DB::transaction(fn () => $this->record->update([
                     'tenant_id' => null,
                     'status' => 'available',

@@ -38,8 +38,8 @@ Route::post('/contact', [ContactController::class, 'store'])
 
 Route::get('/faq', [FaqController::class, 'index'])->name('faq');
 
-// Kotscore-enquête: publieke token-link, aangemaakt bij het stopzetten van
-// een huur (zie ReviewInvitation). De token is de enige toegangscontrole.
+// Room score survey: public token link, created when a rental ends
+// (see ReviewInvitation). The token is the only access control.
 Route::get('/beoordeling/{invitation:token}', [RoomReviewController::class, 'create'])
     ->middleware('throttle:30,1')
     ->name('reviews.create');

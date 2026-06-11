@@ -57,7 +57,7 @@ class RoomScoreDisplayTest extends TestCase
             'score_hygiene' => 4, 'score_size' => 4, 'score_value' => 4, 'score_communication' => 4,
         ]);
 
-        // (1 × 1 + 2 × 4) / 3 — de oude review telt op half gewicht.
+        // (1 × 1 + 2 × 4) / 3 — the old review counts at half weight.
         $breakdown = app(KotScoreService::class)->criteriaBreakdown($room);
 
         $this->assertSame([
@@ -67,7 +67,7 @@ class RoomScoreDisplayTest extends TestCase
             'communication' => 3.0,
         ], $breakdown);
 
-        // En het totaal op de pagina spreekt de breakdown niet tegen.
+        // And the total on the page does not contradict the breakdown.
         $this->assertSame(3.0, $room->refresh()->score);
     }
 }

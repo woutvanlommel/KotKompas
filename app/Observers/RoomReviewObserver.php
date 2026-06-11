@@ -1,12 +1,12 @@
 <?php
 
-// Observer op RoomReview: elke wijziging aan een beoordeling werkt meteen de
-// cached scores van het kot, het gebouw en de verhuurder bij (KotScoreService).
-// De dagelijkse app:recompute-kotscores vangt de recency-drift op.
+// Observer on RoomReview: any change to a review immediately updates the
+// cached scores of the room, building and landlord (KotScoreService).
+// The daily app:recompute-kotscores cron catches recency drift.
 //
-// ShouldHandleEventsAfterCommit: de enquête-submit maakt de review aan binnen
-// een transactie; de recompute hoort daarbuiten, anders houdt die de locks op
-// rooms/buildings/users vast zolang hij rekent.
+// ShouldHandleEventsAfterCommit: the survey submit creates the review inside
+// a transaction; the recompute should happen outside it, otherwise it holds
+// locks on rooms/buildings/users while computing.
 
 namespace App\Observers;
 
@@ -27,8 +27,8 @@ class RoomReviewObserver implements ShouldHandleEventsAfterCommit
     {
         $this->kotScoreService->recomputeForReview($review);
 
-        // Verplaatste beoordeling (kot of verhuurder gecorrigeerd): ook de
-        // oude eigenaar van de review moet zijn cache kwijtraken.
+        // Moved review (room or landlord corrected): the review's previous
+        // owner must also have their cache invalidated.
         if ($review->wasChanged('room_id') || $review->wasChanged('landlord_id')) {
             $this->kotScoreService->recomputeFor(
                 (int) $review->getOriginal('room_id'),

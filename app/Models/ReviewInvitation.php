@@ -79,7 +79,7 @@ class ReviewInvitation extends Model
         }
 
         return DB::transaction(function () use ($room, $tenantId): self {
-            // Eén link per kot + huurder: oude niet-ingevulde vervallen.
+            // One link per room + tenant: old uncompleted ones expire.
             static::query()
                 ->where('room_id', $room->id)
                 ->where('tenant_id', $tenantId)

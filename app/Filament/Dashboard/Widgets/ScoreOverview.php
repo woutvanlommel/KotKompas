@@ -17,8 +17,8 @@ class ScoreOverview extends StatsOverviewWidget
 
     protected ?string $heading = 'Score overzicht';
 
-    // Scores wijzigen alleen bij een review-submit en de nachtelijke
-    // recompute — de 5s-polling-default is hier verspilde queries.
+    // Scores only change on a review submit and the nightly
+    // recompute — the 5s polling default is wasted queries here.
     protected ?string $pollingInterval = null;
 
     public static function canView(): bool

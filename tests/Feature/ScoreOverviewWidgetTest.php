@@ -41,15 +41,15 @@ class ScoreOverviewWidgetTest extends TestCase
             'score_hygiene' => 4, 'score_size' => 4, 'score_value' => 4, 'score_communication' => 2,
         ]);
 
-        // De observer schreef de cache naar de DB via een eigen instance;
-        // in een echt request wordt auth()->user() vers geladen.
+        // The observer wrote the cache to the DB via its own instance;
+        // in a real request auth()->user() is freshly loaded.
         $landlord->refresh();
 
         $this->actingAs($landlord);
         Filament::setCurrentPanel('dashboard');
 
-        // Verhuurder: kwaliteit (5+4)/2 = 4,5 en communicatie (5+2)/2 = 3,5 → 4,0.
-        // Koten: gemiddeld (5,0 + 4,0)/2 = 4,5; beste kot is de Zolderstudio (5,0).
+        // Landlord: quality (5+4)/2 = 4.5 and communication (5+2)/2 = 3.5 → 4.0.
+        // Rooms: average (5.0 + 4.0)/2 = 4.5; best room is Zolderstudio (5.0).
         Livewire::test(ScoreOverview::class)
             ->assertSee('Jouw verhuurderscore')
             ->assertSee('4,0 / 5')
@@ -65,7 +65,7 @@ class ScoreOverviewWidgetTest extends TestCase
         $onceReviewed = Room::factory()->for($building)->create(['title' => 'Eén beoordeling']);
         $twiceReviewed = Room::factory()->for($building)->create(['title' => 'Twee beoordelingen']);
 
-        // Allemaal 4/4/4 → beide koten scoren exact 4,0.
+        // All 4/4/4 → both rooms score exactly 4.0.
         $scores = ['score_hygiene' => 4, 'score_size' => 4, 'score_value' => 4, 'score_communication' => 4];
         RoomReview::factory()->forRoom($onceReviewed)->create($scores);
         RoomReview::factory()->forRoom($twiceReviewed)->create($scores);

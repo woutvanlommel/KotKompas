@@ -4,9 +4,9 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-// Token-uitnodigingen voor de kotscore-enquête, aangemaakt bij het stopzetten
-// van een huur. De mail die de link verstuurt hangt aan "Template mail" (#28);
-// tot die er is deelt de verhuurder (of het platform) de link handmatig.
+// Token invitations for the room score survey, created when a rental ends.
+// The email that sends the link depends on "Template mail" (#28);
+// until then the landlord (or the platform) shares the link manually.
 return new class extends Migration
 {
     public function up(): void
@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('room_id')->constrained()->cascadeOnDelete();
 
-            // Snapshot van de verhuurder bij het stopzetten — zelfde principe
-            // als op room_reviews: de score mag niet verschuiven bij overdracht.
+            // Landlord snapshot at rental end — same principle as
+            // room_reviews: scores must not shift on transfer.
             $table->foreignId('landlord_id')->constrained('users');
 
             $table->foreignId('tenant_id')->nullable()->constrained('users')->nullOnDelete();

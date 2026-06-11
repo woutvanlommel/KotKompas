@@ -61,7 +61,7 @@ class KotScoreServiceTest extends TestCase
 
         $this->artisan('app:recompute-kotscores')->assertSuccessful();
 
-        // Platformgemiddelde = 3.0; één review (gewicht 2) tegen confidence 5.
+        // Platform mean = 3.0; one review (weight 2) against confidence 5.
         $this->assertSame(5.0, $top->refresh()->score);
         $this->assertSame(3.57, $top->score_bayesian); // (5×3 + 2×5) / 7
         $this->assertSame(1.0, $flop->refresh()->score);
@@ -138,8 +138,8 @@ class KotScoreServiceTest extends TestCase
 
         $this->assertSame(1, $building->refresh()->reviews_count);
 
-        // DB-cascade verwijdert de review zonder observer — de cache blijft
-        // stale tot de dagelijkse recompute het gebouw zelf langsloopt.
+        // DB cascade deletes the review without observer — the cache stays
+        // stale until the daily recompute walks the building itself.
         $room->delete();
         $this->assertSame(1, $building->refresh()->reviews_count);
 

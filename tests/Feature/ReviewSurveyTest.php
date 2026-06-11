@@ -64,7 +64,7 @@ class ReviewSurveyTest extends TestCase
 
         $this->assertSame($newTenant->id, $room->refresh()->tenant_id);
 
-        // De wissel beëindigde de huur van de vorige huurder — die krijgt de enquête.
+        // The swap ended the previous tenant's rental — they get the survey.
         $invitation = ReviewInvitation::query()->sole();
         $this->assertSame($previousTenant->id, $invitation->tenant_id);
         $this->assertTrue($invitation->isOpen());
