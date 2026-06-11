@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -58,6 +59,17 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasMedia
             ->format('webp')
             ->fit(Fit::Crop, 200, 200)
             ->quality(80);
+    }
+
+    /**
+     * Beoordelingen waar deze gebruiker als verhuurder beoordeeld werd
+     * (snapshot bij het insturen — voedt straks de verhuurderscore).
+     *
+     * @return HasMany<RoomReview, $this>
+     */
+    public function landlordReviews(): HasMany
+    {
+        return $this->hasMany(RoomReview::class, 'landlord_id');
     }
 
     public function canAccessPanel(Panel $panel): bool
