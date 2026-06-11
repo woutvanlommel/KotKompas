@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Socialite\Facades\Socialite;
 use Laravel\Socialite\Two\User as OAuthUser;
@@ -61,6 +62,47 @@ class FacebookAuthTest extends TestCase
             'provider' => 'facebook',
             'provider_id' => 'fb-123',
         ]);
+    }
+
+    public function test_oauth_login_refuses_linking_to_unverified_account(): void
+    {
+        $bestaand = User::factory()->create([
+            'email' => 'fb@example.com',
+            'email_verified_at' => null,
+        ]);
+
+        $this->mockSocialite($this->fakeOauthUser('fb@example.com'));
+
+        $response = $this->get('/auth/facebook/callback?code=fake');
+
+        $response->assertRedirect();
+        $response->assertSessionHasErrors('social');
+        $this->assertGuest();
+        $this->assertNull($bestaand->fresh()->provider);
+    }
+
+    public function test_oauth_login_links_to_verified_account(): void
+    {
+        $bestaand = User::factory()->create([
+            'email' => 'fb@example.com',
+            'email_verified_at' => now(),
+        ]);
+
+        $this->mockSocialite($this->fakeOauthUser('fb@example.com'));
+
+        $this->get('/auth/facebook/callback?code=fake');
+
+        $this->assertAuthenticatedAs($bestaand);
+        $this->assertSame('facebook', $bestaand->fresh()->provider);
+    }
+
+    public function test_oauth_created_account_is_email_verified(): void
+    {
+        $this->mockSocialite($this->fakeOauthUser('fb@example.com'));
+
+        $this->get('/auth/facebook/callback?code=fake');
+
+        $this->assertNotNull(User::where('email', 'fb@example.com')->first()->email_verified_at);
     }
 
     public function test_facebook_account_without_email_is_refused(): void
