@@ -15,3 +15,10 @@ Schedule::command('app:prune-tmp-media')
     ->daily()
     ->withoutOverlapping()
     ->runInBackground();
+
+// Cached kotscores verschuiven ook zonder nieuwe beoordelingen: reviews zakken
+// na 2 jaar naar half gewicht. Dagelijks herberekenen vangt die drift op.
+Schedule::command('app:recompute-kotscores')
+    ->daily()
+    ->withoutOverlapping()
+    ->runInBackground();

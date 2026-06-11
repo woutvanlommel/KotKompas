@@ -92,6 +92,8 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasMedia
             'email_verified_at' => 'datetime',
             'date_of_birth' => 'date',
             'password' => 'hashed',
+            'landlord_score' => 'float',
+            'landlord_reviews_count' => 'integer',
         ];
     }
 

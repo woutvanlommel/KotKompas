@@ -97,6 +97,9 @@ class Room extends Model implements HasMedia
         return [
             'price_per_month' => 'decimal:2',
             'deposit_amount' => 'decimal:2',
+            'score' => 'float',
+            'score_bayesian' => 'float',
+            'reviews_count' => 'integer',
             'available_from' => 'date',
             'costs_included' => 'boolean',
             'is_furnished' => 'boolean',
