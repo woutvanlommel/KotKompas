@@ -3,8 +3,10 @@
 namespace App\Models;
 
 use App\Concerns\HasImages;
+use App\Observers\RoomObserver;
 use Database\Factories\RoomFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -15,6 +17,7 @@ use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 #[Fillable(['building_id', 'tenant_id', 'bus', 'room_number', 'type', 'title', 'description', 'price_per_month', 'deposit_amount', 'costs_included', 'surface_m2', 'is_furnished', 'available_from', 'status'])]
+#[ObservedBy(RoomObserver::class)]
 class Room extends Model implements HasMedia
 {
     /** @use HasFactory<RoomFactory> */
@@ -37,6 +40,26 @@ class Room extends Model implements HasMedia
     public function reviews(): HasMany
     {
         return $this->hasMany(RoomReview::class);
+    }
+
+    /** @return HasMany<ReviewInvitation, $this> */
+    public function reviewInvitations(): HasMany
+    {
+        return $this->hasMany(ReviewInvitation::class);
+    }
+
+    /**
+     * Nog niet ingevulde enquête-uitnodigingen (open of verlopen, één per
+     * ex-huurder) — het dashboard toont ze zodat de verhuurder de link
+     * handmatig kan delen of een verlopen link kan vernieuwen.
+     *
+     * @return HasMany<ReviewInvitation, $this>
+     */
+    public function pendingReviewInvitations(): HasMany
+    {
+        return $this->hasMany(ReviewInvitation::class)
+            ->whereNull('completed_at')
+            ->latest('id');
     }
 
     /** @return BelongsToMany<Facility, $this> */

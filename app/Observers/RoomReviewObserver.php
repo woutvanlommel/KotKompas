@@ -3,13 +3,18 @@
 // Observer op RoomReview: elke wijziging aan een beoordeling werkt meteen de
 // cached scores van het kot, het gebouw en de verhuurder bij (KotScoreService).
 // De dagelijkse app:recompute-kotscores vangt de recency-drift op.
+//
+// ShouldHandleEventsAfterCommit: de enquête-submit maakt de review aan binnen
+// een transactie; de recompute hoort daarbuiten, anders houdt die de locks op
+// rooms/buildings/users vast zolang hij rekent.
 
 namespace App\Observers;
 
 use App\Models\RoomReview;
 use App\Services\KotScoreService;
+use Illuminate\Contracts\Events\ShouldHandleEventsAfterCommit;
 
-class RoomReviewObserver
+class RoomReviewObserver implements ShouldHandleEventsAfterCommit
 {
     public function __construct(private KotScoreService $kotScoreService) {}
 

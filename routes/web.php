@@ -5,6 +5,7 @@ use App\Http\Controllers\FaqController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\OnboardingController;
 use App\Http\Controllers\RoomController;
+use App\Http\Controllers\RoomReviewController;
 use App\Http\Controllers\SocialAuthController;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
@@ -36,6 +37,15 @@ Route::post('/contact', [ContactController::class, 'store'])
     ->name('contact.send');
 
 Route::get('/faq', [FaqController::class, 'index'])->name('faq');
+
+// Kotscore-enquête: publieke token-link, aangemaakt bij het stopzetten van
+// een huur (zie ReviewInvitation). De token is de enige toegangscontrole.
+Route::get('/beoordeling/{invitation:token}', [RoomReviewController::class, 'create'])
+    ->middleware('throttle:30,1')
+    ->name('reviews.create');
+Route::post('/beoordeling/{invitation:token}', [RoomReviewController::class, 'store'])
+    ->middleware('throttle:10,1')
+    ->name('reviews.store');
 
 // Social login (Google)
 Route::get('/auth/{provider}/redirect', [SocialAuthController::class, 'redirect'])->name('social.redirect');
