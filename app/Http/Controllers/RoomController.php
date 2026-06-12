@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Building;
 use App\Models\Room;
+use App\Services\KotScoreService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -24,8 +25,8 @@ class RoomController extends Controller
 
         $rooms = $this->query($filters)->paginate(12)->withQueryString();
 
-        // Kaartdata: dezelfde filters als de kamerlijst, maar zonder paginering.
-        // Groepeer per gebouw zodat de popup meerdere kamers kan tonen.
+        // Map data: same filters as the room list, but without pagination.
+        // Group per building so the popup can show multiple rooms.
         $filteredRooms = $this->query($filters)
             ->with(['building' => fn ($q) => $q->whereNotNull('latitude')->whereNotNull('longitude')])
             ->get()
@@ -114,11 +115,13 @@ class RoomController extends Controller
         ]);
     }
 
-    public function show(Room $room): View
+    public function show(Room $room, KotScoreService $kotScoreService): View
     {
         $room->load(['building', 'media', 'facilities', 'costTypes']);
 
-        return view('rooms.show', compact('room'));
+        $scoreBreakdown = $room->reviews_count > 0 ? $kotScoreService->criteriaBreakdown($room) : null;
+
+        return view('rooms.show', compact('room', 'scoreBreakdown'));
     }
 
     /**

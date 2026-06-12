@@ -24,7 +24,7 @@ class BuildingsOverviewTable extends TableWidget
     {
         return $table
             ->heading('Gebouwen overzicht')
-            ->description('Bezetting en huurprijs per gebouw')
+            ->description('Bezetting, huurprijs en kotscore per gebouw')
             ->query(
                 Building::query()
                     ->where('landlord_id', auth()->id())
@@ -59,6 +59,15 @@ class BuildingsOverviewTable extends TableWidget
                     ->label('Gem. basishuur')
                     ->money('EUR', locale: 'nl_BE')
                     ->placeholder('—')
+                    ->sortable(),
+                TextColumn::make('score')
+                    ->label('Kotscore')
+                    ->state(fn ($record) => $record->score !== null
+                        ? number_format($record->score, 1, ',', '.')." ({$record->reviews_count})"
+                        : null)
+                    ->placeholder('Geen beoordelingen')
+                    ->badge()
+                    ->color(fn ($record) => $record->score !== null && $record->score >= 4.0 ? 'success' : 'gray')
                     ->sortable(),
             ])
             ->defaultSort('name')

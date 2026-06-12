@@ -14,6 +14,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class RoomResource extends Resource
 {
@@ -28,6 +29,17 @@ class RoomResource extends Resource
         $user = auth()->user();
 
         return $user?->hasRole('verhuurder') ?? false;
+    }
+
+    /**
+     * Owner scope at resource level: applies to the list and to
+     * view/edit record binding — otherwise /dashboard/rooms/{id} of
+     * another landlord is reachable simply via the URL.
+     */
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->whereHas('building', fn (Builder $query) => $query->where('landlord_id', auth()->id()));
     }
 
     public static function form(Schema $schema): Schema

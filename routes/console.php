@@ -15,3 +15,10 @@ Schedule::command('app:prune-tmp-media')
     ->daily()
     ->withoutOverlapping()
     ->runInBackground();
+
+// Cached room scores drift even without new reviews: reviews drop to
+// half weight after 2 years. Daily recompute catches that drift.
+Schedule::command('app:recompute-kotscores')
+    ->daily()
+    ->withoutOverlapping()
+    ->runInBackground();

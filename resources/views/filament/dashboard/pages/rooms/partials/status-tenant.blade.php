@@ -65,4 +65,51 @@
             <p class="text-sm text-gray-400 italic">Geen huurder gekoppeld.</p>
         @endif
     </div>
+
+    @php $pendingInvitations = $room->pendingReviewInvitations()->with('tenant')->get(); @endphp
+    @if ($pendingInvitations->isNotEmpty())
+        <div class="border-t border-gray-100 pt-5 mt-5">
+            <p class="text-sm font-medium text-gray-700 mb-3">{{ Str::plural('Beoordelingslink', $pendingInvitations->count()) }}</p>
+            <div class="space-y-4">
+                @foreach ($pendingInvitations as $invitation)
+                    <div>
+                        <div class="flex items-center justify-between mb-1.5">
+                            <p class="text-xs font-medium text-gray-600">{{ $invitation->tenant?->name ?? 'Ex-huurder' }}</p>
+                            @if ($invitation->isOpen())
+                                <span class="text-xs text-gray-400">geldig tot {{ $invitation->expires_at->format('d-m-Y') }}</span>
+                            @else
+                                <span class="text-xs font-medium text-red-500">verlopen</span>
+                            @endif
+                        </div>
+                        @if ($invitation->isOpen())
+                            <div x-data="{ copied: false }" class="flex items-center gap-2">
+                                <input type="text" readonly value="{{ $invitation->url() }}"
+                                       x-on:focus="$el.select()"
+                                       class="w-full truncate rounded-lg border border-gray-200 bg-gray-50 px-3 py-1.5 text-xs text-gray-600 focus:outline-none">
+                                <button type="button"
+                                        x-on:click="navigator.clipboard.writeText('{{ $invitation->url() }}'); copied = true; setTimeout(() => copied = false, 2000)"
+                                        class="inline-flex shrink-0 items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-gray-500 hover:bg-gray-100 transition">
+                                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.666 3.888A2.25 2.25 0 0013.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 01-.75.75H9a.75.75 0 01-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 01-2.25 2.25H6.75A2.25 2.25 0 014.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 011.927-.184" />
+                                    </svg>
+                                    <span x-show="!copied">Kopieer</span>
+                                    <span x-show="copied" x-cloak>Gekopieerd!</span>
+                                </button>
+                            </div>
+                        @else
+                            <button wire:click="mountAction('reissueReviewInvitation', { invitation: {{ $invitation->id }} })"
+                                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-gray-500 hover:bg-gray-100 transition">
+                                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+                                </svg>
+                                Nieuwe link maken
+                            </button>
+                        @endif
+                    </div>
+                @endforeach
+            </div>
+            {{-- Mail volgt via "Template mail" (#28); tot dan deel je de link zelf. --}}
+            <p class="mt-3 text-xs text-gray-400">De ex-huurder beoordeelt het kot anoniem via zijn link.</p>
+        </div>
+    @endif
 </div>

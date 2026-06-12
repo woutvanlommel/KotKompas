@@ -37,6 +37,8 @@ class Building extends Model implements HasMedia
         return [
             'longitude' => 'decimal:8',
             'latitude' => 'decimal:8',
+            'score' => 'float',
+            'reviews_count' => 'integer',
         ];
     }
 

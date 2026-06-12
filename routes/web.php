@@ -5,6 +5,7 @@ use App\Http\Controllers\FaqController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\OnboardingController;
 use App\Http\Controllers\RoomController;
+use App\Http\Controllers\RoomReviewController;
 use App\Http\Controllers\SocialAuthController;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
@@ -16,8 +17,8 @@ use Illuminate\View\Middleware\ShareErrorsFromSession;
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::get('/koten', [RoomController::class, 'index'])->name('rooms.index');
-// Stateless JSON-lookup: sessie/cookies overslaan scheelt remote DB-roundtrips
-// (sessies en cache leven in de database) — suggesties moeten snappy zijn.
+// Stateless JSON lookup: skipping session/cookies saves remote DB roundtrips
+// (sessions and cache live in the database) — suggestions should be snappy.
 Route::get('/koten/suggesties', [RoomController::class, 'suggestions'])
     ->withoutMiddleware([
         StartSession::class,
@@ -36,6 +37,15 @@ Route::post('/contact', [ContactController::class, 'store'])
     ->name('contact.send');
 
 Route::get('/faq', [FaqController::class, 'index'])->name('faq');
+
+// Room score survey: public token link, created when a rental ends
+// (see ReviewInvitation). The token is the only access control.
+Route::get('/beoordeling/{invitation:token}', [RoomReviewController::class, 'create'])
+    ->middleware('throttle:30,1')
+    ->name('reviews.create');
+Route::post('/beoordeling/{invitation:token}', [RoomReviewController::class, 'store'])
+    ->middleware('throttle:10,1')
+    ->name('reviews.store');
 
 // Social login (Google)
 Route::get('/auth/{provider}/redirect', [SocialAuthController::class, 'redirect'])->name('social.redirect');
