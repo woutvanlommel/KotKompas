@@ -14,16 +14,20 @@ class OverpassService
 
     private const RADIUS = 750; // meters
 
-    // Overpass amenity/tag values → onze interne categorienaam
-    private const CATEGORY_MAP = [
-        'supermarket'   => 'supermarket',
-        'convenience'   => 'convenience',
-        'pharmacy'      => 'pharmacy',
-        'hospital'      => 'hospital',
-        'bus_station'   => 'bus_stop',
-        'bus_stop'      => 'bus_stop',
-        'cafe'          => 'cafe',
-        'restaurant'    => 'restaurant',
+    // Overpass tag values → onze interne categorienaam
+    private const AMENITY_MAP = [
+        'pharmacy'  => 'pharmacy',
+        'hospital'  => 'hospital',
+        'cafe'      => 'cafe',
+        'restaurant'=> 'restaurant',
+        'fast_food' => 'restaurant',
+        'bar'       => 'cafe',
+    ];
+
+    private const SHOP_MAP = [
+        'supermarket' => 'supermarket',
+        'convenience' => 'convenience',
+        'bakery'      => 'convenience',
     ];
 
     /**
@@ -38,7 +42,7 @@ class OverpassService
         try {
             $response = Http::withHeaders([
                 'User-Agent' => 'KotKompas/1.0 (kotkompas@gmail.com)',
-            ])->timeout(15)->post(self::OVERPASS_URL, ['data' => $query]);
+            ])->timeout(15)->get(self::OVERPASS_URL, ['data' => $query]);
 
             if (! $response->ok()) {
                 Log::warning('Overpass API request failed', [
@@ -71,11 +75,13 @@ class OverpassService
 
         // Haal nodes/ways op voor relevante amenity-waarden + bus stops + trein/tram
         return <<<OVERPASS
-        [out:json][timeout:10];
+        [out:json][timeout:15];
         (
-          node["amenity"~"^(supermarket|convenience|pharmacy|hospital|bus_station|bus_stop|cafe|restaurant)$"](around:{$r},{$lat},{$lng});
-          node["public_transport"="stop_position"](around:{$r},{$lat},{$lng});
-          node["railway"~"^(station|halt|tram_stop)$"](around:{$r},{$lat},{$lng});
+          nwr["shop"~"^(supermarket|convenience|bakery)$"](around:{$r},{$lat},{$lng});
+          nwr["amenity"~"^(pharmacy|hospital|cafe|restaurant|fast_food|bar)$"](around:{$r},{$lat},{$lng});
+          node["highway"="bus_stop"](around:{$r},{$lat},{$lng});
+          nwr["public_transport"="stop_position"](around:{$r},{$lat},{$lng});
+          nwr["railway"~"^(station|halt|tram_stop)$"](around:{$r},{$lat},{$lng});
         );
         out center;
         OVERPASS;
@@ -129,17 +135,22 @@ class OverpassService
      */
     private function resolveCategory(array $tags): ?string
     {
-        // amenity tag (supermarket, pharmacy, ...)
-        if (isset($tags['amenity'])) {
-            return self::CATEGORY_MAP[$tags['amenity']] ?? null;
+        if (isset($tags['shop'])) {
+            return self::SHOP_MAP[$tags['shop']] ?? null;
         }
 
-        // public_transport stop → bus_stop
+        if (isset($tags['amenity'])) {
+            return self::AMENITY_MAP[$tags['amenity']] ?? null;
+        }
+
+        if (($tags['highway'] ?? null) === 'bus_stop') {
+            return 'bus_stop';
+        }
+
         if (isset($tags['public_transport'])) {
             return 'bus_stop';
         }
 
-        // railway station/halt/tram_stop
         if (isset($tags['railway'])) {
             return match ($tags['railway']) {
                 'station', 'halt' => 'train_station',
