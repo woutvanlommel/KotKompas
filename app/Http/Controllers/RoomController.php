@@ -119,7 +119,7 @@ class RoomController extends Controller
 
     public function show(Room $room, KotScoreService $kotScoreService): View
     {
-        $room->load(['building', 'media', 'facilities', 'costTypes']);
+        $room->load(['building.poiCache', 'media', 'facilities', 'costTypes']);
 
         $scoreBreakdown = $room->reviews_count > 0 ? $kotScoreService->criteriaBreakdown($room) : null;
 
