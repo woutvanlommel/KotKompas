@@ -2,42 +2,40 @@
 
 namespace App\Filament\Dashboard\Widgets;
 
-use App\Filament\Dashboard\Resources\Buildings\BuildingResource;
 use App\Models\Building;
 use App\Support\Score;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget;
+use Filament\Widgets\Widget;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 
-class BuildingsOverviewTable extends TableWidget
+class BuildingsOverviewTable extends Widget
 {
     protected static ?int $sort = 3;
 
     protected int|string|array $columnSpan = 'full';
+
+    protected string $view = 'filament.dashboard.widgets.buildings-overview';
 
     public static function canView(): bool
     {
         return auth()->user()?->hasRole('verhuurder') ?? false;
     }
 
-    public function table(Table $table): Table
+    public function getBuildings(): Collection
     {
-        return $table
-            ->heading('Gebouwen overzicht')
-            ->description('Bezetting, huurprijs en kotscore per gebouw')
-            ->query(
-                Building::query()
-                    ->where('landlord_id', auth()->id())
-                    ->withCount([
-                        'rooms',
-                        'rooms as available_rooms_count' => fn (Builder $query) => $query->where('status', 'available'),
-                        'rooms as rented_rooms_count' => fn (Builder $query) => $query->where('status', 'rented'),
-                    ])
-                    ->withAvg(
-                        ['rooms as average_price' => fn (Builder $query) => $query->whereNot('status', 'archived')],
-                        'price_per_month',
-                    ),
+        return Building::query()
+            ->where('landlord_id', auth()->id())
+            ->withCount([
+                'rooms',
+                'rooms as available_rooms_count' => fn (Builder $query) => $query->where('status', 'available'),
+                'rooms as rented_rooms_count' => fn (Builder $query) => $query->where('status', 'rented'),
+            ])
+            ->withAvg(
+                ['rooms as average_price' => fn (Builder $query) => $query->whereNot('status', 'archived')],
+                'price_per_month',
             )
             ->recordUrl(fn ($record) => BuildingResource::getUrl('view', ['record' => $record]))
             ->columns([
@@ -71,8 +69,10 @@ class BuildingsOverviewTable extends TableWidget
                     // warning = the brand orange (#ff6700) in this panel.
                     ->color(fn ($record) => $record->score !== null && $record->score >= 4.0 ? 'success' : 'warning')
                     ->sortable(),
+            ->with([
+                'rooms' => fn ($query) => $query->with('tenant')->orderBy('room_number'),
             ])
-            ->defaultSort('name')
-            ->paginated(false);
+            ->orderBy('name')
+            ->get();
     }
 }
