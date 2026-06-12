@@ -2,7 +2,7 @@
 
 namespace App\Filament\Dashboard\Widgets;
 
-use App\Models\Room;
+use App\Models\Building;
 use App\Support\Score;
 use Filament\Widgets\StatsOverviewWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
@@ -11,6 +11,10 @@ use Illuminate\Database\Eloquent\Builder;
 /**
  * Replaces the "Score overzicht" placeholder: the cached kotscores from
  * KotScoreService, seen through the lens of the logged-in landlord.
+ *
+ * Deliberately aggregates at BUILDING level only: a per-room score would
+ * de-anonymise reviews — with one tenant per room, the landlord would know
+ * exactly who wrote what.
  */
 class ScoreOverview extends StatsOverviewWidget
 {
@@ -35,11 +39,11 @@ class ScoreOverview extends StatsOverviewWidget
             return [];
         }
 
-        $scoredRooms = $this->roomsQuery()->whereNotNull('score');
+        $scoredBuildings = $this->buildingsQuery()->whereNotNull('score');
 
-        $averageScore = (clone $scoredRooms)->avg('score');
-        $scoredCount = (clone $scoredRooms)->count();
-        $bestRoom = (clone $scoredRooms)
+        $averageScore = (clone $scoredBuildings)->avg('score');
+        $scoredCount = (clone $scoredBuildings)->count();
+        $bestBuilding = (clone $scoredBuildings)
             ->orderByDesc('score')
             ->orderByDesc('reviews_count')
             ->first();
@@ -50,23 +54,18 @@ class ScoreOverview extends StatsOverviewWidget
                     ? "Op basis van {$landlord->landlord_reviews_count} ".($landlord->landlord_reviews_count === 1 ? 'beoordeling' : 'beoordelingen').' — 50% kotkwaliteit, 50% communicatie'
                     : 'Nog geen beoordelingen ontvangen')
                 ->color('info'),
-            Stat::make('Gemiddelde kotscore', $this->formatScore($averageScore !== null ? (float) $averageScore : null))
+            Stat::make('Gemiddelde gebouwscore', $this->formatScore($averageScore !== null ? (float) $averageScore : null))
                 ->description($scoredCount > 0
-                    ? "Over {$scoredCount} ".($scoredCount === 1 ? 'beoordeeld kot' : 'beoordeelde koten')
-                    : 'Nog geen beoordeelde koten'),
-            Stat::make('Best scorend kot', $this->formatScore($bestRoom?->score))
-                ->description($bestRoom
-                    ? ($bestRoom->title ?: 'Kamer '.$bestRoom->room_number)
-                    : 'Nog geen beoordeelde koten'),
+                    ? "Over {$scoredCount} ".($scoredCount === 1 ? 'beoordeeld gebouw' : 'beoordeelde gebouwen')
+                    : 'Nog geen beoordeelde gebouwen'),
+            Stat::make('Best scorend gebouw', $this->formatScore($bestBuilding?->score))
+                ->description($bestBuilding->name ?? 'Nog geen beoordeelde gebouwen'),
         ];
     }
 
-    protected function roomsQuery(): Builder
+    protected function buildingsQuery(): Builder
     {
-        return Room::query()->whereHas(
-            'building',
-            fn (Builder $query) => $query->where('landlord_id', auth()->id()),
-        );
+        return Building::query()->where('landlord_id', auth()->id());
     }
 
     private function formatScore(?float $score): string
