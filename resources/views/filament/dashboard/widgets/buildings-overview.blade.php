@@ -81,10 +81,9 @@
                             </td>
                             <td class="px-4 py-4 text-right hidden sm:table-cell">
                                 @if ($building->score !== null && $building->reviews_count > 0)
-                                    <span class="inline-flex items-center gap-1.5 font-medium text-gray-900 dark:text-white">
+                                    <span class="inline-flex items-center gap-1 font-medium text-gray-900 dark:text-white">
                                         <span class="text-amber-500">★</span>
-                                        {{ number_format($building->score, 1, ',', '.') }}
-                                        <span class="text-xs text-gray-400 font-normal">({{ $building->reviews_count }})</span>
+                                        <span>{{ number_format($building->score, 1, ',', '.') }} ({{ $building->reviews_count }})</span>
                                     </span>
                                 @else
                                     <span class="text-gray-400 dark:text-gray-600">—</span>
