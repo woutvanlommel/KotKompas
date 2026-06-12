@@ -17,6 +17,7 @@
             $activeFilterCount = count(array_filter([
                 $filters['q'], $filters['type'], $filters['price_min'],
                 $filters['price_max'], $filters['surface_min'], $filters['furnished'],
+                $filters['score_min'],
             ]));
         @endphp
 
@@ -67,6 +68,7 @@
                     <option value="price_asc" @selected($filters['sort'] === 'price_asc')>Prijs laag → hoog</option>
                     <option value="price_desc" @selected($filters['sort'] === 'price_desc')>Prijs hoog → laag</option>
                     <option value="surface_desc" @selected($filters['sort'] === 'surface_desc')>Grootste eerst</option>
+                    <option value="score" @selected($filters['sort'] === 'score')>Best beoordeeld</option>
                 </select>
             </label>
 
@@ -83,6 +85,16 @@
             <label>
                 <span class="mb-2 block text-[0.625rem] font-medium uppercase tracking-[0.14em] text-ink-soft">Min. oppervlakte (m²)</span>
                 <input type="number" name="surface_min" min="0" step="5" value="{{ $filters['surface_min'] }}" class="kk-field">
+            </label>
+
+            <label>
+                <span class="mb-2 block text-[0.625rem] font-medium uppercase tracking-[0.14em] text-ink-soft">Min. kotscore</span>
+                <select name="score_min" class="kk-field">
+                    <option value="">Alle scores</option>
+                    @foreach (['3' => '3+', '3.5' => '3,5+', '4' => '4+', '4.5' => '4,5+'] as $value => $label)
+                        <option value="{{ $value }}" @selected($filters['score_min'] !== null && (string) $filters['score_min'] === (string) (float) $value)>{{ $label }}</option>
+                    @endforeach
+                </select>
             </label>
 
             <div class="flex flex-wrap items-end justify-between gap-4 sm:col-span-2 lg:col-span-1">
@@ -105,7 +117,7 @@
             <p class="text-sm text-ink/55">{{ $rooms->total() }} {{ $rooms->total() === 1 ? 'kot' : 'koten' }} gevonden</p>
 
             <div class="flex items-center gap-5">
-                @if ($filters['q'] || $filters['type'] || $filters['price_min'] || $filters['price_max'] || $filters['surface_min'] || $filters['furnished'])
+                @if ($filters['q'] || $filters['type'] || $filters['price_min'] || $filters['price_max'] || $filters['surface_min'] || $filters['furnished'] || $filters['score_min'])
                     <a href="{{ route('rooms.index') }}" class="text-sm text-ink/55 underline hover:text-ink">Filters wissen</a>
                 @endif
 

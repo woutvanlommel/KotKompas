@@ -15,7 +15,9 @@ class RoomController extends Controller
 {
     private const TYPES = ['studio', 'one_bedroom', 'two_bedroom', 'three_bedroom', 'four_bedroom', 'five_plus_bedroom'];
 
-    private const SORTS = ['newest', 'price_asc', 'price_desc', 'surface_desc'];
+    private const SORTS = ['newest', 'price_asc', 'price_desc', 'surface_desc', 'score'];
+
+    private const SCORE_MINIMUMS = ['3', '3.5', '4', '4.5'];
 
     private const VIEWS = ['grid', 'list', 'map'];
 
@@ -136,6 +138,9 @@ class RoomController extends Controller
             'price_max' => $request->integer('price_max') ?: null,
             'surface_min' => $request->integer('surface_min') ?: null,
             'furnished' => $request->boolean('furnished') ?: null,
+            'score_min' => in_array($request->input('score_min'), self::SCORE_MINIMUMS, true)
+                ? (float) $request->input('score_min')
+                : null,
             'sort' => in_array($request->input('sort'), self::SORTS, true) ? $request->input('sort') : 'newest',
             'view' => in_array($request->input('view'), self::VIEWS, true) ? $request->input('view') : 'grid',
         ];
@@ -162,9 +167,19 @@ class RoomController extends Controller
             ->when($filters['price_max'], fn ($query, $max) => $query->where('price_per_month', '<=', $max))
             ->when($filters['surface_min'], fn ($query, $min) => $query->where('surface_m2', '>=', $min))
             ->when($filters['furnished'], fn ($query) => $query->where('is_furnished', true))
+            // Filteren gebeurt op de getoonde score; koten zonder
+            // beoordelingen (score null) vallen dan vanzelf af.
+            ->when($filters['score_min'], fn ($query, $min) => $query->where('score', '>=', $min))
             ->when($filters['sort'] === 'price_asc', fn ($query) => $query->orderBy('price_per_month'))
             ->when($filters['sort'] === 'price_desc', fn ($query) => $query->orderByDesc('price_per_month'))
             ->when($filters['sort'] === 'surface_desc', fn ($query) => $query->orderByDesc('surface_m2'))
+            // Sorteren gaat op score_bayesian (nooit getoond): één verse
+            // 5-sterrenreview komt zo niet boven consistent goede koten.
+            // Onbeoordeelde koten sluiten achteraan aan, nieuwste eerst.
+            ->when($filters['sort'] === 'score', fn ($query) => $query
+                ->orderByRaw('case when score_bayesian is null then 1 else 0 end')
+                ->orderByDesc('score_bayesian')
+                ->latest())
             ->when($filters['sort'] === 'newest', fn ($query) => $query->latest());
     }
 }

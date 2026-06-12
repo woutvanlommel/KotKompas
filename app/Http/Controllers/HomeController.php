@@ -10,9 +10,14 @@ class HomeController extends Controller
 {
     public function index(): View
     {
+        // Uitgelicht = best beoordeeld, gerankt op score_bayesian (nooit
+        // getoond): één verse 5-sterrenreview komt zo niet boven consistent
+        // goede koten. Onbeoordeelde koten vullen aan op nieuwste eerst.
         $featuredRooms = Room::query()
             ->where('status', 'available')
             ->with(['building', 'media'])
+            ->orderByRaw('case when score_bayesian is null then 1 else 0 end')
+            ->orderByDesc('score_bayesian')
             ->latest()
             ->take(8)
             ->get();
