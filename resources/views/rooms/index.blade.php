@@ -17,10 +17,11 @@
             $activeFilterCount = count(array_filter([
                 $filters['q'], $filters['type'], $filters['price_min'],
                 $filters['price_max'], $filters['surface_min'], $filters['furnished'],
+                $filters['score_min'],
             ]));
         @endphp
 
-        {{-- Mobiel: filters inklapbaar zodat de resultaten meteen zichtbaar zijn --}}
+        {{-- Mobile: collapsible filters so the results are visible right away --}}
         <button type="button" data-filters-toggle aria-controls="kk-filters"
                 aria-expanded="{{ $activeFilterCount ? 'true' : 'false' }}"
                 class="mb-6 flex w-full items-center justify-between gap-3 border-y border-hairline py-3.5 text-[0.7rem] font-medium uppercase tracking-[0.14em] text-ink lg:hidden">
@@ -35,8 +36,8 @@
             </svg>
         </button>
 
-        {{-- Filterbalk — GET zodat filters in de URL leven (deelbaar, paginatie-vriendelijk).
-             Underline-velden: de auth/login-taal op het lichte canvas. --}}
+        {{-- Filter bar — GET so the filters live in the URL (shareable, pagination-friendly).
+             Underline fields: the auth/login language on the light canvas. --}}
         <form method="GET" action="{{ route('rooms.index') }}" id="kk-filters" data-filters-panel
               @unless ($activeFilterCount) data-collapsed @endunless
               class="kk-filters mb-12 grid grid-cols-1 gap-x-10 gap-y-7 border-b border-hairline pb-10 sm:grid-cols-2 lg:grid-cols-4 lg:border-y lg:py-9">
@@ -67,6 +68,7 @@
                     <option value="price_asc" @selected($filters['sort'] === 'price_asc')>Prijs laag → hoog</option>
                     <option value="price_desc" @selected($filters['sort'] === 'price_desc')>Prijs hoog → laag</option>
                     <option value="surface_desc" @selected($filters['sort'] === 'surface_desc')>Grootste eerst</option>
+                    <option value="score" @selected($filters['sort'] === 'score')>Best beoordeeld</option>
                 </select>
             </label>
 
@@ -83,6 +85,16 @@
             <label>
                 <span class="mb-2 block text-[0.625rem] font-medium uppercase tracking-[0.14em] text-ink-soft">Min. oppervlakte (m²)</span>
                 <input type="number" name="surface_min" min="0" step="5" value="{{ $filters['surface_min'] }}" class="kk-field">
+            </label>
+
+            <label>
+                <span class="mb-2 block text-[0.625rem] font-medium uppercase tracking-[0.14em] text-ink-soft">Min. kotscore</span>
+                <select name="score_min" class="kk-field">
+                    <option value="">Alle scores</option>
+                    @foreach (['3' => '3+', '3.5' => '3,5+', '4' => '4+', '4.5' => '4,5+'] as $value => $label)
+                        <option value="{{ $value }}" @selected($filters['score_min'] !== null && (string) $filters['score_min'] === (string) (float) $value)>{{ $label }}</option>
+                    @endforeach
+                </select>
             </label>
 
             <div class="flex flex-wrap items-end justify-between gap-4 sm:col-span-2 lg:col-span-1">
@@ -105,7 +117,7 @@
             <p class="text-sm text-ink/55">{{ $rooms->total() }} {{ $rooms->total() === 1 ? 'kot' : 'koten' }} gevonden</p>
 
             <div class="flex items-center gap-5">
-                @if ($filters['q'] || $filters['type'] || $filters['price_min'] || $filters['price_max'] || $filters['surface_min'] || $filters['furnished'])
+                @if ($filters['q'] || $filters['type'] || $filters['price_min'] || $filters['price_max'] || $filters['surface_min'] || $filters['furnished'] || $filters['score_min'])
                     <a href="{{ route('rooms.index') }}" class="text-sm text-ink/55 underline hover:text-ink">Filters wissen</a>
                 @endif
 

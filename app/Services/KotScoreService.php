@@ -130,7 +130,10 @@ class KotScoreService
      * detail page. Same recency weights as the room score itself, so
      * the breakdown and total never contradict each other.
      *
-     * @return array{hygiene: float, size: float, value: float, communication: float}|null
+     * Communication is deliberately absent: it is asked in the survey and
+     * counts toward the landlord score, but is never shown on room pages.
+     *
+     * @return array{hygiene: float, size: float, value: float}|null
      */
     public function criteriaBreakdown(Room $room): ?array
     {
@@ -145,20 +148,18 @@ class KotScoreService
         [$hygiene] = $this->weightedAverage($reviews, fn (RoomReview $r) => (float) $r->score_hygiene);
         [$size] = $this->weightedAverage($reviews, fn (RoomReview $r) => (float) $r->score_size);
         [$value] = $this->weightedAverage($reviews, fn (RoomReview $r) => (float) $r->score_value);
-        [$communication] = $this->weightedAverage($reviews, fn (RoomReview $r) => (float) $r->score_communication);
 
         return [
             'hygiene' => (float) $hygiene,
             'size' => (float) $size,
             'value' => (float) $value,
-            'communication' => (float) $communication,
         ];
     }
 
     /**
      * @param  Collection<int, RoomReview>  $reviews
      * @param  callable(RoomReview): float  $value
-     * @return array{0: float|null, 1: float} [gewogen gemiddelde, totaalgewicht]
+     * @return array{0: float|null, 1: float} [weighted average, total weight]
      */
     private function weightedAverage(Collection $reviews, callable $value): array
     {

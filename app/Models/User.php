@@ -62,8 +62,8 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasMedia
     }
 
     /**
-     * Beoordelingen waar deze gebruiker als verhuurder beoordeeld werd
-     * (snapshot bij het insturen — voedt straks de verhuurderscore).
+     * Reviews in which this user was rated as the landlord
+     * (snapshot at submission — feeds the landlord score).
      *
      * @return HasMany<RoomReview, $this>
      */

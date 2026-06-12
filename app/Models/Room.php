@@ -49,9 +49,9 @@ class Room extends Model implements HasMedia
     }
 
     /**
-     * Nog niet ingevulde enquête-uitnodigingen (open of verlopen, één per
-     * ex-huurder) — het dashboard toont ze zodat de verhuurder de link
-     * handmatig kan delen of een verlopen link kan vernieuwen.
+     * Survey invitations not yet completed (open or expired, one per
+     * ex-tenant) — the dashboard lists them so the landlord can share the
+     * link manually or renew an expired one.
      *
      * @return HasMany<ReviewInvitation, $this>
      */

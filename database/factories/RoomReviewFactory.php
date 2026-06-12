@@ -31,8 +31,8 @@ class RoomReviewFactory extends Factory
     }
 
     /**
-     * Beoordeling voor een bestaand kot, met de verhuurder van het gebouw
-     * als landlord-snapshot — zoals de enquête hem straks ook aanmaakt.
+     * Review for an existing room, with the building's landlord as the
+     * landlord snapshot — exactly how the survey creates one.
      */
     public function forRoom(Room $room): static
     {

@@ -1,14 +1,14 @@
-{{-- Leaflet kaartcomponent voor de koten-overzichtspagina.
-     Toont alle gefilterde gebouwen als custom pins op een OpenStreetMap kaart.
-     - Standaard gecentreerd op $defaultCity (zie variabelen hieronder).
-     - Markers buiten het zichtbare viewport worden gedimmed na het slepen (met debounce).
-     - Popup: 1 kamer → naam, prijs, link; meerdere kamers → lijst.
-     Gebruik: <x-rooms-map :buildings="$mapBuildings" default-city="hasselt" /> --}}
+{{-- Leaflet map component for the rooms index page.
+     Shows all filtered buildings as custom pins on an OpenStreetMap map.
+     - Centred on $defaultCity by default (see variables below).
+     - Markers outside the visible viewport are dimmed after dragging (debounced).
+     - Popup: 1 room → name, price, link; multiple rooms → list.
+     Usage: <x-rooms-map :buildings="$mapBuildings" default-city="hasselt" /> --}}
 
 @props(['buildings', 'defaultCity' => 'belgie', 'height' => '500px'])
 
 @php
-    // Standaard locaties voor Belgische steden — aanpasbaar via de defaultCity prop.
+    // Default locations for Belgian cities — adjustable via the defaultCity prop.
     $cities = [
         'belgie'    => ['lat' => 50.641,  'lng' => 4.668,  'zoom' => 8],
         'hasselt'   => ['lat' => 50.9307, 'lng' => 5.3384, 'zoom' => 13],

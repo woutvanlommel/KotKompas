@@ -47,8 +47,8 @@ class RoomReview extends Model
     }
 
     /**
-     * De kotscore van deze beoordeling: gemiddelde van de kot-criteria.
-     * Communicatie hoort bij de verhuurder en telt hier bewust niet mee.
+     * This review's kotscore: the average of the room criteria.
+     * Communication belongs to the landlord and deliberately does not count here.
      */
     protected function roomScore(): Attribute
     {

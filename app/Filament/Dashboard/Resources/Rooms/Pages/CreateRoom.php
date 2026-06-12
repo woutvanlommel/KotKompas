@@ -39,7 +39,7 @@ class CreateRoom extends CreateRecord
             ];
         }
 
-        // costs_included = true als er maandelijkse kostensoorten zijn
+        // costs_included = true when there are monthly cost types
         $data['costs_included'] = collect($this->pendingCostTypes)
             ->contains(fn ($ct) => ($ct['frequency'] ?? '') === 'monthly');
 

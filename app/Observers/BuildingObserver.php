@@ -1,8 +1,8 @@
 <?php
 
-// Observer op het Building model die automatisch geocoding triggert via GeocodingService:
-// - bij aanmaken van een gebouw (created)
-// - bij bewerken als minstens één adresveld gewijzigd is (updated)
+// Observer on the Building model that automatically triggers geocoding via GeocodingService:
+// - when a building is created (created)
+// - when editing if at least one address field changed (updated)
 
 namespace App\Observers;
 
@@ -35,8 +35,8 @@ class BuildingObserver
         $coordinates = $this->geocodingService->geocodeBuilding($building);
 
         if ($coordinates) {
-            // Geen withoutEvents nodig: observer triggert enkel bij adresveldwijzigingen,
-            // lat/lng vallen daar niet onder, dus geen oneindige loop mogelijk.
+            // No withoutEvents needed: the observer only triggers on address field
+            // changes, and lat/lng are not among them, so no infinite loop is possible.
             $building->update([
                 'latitude' => $coordinates['latitude'],
                 'longitude' => $coordinates['longitude'],

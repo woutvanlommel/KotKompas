@@ -28,7 +28,7 @@
 
     @if ($photo)
         <img src="{{ $photo }}" alt="{{ $room->title ?? $type }}" loading="lazy" data-parallax
-             class="absolute inset-0 h-[112%] w-full object-cover transition-[transform,filter] duration-[800ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.04] group-hover:brightness-[0.72]">
+             class="absolute inset-0 h-[112%] w-full object-cover transition-[transform,filter] duration-800 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.04] group-hover:brightness-[0.72]">
     @else
         <div class="absolute inset-0 flex items-center justify-center bg-primary-800 text-white/15">
             <svg class="h-14 w-14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" aria-hidden="true">
@@ -46,7 +46,10 @@
             <h3 class="truncate text-xl font-medium leading-none tracking-[-0.03em]">{{ $city }}</h3>
             <p class="mt-1.5 text-[0.65rem] font-medium uppercase tracking-[0.14em] text-white/60">{{ $type }}</p>
         </div>
-        <span class="shrink-0 text-lg font-medium leading-none text-white tabular-nums">€{{ $price }}<span class="ml-0.5 align-top text-[0.6rem] text-white/55">/m</span></span>
+        <div class="flex shrink-0 flex-col items-end gap-1.5">
+            <span class="text-lg font-medium leading-none text-white tabular-nums">€{{ $price }}<span class="ml-0.5 align-top text-[0.6rem] text-white/55">/m</span></span>
+            <x-score-badge :score="$room->score" :count="$room->reviews_count" variant="dark" />
+        </div>
     </div>
 
     {{-- Pixel glyph bottom-left — desktop only, hides on hover --}}

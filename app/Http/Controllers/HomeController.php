@@ -10,9 +10,14 @@ class HomeController extends Controller
 {
     public function index(): View
     {
+        // Featured = best reviewed, ranked on score_bayesian (never shown):
+        // a single fresh 5-star review does not outrank consistently good
+        // rooms. Unreviewed rooms fill the remaining slots, newest first.
         $featuredRooms = Room::query()
             ->where('status', 'available')
             ->with(['building', 'media'])
+            ->orderByRaw('case when score_bayesian is null then 1 else 0 end')
+            ->orderByDesc('score_bayesian')
             ->latest()
             ->take(8)
             ->get();

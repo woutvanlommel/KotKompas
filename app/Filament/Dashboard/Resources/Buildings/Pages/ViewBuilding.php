@@ -53,7 +53,7 @@ class ViewBuilding extends ViewRecord
                         ];
                     }
 
-                    // costs_included = true als er maandelijkse kostensoorten zijn
+                    // costs_included = true when there are monthly cost types
                     $data['costs_included'] = collect($pendingCostTypes)
                         ->contains(fn ($ct) => $ct['frequency'] === 'monthly');
 
@@ -81,7 +81,7 @@ class ViewBuilding extends ViewRecord
                         unset($data[$key]);
                     }
 
-                    // ── Kamer aanmaken en pivots synchroniseren ──────────────
+                    // ── Create room and sync pivots ───────────────────────────
                     $room = Room::create(array_merge($data, ['building_id' => $this->record->id]));
 
                     if (! empty($pendingCostTypes)) {
