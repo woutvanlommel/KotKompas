@@ -72,6 +72,18 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasMedia
         return $this->hasMany(RoomReview::class, 'landlord_id');
     }
 
+    /** @return HasMany<RentalPeriod, $this> */
+    public function rentalPeriods(): HasMany
+    {
+        return $this->hasMany(RentalPeriod::class);
+    }
+
+    /** @return HasMany<Document, $this> */
+    public function documents(): HasMany
+    {
+        return $this->hasMany(Document::class);
+    }
+
     public function canAccessPanel(Panel $panel): bool
     {
         return match ($panel->getId()) {

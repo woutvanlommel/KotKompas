@@ -31,9 +31,27 @@ class Room extends Model implements HasMedia
         return $this->belongsTo(Building::class);
     }
 
+    /** @deprecated Gebruik rentalPeriods() — tenant_id wordt uitgefaseerd */
     public function tenant(): BelongsTo
     {
         return $this->belongsTo(User::class, 'tenant_id');
+    }
+
+    /** @return HasMany<RentalPeriod, $this> */
+    public function rentalPeriods(): HasMany
+    {
+        return $this->hasMany(RentalPeriod::class);
+    }
+
+    public function activeTenant(): ?User
+    {
+        return $this->rentalPeriods()
+            ->where(function ($q) {
+                $q->whereNull('end_date')->orWhere('end_date', '>=', now());
+            })
+            ->latest('start_date')
+            ->first()
+            ?->tenant;
     }
 
     /** @return HasMany<RoomReview, $this> */
