@@ -66,7 +66,7 @@
                             <td class="px-4 py-4 hidden md:table-cell">
                                 @if ($building->rooms_count > 0)
                                     <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium {{ $building->available_rooms_count > 0 ? 'bg-success-100 text-success-700 dark:bg-success-500/20 dark:text-success-400' : 'bg-gray-100 text-gray-500 dark:bg-gray-500/20 dark:text-gray-400' }}">
-                                        {{ $building->rented_rooms_count }} / {{ $building->rooms_count }} verhuurd
+                                        {{ $building->rented_rooms_count }} / {{ $building->rooms_count }}
                                     </span>
                                 @else
                                     <span class="text-xs text-gray-400 dark:text-gray-600">Geen koten</span>
