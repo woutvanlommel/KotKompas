@@ -135,7 +135,7 @@ class ScoreOverviewWidgetTest extends TestCase
             ->assertSee('Kotscore')
             ->assertSee('4,0 (1)')
             ->assertSee('2,0 (1)')
-            ->assertSee('fi-color-success')
-            ->assertSee('fi-color-warning');
+            ->assertSee('bg-success-100')
+            ->assertSee('bg-warning-100');
     }
 }

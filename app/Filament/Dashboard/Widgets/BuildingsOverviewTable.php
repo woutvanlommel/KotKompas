@@ -3,10 +3,6 @@
 namespace App\Filament\Dashboard\Widgets;
 
 use App\Models\Building;
-use App\Support\Score;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Table;
-use Filament\Widgets\TableWidget;
 use Filament\Widgets\Widget;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -37,38 +33,6 @@ class BuildingsOverviewTable extends Widget
                 ['rooms as average_price' => fn (Builder $query) => $query->whereNot('status', 'archived')],
                 'price_per_month',
             )
-            ->recordUrl(fn ($record) => BuildingResource::getUrl('view', ['record' => $record]))
-            ->columns([
-                TextColumn::make('name')
-                    ->label('Gebouw')
-                    ->sortable(),
-                TextColumn::make('city')
-                    ->label('Plaats')
-                    ->sortable(),
-                TextColumn::make('rented_rooms_count')
-                    ->label('Koten verhuurd')
-                    ->state(fn ($record) => $record->rooms_count > 0
-                        ? "{$record->rented_rooms_count} van {$record->rooms_count}"
-                        : null)
-                    ->placeholder('Geen koten')
-                    ->badge()
-                    ->color(fn ($record) => $record->available_rooms_count > 0 ? 'success' : 'gray')
-                    ->sortable(),
-                TextColumn::make('average_price')
-                    ->label('Gem. basishuur')
-                    ->money('EUR', locale: 'nl_BE')
-                    ->placeholder('—')
-                    ->sortable(),
-                TextColumn::make('score')
-                    ->label('Kotscore')
-                    ->state(fn ($record) => $record->score !== null
-                        ? Score::format($record->score)." ({$record->reviews_count})"
-                        : null)
-                    ->placeholder('Geen beoordelingen')
-                    ->badge()
-                    // warning = the brand orange (#ff6700) in this panel.
-                    ->color(fn ($record) => $record->score !== null && $record->score >= 4.0 ? 'success' : 'warning')
-                    ->sortable(),
             ->with([
                 'rooms' => fn ($query) => $query->with('tenant')->orderBy('room_number'),
             ])

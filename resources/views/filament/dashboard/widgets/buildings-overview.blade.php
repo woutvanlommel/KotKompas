@@ -81,9 +81,10 @@
                             </td>
                             <td class="px-4 py-4 text-right hidden sm:table-cell">
                                 @if ($building->score !== null && $building->reviews_count > 0)
-                                    <span class="inline-flex items-center gap-1 font-medium text-gray-900 dark:text-white">
-                                        <span class="text-amber-500">★</span>
-                                        <span>{{ number_format($building->score, 1, ',', '.') }} ({{ $building->reviews_count }})</span>
+                                    {{-- >= 4.0 green; below that the brand orange (warning = #ff6700 in this panel). --}}
+                                    <span class="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium {{ $building->score >= 4.0 ? 'bg-success-100 text-success-700 dark:bg-success-500/20 dark:text-success-400' : 'bg-warning-100 text-warning-700 dark:bg-warning-500/20 dark:text-warning-400' }}">
+                                        <span aria-hidden="true">★</span>
+                                        <span>{{ \App\Support\Score::format($building->score) }} ({{ $building->reviews_count }})</span>
                                     </span>
                                 @else
                                     <span class="text-gray-400 dark:text-gray-600">—</span>
