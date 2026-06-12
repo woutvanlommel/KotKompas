@@ -45,18 +45,18 @@ class RefreshBuildingPoiCache implements ShouldQueue
         BuildingPoiCache::insert(
             array_map(fn (array $poi) => [
                 'building_id' => $this->building->id,
-                'category'    => $poi['category'],
-                'name'        => $poi['name'],
-                'latitude'    => $poi['latitude'],
-                'longitude'   => $poi['longitude'],
-                'created_at'  => $now,
-                'updated_at'  => $now,
+                'category' => $poi['category'],
+                'name' => $poi['name'],
+                'latitude' => $poi['latitude'],
+                'longitude' => $poi['longitude'],
+                'created_at' => $now,
+                'updated_at' => $now,
             ], $pois)
         );
 
         Log::info('RefreshBuildingPoiCache completed', [
             'building_id' => $this->building->id,
-            'poi_count'   => count($pois),
+            'poi_count' => count($pois),
         ]);
     }
 }

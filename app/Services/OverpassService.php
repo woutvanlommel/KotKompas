@@ -16,18 +16,18 @@ class OverpassService
 
     // Overpass tag values → onze interne categorienaam
     private const AMENITY_MAP = [
-        'pharmacy'  => 'Apotheker',
-        'hospital'  => 'Ziekenhuis',
-        'cafe'      => 'Café',
-        'restaurant'=> 'Restaurant',
+        'pharmacy' => 'Apotheker',
+        'hospital' => 'Ziekenhuis',
+        'cafe' => 'Café',
+        'restaurant' => 'Restaurant',
         'fast_food' => 'Fast Food',
-        'bar'       => 'Café',
+        'bar' => 'Café',
     ];
 
     private const SHOP_MAP = [
         'supermarket' => 'supermarkt',
         'convenience' => 'convenience',
-        'bakery'      => 'bakker',
+        'bakery' => 'bakker',
     ];
 
     /**
@@ -47,8 +47,8 @@ class OverpassService
             if (! $response->ok()) {
                 Log::warning('Overpass API request failed', [
                     'status' => $response->status(),
-                    'lat'    => $latitude,
-                    'lng'    => $longitude,
+                    'lat' => $latitude,
+                    'lng' => $longitude,
                 ]);
 
                 return [];
@@ -58,8 +58,8 @@ class OverpassService
         } catch (\Throwable $e) {
             Log::error('Overpass API error', [
                 'error' => $e->getMessage(),
-                'lat'   => $latitude,
-                'lng'   => $longitude,
+                'lat' => $latitude,
+                'lng' => $longitude,
             ]);
 
             return [];
@@ -120,9 +120,9 @@ class OverpassService
             }
 
             $results[] = [
-                'category'  => $category,
-                'name'      => $name,
-                'latitude'  => (float) $lat,
+                'category' => $category,
+                'name' => $name,
+                'latitude' => (float) $lat,
                 'longitude' => (float) $lng,
             ];
         }
@@ -154,8 +154,8 @@ class OverpassService
         if (isset($tags['railway'])) {
             return match ($tags['railway']) {
                 'station', 'halt' => 'trein_station',
-                'tram_stop'       => 'tram_halte',
-                default           => null,
+                'tram_stop' => 'tram_halte',
+                default => null,
             };
         }
 

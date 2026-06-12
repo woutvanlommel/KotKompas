@@ -13,7 +13,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\MediaLibrary\HasMedia;
-use App\Models\BuildingPoiCache;
 
 #[Fillable(['landlord_id', 'name', 'description', 'street', 'house_number', 'box', 'postal_code', 'city', 'country', 'longitude', 'latitude'])]
 #[ObservedBy(BuildingObserver::class)]
