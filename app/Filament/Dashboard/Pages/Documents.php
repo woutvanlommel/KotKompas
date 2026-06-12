@@ -30,13 +30,25 @@ class Documents extends Page
 
     public function mount(): void
     {
-        abort_unless(auth()->user()?->hasRole('huurder'), 403);
+        abort_unless(auth()->user()?->hasAnyRole(['huurder', 'verhuurder']), 403);
     }
 
+    /** Eigen geüploade documenten (geen contracten) */
     public function getDocuments(): Collection
     {
         return auth()->user()
             ->documents()
+            ->where('type', '!=', 'contract')
+            ->with(['media', 'rentalPeriod.room.building'])
+            ->latest()
+            ->get();
+    }
+
+    /** Contracten aangemaakt door de verhuurder, gekoppeld via huurperiodes */
+    public function getContracts(): Collection
+    {
+        return \App\Models\Document::whereHas('rentalPeriod', fn($q) => $q->where('user_id', auth()->id()))
+            ->where('type', 'contract')
             ->with(['media', 'rentalPeriod.room.building'])
             ->latest()
             ->get();
@@ -46,10 +58,30 @@ class Documents extends Page
     {
         return RentalPeriod::where('user_id', auth()->id())
             ->with('room.building')
-            ->whereNull('end_date')
-            ->orWhere('end_date', '>=', now())
+            ->where(fn($q) => $q->whereNull('end_date')->orWhere('end_date', '>=', now()))
             ->latest('start_date')
             ->get();
+    }
+
+    public function signContract(int $documentId): void
+    {
+        $contract = \App\Models\Document::whereHas('rentalPeriod', fn($q) => $q->where('user_id', auth()->id()))
+            ->where('type', 'contract')
+            ->where('status', 'draft')
+            ->findOrFail($documentId);
+
+        $contract->update([
+            'status' => 'signed',
+            'blocks' => array_merge($contract->blocks ?? [], [
+                'signed_at' => now()->toIso8601String(),
+                'signed_by' => auth()->id(),
+            ]),
+        ]);
+
+        Notification::make()
+            ->title('Contract ondertekend')
+            ->success()
+            ->send();
     }
 
     protected function getHeaderActions(): array

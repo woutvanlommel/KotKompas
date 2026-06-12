@@ -30,6 +30,7 @@
         @include('filament.dashboard.pages.rooms.partials.costs')
         @include('filament.dashboard.pages.rooms.partials.facilities')
         @include('filament.dashboard.pages.rooms.partials.status-tenant')
+        @include('filament.dashboard.pages.rooms.partials.documents')
         @include('filament.dashboard.pages.rooms.partials.description')
         @include('filament.dashboard.pages.rooms.partials.gallery')
     </div>

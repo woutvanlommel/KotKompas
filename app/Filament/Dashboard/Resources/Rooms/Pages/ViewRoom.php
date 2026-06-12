@@ -4,6 +4,7 @@ namespace App\Filament\Dashboard\Resources\Rooms\Pages;
 
 use App\Filament\Dashboard\Resources\Buildings\BuildingResource;
 use App\Filament\Dashboard\Resources\Rooms\Concerns\HasCostActions;
+use App\Filament\Dashboard\Resources\Rooms\Concerns\HasDocumentActions;
 use App\Filament\Dashboard\Resources\Rooms\Concerns\HasFacilityActions;
 use App\Filament\Dashboard\Resources\Rooms\Concerns\HasGalleryActions;
 use App\Filament\Dashboard\Resources\Rooms\Concerns\HasRoomInfoActions;
@@ -20,6 +21,7 @@ use Filament\Resources\Pages\ViewRecord;
 class ViewRoom extends ViewRecord
 {
     use HasCostActions;
+    use HasDocumentActions;
     use HasFacilityActions;
     use HasGalleryActions;
     use HasRoomInfoActions;
