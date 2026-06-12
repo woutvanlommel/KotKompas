@@ -49,10 +49,20 @@ class Documents extends Page
             ->paginate(12);
     }
 
-    /** Contracten aangemaakt door de verhuurder, gekoppeld via huurperiodes */
+    /** Contracten — huurder ziet zijn eigen contracten, verhuurder ziet alle contracten van zijn kamers */
     public function getContracts(): Collection
     {
-        return Document::whereHas('rentalPeriod.tenants', fn($q) => $q->where('users.id', auth()->id()))
+        $user = auth()->user();
+
+        if ($user->hasRole('verhuurder')) {
+            return Document::where('type', 'contract')
+                ->whereHas('rentalPeriod.room.building', fn($q) => $q->where('landlord_id', $user->id))
+                ->with(['media', 'rentalPeriod.room.building', 'rentalPeriod.tenants'])
+                ->latest()
+                ->get();
+        }
+
+        return Document::whereHas('rentalPeriod.tenants', fn($q) => $q->where('users.id', $user->id))
             ->where('type', 'contract')
             ->with(['media', 'rentalPeriod.room.building', 'rentalPeriod.tenants'])
             ->latest()
@@ -82,11 +92,15 @@ class Documents extends Page
                 $documentId = $arguments['documentId'] ?? null;
                 $user = auth()->user();
 
-                $contract = Document::whereHas('rentalPeriod.tenants', fn($q) => $q->where('users.id', $user->id))
-                    ->where('type', 'contract')
-                    ->where('status', 'draft')
-                    ->with('rentalPeriod.tenants')
-                    ->findOrFail($documentId);
+                $query = Document::where('type', 'contract')->where('status', 'draft');
+
+                if ($user->hasRole('verhuurder')) {
+                    $query->whereHas('rentalPeriod.room.building', fn($q) => $q->where('landlord_id', $user->id));
+                } else {
+                    $query->whereHas('rentalPeriod.tenants', fn($q) => $q->where('users.id', $user->id));
+                }
+
+                $contract = $query->with('rentalPeriod.tenants')->findOrFail($documentId);
 
                 $blocks = $contract->blocks ?? [];
                 $handtekeningen = $blocks['ondertekening']['handtekeningen'] ?? [];
@@ -96,18 +110,21 @@ class Documents extends Page
                     return;
                 }
 
+                $isVerhuurder = $user->hasRole('verhuurder');
                 $handtekeningen[] = [
-                    'user_id'   => $user->id,
-                    'naam'      => $user->full_name ?? $user->name,
-                    'signed_at' => now()->toIso8601String(),
+                    'user_id'        => $user->id,
+                    'naam'           => $user->full_name ?? $user->name,
+                    'is_verhuurder'  => $isVerhuurder,
+                    'signed_at'      => now()->toIso8601String(),
                 ];
 
                 $blocks['ondertekening']['handtekeningen'] = $handtekeningen;
 
-                // Status op 'signed' zetten enkel als alle huurders getekend hebben
-                $allTenantIds  = $contract->rentalPeriod->tenants->pluck('id');
+                // Volledig ondertekend als verhuurder én alle huurders getekend hebben
+                $tenantIds     = $contract->rentalPeriod->tenants->pluck('id');
                 $signedUserIds = collect($handtekeningen)->pluck('user_id');
-                $allSigned     = $allTenantIds->diff($signedUserIds)->isEmpty();
+                $verhuurderSigned = collect($handtekeningen)->where('is_verhuurder', true)->isNotEmpty();
+                $allSigned     = $verhuurderSigned && $tenantIds->diff($signedUserIds)->isEmpty();
 
                 $contract->update([
                     'status' => $allSigned ? 'signed' : 'draft',
