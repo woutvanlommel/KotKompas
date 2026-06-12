@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Collection;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
@@ -31,9 +32,40 @@ class Room extends Model implements HasMedia
         return $this->belongsTo(Building::class);
     }
 
+    /** @deprecated Gebruik rentalPeriods() — tenant_id wordt uitgefaseerd */
     public function tenant(): BelongsTo
     {
         return $this->belongsTo(User::class, 'tenant_id');
+    }
+
+    /** @return HasMany<RentalPeriod, $this> */
+    public function rentalPeriods(): HasMany
+    {
+        return $this->hasMany(RentalPeriod::class);
+    }
+
+    public function activeTenant(): ?User
+    {
+        return $this->rentalPeriods()
+            ->where(function ($q) {
+                $q->whereNull('end_date')->orWhere('end_date', '>=', now());
+            })
+            ->latest('start_date')
+            ->first()
+            ?->primaryTenant();
+    }
+
+    /** Alle huurders (hoofd + mede) van de actieve huurperiode */
+    public function activeTenants(): Collection
+    {
+        $period = $this->rentalPeriods()
+            ->where(function ($q) {
+                $q->whereNull('end_date')->orWhere('end_date', '>=', now());
+            })
+            ->latest('start_date')
+            ->first();
+
+        return $period->tenants ?? collect();
     }
 
     /** @return HasMany<RoomReview, $this> */

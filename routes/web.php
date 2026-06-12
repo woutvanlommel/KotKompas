@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\ContractPdfController;
 use App\Http\Controllers\FaqController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\OnboardingController;
@@ -50,6 +51,10 @@ Route::post('/beoordeling/{invitation:token}', [RoomReviewController::class, 'st
 // Social login (Google)
 Route::get('/auth/{provider}/redirect', [SocialAuthController::class, 'redirect'])->name('social.redirect');
 Route::get('/auth/{provider}/callback', [SocialAuthController::class, 'callback'])->name('social.callback');
+
+// Contract PDF (authenticated, toegankelijk voor huurder + verhuurder)
+Route::middleware('auth')->get('/contracten/{document}/pdf', ContractPdfController::class)
+    ->name('contracts.pdf');
 
 // One-time role choice after social sign-up
 Route::middleware('auth')->group(function () {
