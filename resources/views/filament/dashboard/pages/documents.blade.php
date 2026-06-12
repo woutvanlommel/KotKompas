@@ -1,7 +1,7 @@
 <x-filament-panels::page>
 
     @php
-        $documents = $this->getDocuments();
+        $documents = $this->getDocuments(); 
         $contracts = $this->getContracts();
     @endphp
 
@@ -83,7 +83,7 @@
             <h2 class="text-base font-semibold text-gray-900 dark:text-white flex items-center gap-2">
                 <x-heroicon-o-folder-open class="w-5 h-5 text-gray-400" />
                 Mijn documenten
-                <span class="text-sm font-normal text-gray-400">({{ $documents->count() }})</span>
+                <span class="text-sm font-normal text-gray-400">({{ $documents->total() }})</span>
             </h2>
 
             <div class="inline-flex rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
@@ -120,7 +120,7 @@
 
         {{-- Kaartweergave --}}
         @elseif ($viewMode === 'card')
-            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
                 @foreach ($documents as $document)
                     @php
                         $media     = $document->getFirstMedia('document');
@@ -197,6 +197,12 @@
                     </div>
                 @endforeach
             </div>
+
+            @if ($documents->hasPages())
+                <div class="mt-6">
+                    {{ $documents->links() }}
+                </div>
+            @endif
 
         {{-- Lijstweergave --}}
         @else
@@ -278,6 +284,12 @@
                     </div>
                 @endforeach
             </div>
+
+            @if ($documents->hasPages())
+                <div class="mt-4">
+                    {{ $documents->links() }}
+                </div>
+            @endif
         @endif
     </section>
 

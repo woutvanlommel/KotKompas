@@ -2,6 +2,7 @@
 
 namespace App\Filament\Dashboard\Pages;
 
+use App\Models\Document;
 use App\Models\RentalPeriod;
 use BackedEnum;
 use Filament\Actions\Action;
@@ -12,7 +13,9 @@ use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Support\Icons\Heroicon;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
+use Livewire\WithPagination;
 
 class Documents extends Page
 {
@@ -26,6 +29,8 @@ class Documents extends Page
 
     protected static ?int $navigationSort = 3;
 
+    use WithPagination;
+
     public string $viewMode = 'card'; // 'card' | 'list'
 
     public function mount(): void
@@ -33,21 +38,21 @@ class Documents extends Page
         abort_unless(auth()->user()?->hasAnyRole(['huurder', 'verhuurder']), 403);
     }
 
-    /** Eigen geüploade documenten (geen contracten) */
-    public function getDocuments(): Collection
+    /** Eigen geüploade documenten (geen contracten), 12 per pagina */
+    public function getDocuments(): LengthAwarePaginator
     {
         return auth()->user()
             ->documents()
             ->where('type', '!=', 'contract')
             ->with(['media', 'rentalPeriod.room.building'])
             ->latest()
-            ->get();
+            ->paginate(12);
     }
 
     /** Contracten aangemaakt door de verhuurder, gekoppeld via huurperiodes */
     public function getContracts(): Collection
     {
-        return \App\Models\Document::whereHas('rentalPeriod', fn($q) => $q->where('user_id', auth()->id()))
+        return Document::whereHas('rentalPeriod', fn($q) => $q->where('user_id', auth()->id()))
             ->where('type', 'contract')
             ->with(['media', 'rentalPeriod.room.building'])
             ->latest()
@@ -65,7 +70,7 @@ class Documents extends Page
 
     public function signContract(int $documentId): void
     {
-        $contract = \App\Models\Document::whereHas('rentalPeriod', fn($q) => $q->where('user_id', auth()->id()))
+        $contract = Document::whereHas('rentalPeriod', fn($q) => $q->where('user_id', auth()->id()))
             ->where('type', 'contract')
             ->where('status', 'draft')
             ->findOrFail($documentId);
@@ -117,17 +122,6 @@ class Documents extends Page
                         ->default('other')
                         ->required(),
 
-                    Select::make('rental_period_id')
-                        ->label('Koppel aan huurperiode')
-                        ->options(
-                            $this->getActiveRentalPeriods()
-                                ->mapWithKeys(fn(RentalPeriod $rp) => [
-                                    $rp->id => $rp->room->building->street . ' — Kamer ' . $rp->room->room_number,
-                                ])
-                        )
-                        ->placeholder('Geen koppeling')
-                        ->nullable(),
-
                     Toggle::make('is_public')
                         ->label('Zichtbaar voor verhuurder')
                         ->helperText('Zet aan om dit document te delen met de verhuurder van de gekoppelde kamer')
@@ -136,11 +130,14 @@ class Documents extends Page
                 ->action(function (array $data): void {
                     $user = auth()->user();
 
+                    // Automatisch koppelen aan de actieve huurperiode van de huurder
+                    $activePeriod = $this->getActiveRentalPeriods()->first();
+
                     $document = $user->documents()->create([
                         'name'             => $data['name'],
                         'type'             => $data['type'],
                         'is_public'        => $data['is_public'],
-                        'rental_period_id' => $data['rental_period_id'] ?? null,
+                        'rental_period_id' => $activePeriod?->id,
                     ]);
 
                     if (! empty($data['file'])) {
@@ -160,6 +157,7 @@ class Documents extends Page
     public function toggleViewMode(string $mode): void
     {
         $this->viewMode = $mode;
+        $this->resetPage();
     }
 
     public function togglePublic(int $documentId): void
