@@ -55,7 +55,7 @@ class RoomWizard
                         ->dehydrated(false)
                         ->afterStateHydrated(fn ($component) => $component->state($building?->city)),
 
-                    // Bus enkel invulbaar als het gebouw geen bus heeft
+                    // Bus only editable when the building has no bus number
                     TextInput::make('bus')
                         ->label('Bus')
                         ->placeholder('bv. 1, b, 3.01')

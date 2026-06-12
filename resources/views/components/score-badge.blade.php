@@ -1,8 +1,8 @@
 @props(['score' => null, 'count' => 0, 'variant' => 'light'])
 
-{{-- Kotscore-pill: rendert niets zolang er geen beoordelingen zijn. Toont de
-     cached weergavescore (nooit score_bayesian — die is alleen voor ranking).
-     variant="dark" volgt de chip-taal van de koten-kaarten (wit op foto). --}}
+{{-- Kotscore pill: renders nothing while there are no reviews. Shows the
+     cached display score (never score_bayesian — that is ranking-only).
+     variant="dark" follows the chip language of the room cards (white on photo). --}}
 @if ($score !== null && $count > 0)
     @if ($variant === 'dark')
         <span {{ $attributes->merge(['class' => 'inline-flex items-center gap-1 rounded-md border border-white/20 bg-white/10 px-2 py-0.5 text-[0.65rem] text-white backdrop-blur-sm']) }}>

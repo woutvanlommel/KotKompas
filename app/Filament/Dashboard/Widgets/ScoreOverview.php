@@ -8,8 +8,8 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Database\Eloquent\Builder;
 
 /**
- * Vervangt de "Score overzicht"-placeholder: de cached kotscores uit
- * KotScoreService, gezien door de bril van de ingelogde verhuurder.
+ * Replaces the "Score overzicht" placeholder: the cached kotscores from
+ * KotScoreService, seen through the lens of the logged-in landlord.
  */
 class ScoreOverview extends StatsOverviewWidget
 {

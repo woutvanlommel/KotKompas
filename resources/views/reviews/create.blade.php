@@ -12,7 +12,7 @@
 @endphp
 <x-layout title="Beoordeel je kot · KotKompas" body-class="bg-primary-900 text-white overflow-x-hidden">
 <x-slot:head>
-    {{-- Token-pagina: mag nooit in een zoekindex belanden. --}}
+    {{-- Token page: must never end up in a search index. --}}
     <meta name="robots" content="noindex, nofollow">
 </x-slot:head>
 <div class="kkc-auth relative min-h-dvh">

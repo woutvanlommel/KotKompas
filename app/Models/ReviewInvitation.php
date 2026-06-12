@@ -12,8 +12,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 /**
- * Token-uitnodiging voor de kotscore-enquête, aangemaakt wanneer een huur
- * wordt stopgezet. De link wordt handmatig gedeeld tot de mail er is (#28).
+ * Token invitation for the kotscore survey, created when a rental ends.
+ * The link is shared manually until the email exists (#28).
  *
  * @property int $id
  * @property int $room_id
@@ -63,9 +63,9 @@ class ReviewInvitation extends Model
     }
 
     /**
-     * Maak een uitnodiging voor de huurder wiens huur net is stopgezet.
-     * Geeft null terug als die huurder dit kot al beoordeeld heeft —
-     * room_reviews staat maar één beoordeling per huurder per kot toe.
+     * Create an invitation for the tenant whose rental just ended.
+     * Returns null when that tenant already reviewed this room —
+     * room_reviews allows only one review per tenant per room.
      */
     public static function issueFor(Room $room, int $tenantId): ?self
     {

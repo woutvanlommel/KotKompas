@@ -35,8 +35,8 @@ class BuildingObserver
         $coordinates = $this->geocodingService->geocodeBuilding($building);
 
         if ($coordinates) {
-            // Geen withoutEvents nodig: observer triggert enkel bij adresveldwijzigingen,
-            // lat/lng vallen daar niet onder, dus geen oneindige loop mogelijk.
+            // No withoutEvents needed: the observer only triggers on address field
+            // changes, and lat/lng are not among them, so no infinite loop is possible.
             $building->update([
                 'latitude' => $coordinates['latitude'],
                 'longitude' => $coordinates['longitude'],

@@ -10,9 +10,9 @@ class HomeController extends Controller
 {
     public function index(): View
     {
-        // Uitgelicht = best beoordeeld, gerankt op score_bayesian (nooit
-        // getoond): één verse 5-sterrenreview komt zo niet boven consistent
-        // goede koten. Onbeoordeelde koten vullen aan op nieuwste eerst.
+        // Featured = best reviewed, ranked on score_bayesian (never shown):
+        // a single fresh 5-star review does not outrank consistently good
+        // rooms. Unreviewed rooms fill the remaining slots, newest first.
         $featuredRooms = Room::query()
             ->where('status', 'available')
             ->with(['building', 'media'])

@@ -21,7 +21,7 @@
             ]));
         @endphp
 
-        {{-- Mobiel: filters inklapbaar zodat de resultaten meteen zichtbaar zijn --}}
+        {{-- Mobile: collapsible filters so the results are visible right away --}}
         <button type="button" data-filters-toggle aria-controls="kk-filters"
                 aria-expanded="{{ $activeFilterCount ? 'true' : 'false' }}"
                 class="mb-6 flex w-full items-center justify-between gap-3 border-y border-hairline py-3.5 text-[0.7rem] font-medium uppercase tracking-[0.14em] text-ink lg:hidden">
@@ -36,8 +36,8 @@
             </svg>
         </button>
 
-        {{-- Filterbalk — GET zodat filters in de URL leven (deelbaar, paginatie-vriendelijk).
-             Underline-velden: de auth/login-taal op het lichte canvas. --}}
+        {{-- Filter bar — GET so the filters live in the URL (shareable, pagination-friendly).
+             Underline fields: the auth/login language on the light canvas. --}}
         <form method="GET" action="{{ route('rooms.index') }}" id="kk-filters" data-filters-panel
               @unless ($activeFilterCount) data-collapsed @endunless
               class="kk-filters mb-12 grid grid-cols-1 gap-x-10 gap-y-7 border-b border-hairline pb-10 sm:grid-cols-2 lg:grid-cols-4 lg:border-y lg:py-9">

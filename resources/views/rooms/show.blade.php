@@ -1,6 +1,6 @@
-{{-- Detailpagina voor een individueel kot.
-     Componenten staan in resources/views/components/room/.
-     Alpine skeleton: <x-room.skeleton> zichtbaar tot Alpine opstart → fade naar content. --}}
+{{-- Detail page for an individual room.
+     Components live in resources/views/components/room/.
+     Alpine skeleton: <x-room.skeleton> visible until Alpine boots → fade to content. --}}
 
 <x-layout :title="($room->title ?? 'Kot') . ' — KotKompas'" body-class="bg-canvas text-ink">
 
@@ -24,8 +24,8 @@
                 <x-room.skeleton />
             </div>
 
-            {{-- Echte content: style="display:none" zodat Alpine dit zelf managed
-                 (x-cloak vereist de CSS-regel; inline style is betrouwbaarder) --}}
+            {{-- Real content: style="display:none" so Alpine manages this itself
+                 (x-cloak requires the CSS rule; an inline style is more reliable) --}}
             <div style="display:none" x-show="ready"
                  x-transition:enter="transition ease-out duration-300"
                  x-transition:enter-start="opacity-0"

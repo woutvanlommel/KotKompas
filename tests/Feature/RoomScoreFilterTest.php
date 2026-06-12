@@ -25,9 +25,9 @@ class RoomScoreFilterTest extends TestCase
 
     public function test_sorting_by_score_ranks_on_bayesian_not_on_display_score(): void
     {
-        // consistent: 6 reviews, gemiddeld 4,83 — single: één perfecte review.
-        // Op weergavescore wint single (5,0 > 4,83); op score_bayesian wint
-        // consistent — precies waarvoor die kolom bestaat.
+        // consistent: 6 reviews averaging 4.83 — single: one perfect review.
+        // On display score single wins (5.0 > 4.83); on score_bayesian
+        // consistent wins — exactly what that column exists for.
         $consistent = Room::factory()->create();
         $this->reviewTimes($consistent, 5, kot: 5);
         $this->reviewTimes($consistent, 1, kot: 4);
@@ -40,8 +40,8 @@ class RoomScoreFilterTest extends TestCase
 
         $unreviewed = Room::factory()->create();
 
-        // Bayesians settelen op het uiteindelijke platformgemiddelde —
-        // in productie doet de nachtelijke recompute dit.
+        // Settle the bayesians on the final platform mean — in production
+        // the nightly recompute does this.
         $this->artisan('app:recompute-kotscores')->assertSuccessful();
 
         $this->assertGreaterThan($consistent->refresh()->score, $single->refresh()->score);
@@ -111,7 +111,7 @@ class RoomScoreFilterTest extends TestCase
         $this->assertStringContainsString('sort=score', $pageOne->url(2));
 
         $pageTwo = $this->get('/koten?sort=score&page=2')->assertOk()->viewData('rooms');
-        $this->assertCount(2, $pageTwo); // 14 koten, 12 per pagina
+        $this->assertCount(2, $pageTwo); // 14 rooms, 12 per page
         $this->assertNotContains($reviewed->id, $pageTwo->pluck('id'));
     }
 

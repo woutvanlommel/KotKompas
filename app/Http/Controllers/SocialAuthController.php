@@ -69,9 +69,9 @@ class SocialAuthController extends Controller
         if (! $user) {
             $emailMatch = User::where('email', $oauthUser->getEmail())->first();
 
-            // Alleen koppelen aan een geverifieerd account. Een ongeverifieerd
-            // account kan door iemand anders met dit adres geregistreerd zijn —
-            // koppelen zou dan een account takeover zijn.
+            // Only link to a verified account. An unverified account may have
+            // been registered by someone else using this address — linking
+            // would then be an account takeover.
             if ($emailMatch && $emailMatch->email_verified_at === null) {
                 return redirect()->to(filament()->getPanel('dashboard')->getLoginUrl())
                     ->withErrors(['social' => 'Er bestaat al een account met dit e-mailadres. Log in met je wachtwoord.']);
@@ -82,7 +82,7 @@ class SocialAuthController extends Controller
 
         if ($user) {
             // Link the social identity to an existing (or already-linked) account.
-            // De provider heeft het e-mailadres geverifieerd, dus dat mag hier ook.
+            // The provider verified the email address, so we may do the same here.
             $user->forceFill([
                 'provider' => $provider,
                 'provider_id' => $oauthUser->getId(),

@@ -53,7 +53,7 @@ class ViewBuilding extends ViewRecord
                         ];
                     }
 
-                    // costs_included = true als er maandelijkse kostensoorten zijn
+                    // costs_included = true when there are monthly cost types
                     $data['costs_included'] = collect($pendingCostTypes)
                         ->contains(fn ($ct) => $ct['frequency'] === 'monthly');
 

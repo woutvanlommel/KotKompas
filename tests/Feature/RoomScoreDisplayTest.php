@@ -25,11 +25,12 @@ class RoomScoreDisplayTest extends TestCase
         $this->get(route('rooms.show', $room))
             ->assertOk()
             ->assertSee('Wat zeggen ex-huurders?')
-            ->assertSee('4,0')        // kotscore (badge + sectie)
-            ->assertSee('2,0')        // communicatie in de breakdown
+            ->assertSee('4,0')        // kotscore (badge + section)
             ->assertSee('1 beoordeling')
             ->assertSee('Hygiëne')
-            ->assertSee('Communicatie verhuurder');
+            // Communication is asked in the survey and counts toward the
+            // landlord score, but is never displayed on room pages.
+            ->assertDontSee('Communicatie verhuurder');
     }
 
     public function test_detail_page_hides_kotscore_without_reviews(): void
@@ -64,7 +65,6 @@ class RoomScoreDisplayTest extends TestCase
             'hygiene' => 3.0,
             'size' => 3.0,
             'value' => 3.0,
-            'communication' => 3.0,
         ], $breakdown);
 
         // And the total on the page does not contradict the breakdown.
