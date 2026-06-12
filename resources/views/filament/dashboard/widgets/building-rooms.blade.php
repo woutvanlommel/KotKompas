@@ -1,4 +1,6 @@
 @php
+    use App\Filament\Dashboard\Resources\Rooms\RoomResource;
+
     $building = $getRecord();
     $rooms = $building->rooms;
 
@@ -34,8 +36,12 @@
                     @php
                         $statusLabel = $statusLabels[$room->status] ?? $room->status;
                         $statusColor = $statusColors[$room->status] ?? 'bg-gray-100 text-gray-500';
+                        $roomUrl = RoomResource::getUrl('view', ['record' => $room]);
                     @endphp
-                    <tr class="hover:bg-gray-50 dark:hover:bg-white/5">
+                    <tr
+                        class="hover:bg-gray-50 dark:hover:bg-white/5 cursor-pointer"
+                        onclick="window.location.href='{{ $roomUrl }}'"
+                    >
                         <td class="px-4 py-2 font-medium text-gray-900 dark:text-white">
                             {{ $room->title ?? 'Kamer '.$room->room_number }}
                         </td>

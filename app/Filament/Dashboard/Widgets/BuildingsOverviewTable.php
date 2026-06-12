@@ -2,8 +2,8 @@
 
 namespace App\Filament\Dashboard\Widgets;
 
-use App\Filament\Dashboard\Resources\Buildings\BuildingResource;
 use App\Models\Building;
+use Filament\Actions\Action;
 use Filament\Tables\Columns\Layout\Panel;
 use Filament\Tables\Columns\Layout\Split;
 use Filament\Tables\Columns\Layout\View;
@@ -18,9 +18,23 @@ class BuildingsOverviewTable extends TableWidget
 
     protected int|string|array $columnSpan = 'full';
 
+    /** @var array<int> */
+    public array $expandedBuildings = [];
+
     public static function canView(): bool
     {
         return auth()->user()?->hasRole('verhuurder') ?? false;
+    }
+
+    public function toggleBuilding(int $id): void
+    {
+        if (in_array($id, $this->expandedBuildings)) {
+            $this->expandedBuildings = array_values(
+                array_filter($this->expandedBuildings, fn ($bid) => $bid !== $id)
+            );
+        } else {
+            $this->expandedBuildings[] = $id;
+        }
     }
 
     public function table(Table $table): Table
@@ -46,7 +60,16 @@ class BuildingsOverviewTable extends TableWidget
                             ->orderBy('room_number'),
                     ]),
             )
-            ->recordUrl(fn ($record) => BuildingResource::getUrl('view', ['record' => $record]))
+            ->recordAction('toggleBuilding')
+            ->recordActions([
+                Action::make('toggleBuilding')
+                    ->action(fn (Building $record) => $this->toggleBuilding($record->id))
+                    ->icon(fn (Building $record) => in_array($record->id, $this->expandedBuildings)
+                        ? 'heroicon-o-chevron-up'
+                        : 'heroicon-o-chevron-down')
+                    ->label('')
+                    ->color('gray'),
+            ])
             ->columns([
                 Split::make([
                     TextColumn::make('name')
@@ -72,7 +95,7 @@ class BuildingsOverviewTable extends TableWidget
                 ]),
                 Panel::make([
                     View::make('filament.dashboard.widgets.building-rooms'),
-                ])->collapsible(),
+                ])->visible(fn (Building $record) => in_array($record->id, $this->expandedBuildings)),
             ])
             ->defaultSort('name')
             ->paginated(false);
