@@ -93,12 +93,14 @@
                                 <x-heroicon-o-arrow-top-right-on-square class="w-4 h-4" />
                             </a>
 
-                            <button
-                                wire:click="mountAction('deleteContract', { documentId: {{ $contract->id }} })"
-                                class="p-1.5 rounded-lg border border-gray-200 dark:border-gray-700 text-gray-400 hover:text-red-500 hover:border-red-200 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
-                                title="Verwijderen">
-                                <x-heroicon-o-trash class="w-4 h-4" />
-                            </button>
+                            @if (auth()->user()->hasRole('verhuurder'))
+                                <button
+                                    wire:click="mountAction('deleteContract', { documentId: {{ $contract->id }} })"
+                                    class="p-1.5 rounded-lg border border-gray-200 dark:border-gray-700 text-gray-400 hover:text-red-500 hover:border-red-200 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                                    title="Verwijderen">
+                                    <x-heroicon-o-trash class="w-4 h-4" />
+                                </button>
+                            @endif
                         </div>
                     </div>
                 @endforeach

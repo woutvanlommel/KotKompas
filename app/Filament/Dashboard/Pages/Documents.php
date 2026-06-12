@@ -236,20 +236,18 @@ class Documents extends Page
             ->color('danger')
             ->action(function (array $arguments): void {
                 $user = auth()->user();
+
+                abort_unless($user->hasRole('verhuurder'), 403);
+
                 $documentId = $arguments['documentId'] ?? null;
 
-                $query = Document::where('type', 'contract');
-
-                if ($user->hasRole('verhuurder')) {
-                    $query->where(fn ($q) => $q
+                $contract = Document::where('type', 'contract')
+                    ->where(fn ($q) => $q
                         ->whereHas('rentalPeriod.room.building', fn ($q2) => $q2->where('landlord_id', $user->id))
                         ->orWhere('user_id', $user->id)
-                    );
-                } else {
-                    $query->whereHas('rentalPeriod.tenants', fn ($q) => $q->where('users.id', $user->id));
-                }
+                    )
+                    ->findOrFail($documentId);
 
-                $contract = $query->findOrFail($documentId);
                 $contract->delete();
 
                 Notification::make()
