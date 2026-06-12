@@ -109,7 +109,6 @@
                                                     <th class="px-4 py-2.5 text-left text-xs font-semibold text-gray-400 dark:text-gray-600 uppercase tracking-wider hidden sm:table-cell">Status</th>
                                                     <th class="px-4 py-2.5 text-left text-xs font-semibold text-gray-400 dark:text-gray-600 uppercase tracking-wider hidden md:table-cell">Huurder</th>
                                                     <th class="px-4 py-2.5 text-right text-xs font-semibold text-gray-400 dark:text-gray-600 uppercase tracking-wider hidden lg:table-cell">Huurprijs/mnd</th>
-                                                    <th class="px-4 py-2.5 text-center text-xs font-semibold text-gray-400 dark:text-gray-600 uppercase tracking-wider">Score</th>
                                                 </tr>
                                             </thead>
                                             <tbody class="divide-y divide-gray-100/80 dark:divide-white/[0.04]">
@@ -145,16 +144,6 @@
                                                                 € {{ number_format($room->price_per_month, 2, ',', '.') }}
                                                             @else
                                                                 <span class="text-gray-400">—</span>
-                                                            @endif
-                                                        </td>
-                                                        <td class="px-4 py-3 text-center">
-                                                            @if ($room->score !== null)
-                                                                <span class="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium {{ $room->score >= 4.0 ? 'bg-success-100 text-success-700 dark:bg-success-500/20 dark:text-success-400' : 'bg-gray-100 text-gray-500 dark:bg-gray-500/20 dark:text-gray-400' }}">
-                                                                    ★ {{ number_format($room->score, 1, ',', '.') }}
-                                                                    <span class="opacity-60">({{ $room->reviews_count }})</span>
-                                                                </span>
-                                                            @else
-                                                                <span class="text-gray-300 dark:text-gray-700 text-xs">—</span>
                                                             @endif
                                                         </td>
                                                     </tr>
