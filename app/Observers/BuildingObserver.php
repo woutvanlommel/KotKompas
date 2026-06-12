@@ -6,6 +6,7 @@
 
 namespace App\Observers;
 
+use App\Jobs\RefreshBuildingPoiCache;
 use App\Models\Building;
 use App\Services\GeocodingService;
 
@@ -18,6 +19,8 @@ class BuildingObserver
     public function created(Building $building): void
     {
         $this->updateCoordinates($building);
+
+        RefreshBuildingPoiCache::dispatch($building);
     }
 
     public function updated(Building $building): void
@@ -27,6 +30,8 @@ class BuildingObserver
 
         if ($addressChanged) {
             $this->updateCoordinates($building);
+
+            RefreshBuildingPoiCache::dispatch($building);
         }
     }
 

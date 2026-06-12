@@ -1,5 +1,7 @@
 <?php
 
+use App\Jobs\RefreshBuildingPoiCache;
+use App\Models\Building;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schedule;
@@ -22,3 +24,9 @@ Schedule::command('app:recompute-kotscores')
     ->daily()
     ->withoutOverlapping()
     ->runInBackground();
+// Ververs de POI-cache van elk gebouw maandelijks.
+Schedule::call(function () {
+    Building::whereNotNull('latitude')
+        ->whereNotNull('longitude')
+        ->each(fn (Building $building) => RefreshBuildingPoiCache::dispatch($building));
+})->monthly();

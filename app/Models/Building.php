@@ -52,4 +52,12 @@ class Building extends Model implements HasMedia
             },
         );
     }
+
+    /**
+     * @return HasMany<BuildingPoiCache, $this>
+     */
+    public function poiCache(): HasMany
+    {
+        return $this->hasMany(BuildingPoiCache::class);
+    }
 }
