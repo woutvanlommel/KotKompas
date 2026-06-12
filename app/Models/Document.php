@@ -58,7 +58,7 @@ class Document extends Model implements HasMedia
     {
         return [
             'is_public' => 'boolean',
-            'blocks'    => 'array',
+            'blocks' => 'array',
         ];
     }
 }

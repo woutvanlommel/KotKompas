@@ -3,17 +3,17 @@
 namespace App\Filament\Dashboard\Resources\Rooms\Concerns;
 
 use App\Models\Document;
-use App\Models\RentalPeriod;
 use Filament\Actions\Action;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
-use Filament\Notifications\Notification;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 
 trait HasDocumentActions
 {
@@ -24,8 +24,8 @@ trait HasDocumentActions
             ->icon('heroicon-o-document-plus')
             ->slideOver()
             ->form(function () {
-                $room         = $this->record;
-                $building     = $room->building;
+                $room = $this->record;
+                $building = $room->building;
                 $activePeriod = $room->rentalPeriods()
                     ->with('tenants')
                     ->where(fn ($q) => $q->whereNull('end_date')->orWhere('end_date', '>=', now()))
@@ -36,8 +36,8 @@ trait HasDocumentActions
                     ? $activePeriod->tenants->map->full_name->join(', ')
                     : '—';
 
-                $address = $building->street . ' ' . $building->house_number
-                    . ', ' . $building->postal_code . ' ' . $building->city;
+                $address = $building->street.' '.$building->house_number
+                    .', '.$building->postal_code.' '.$building->city;
 
                 return [
                     // ── Info (read-only context) ───────────────────────────
@@ -73,7 +73,7 @@ trait HasDocumentActions
                     Select::make('duration_months')
                         ->label('Duur huurperiode')
                         ->options([
-                            9  => '9 maanden',
+                            9 => '9 maanden',
                             10 => '10 maanden',
                             11 => '11 maanden',
                             12 => '12 maanden',
@@ -100,9 +100,9 @@ trait HasDocumentActions
                 ];
             })
             ->action(function (array $data): void {
-                $room         = $this->record;
-                $building     = $room->building;
-                $landlord     = auth()->user();
+                $room = $this->record;
+                $building = $room->building;
+                $landlord = auth()->user();
                 $activePeriod = $room->rentalPeriods()
                     ->with('tenants')
                     ->where(fn ($q) => $q->whereNull('end_date')->orWhere('end_date', '>=', now()))
@@ -114,42 +114,42 @@ trait HasDocumentActions
                 $blocks = [
                     'partijen' => [
                         'verhuurder' => [
-                            'naam'  => $landlord->full_name,
+                            'naam' => $landlord->full_name,
                             'email' => $landlord->email,
-                            'tel'   => $landlord->phone,
+                            'tel' => $landlord->phone,
                         ],
                         'huurders' => $tenants->map(fn ($u) => [
-                            'user_id'    => $u->id,
-                            'naam'       => $u->full_name,
-                            'email'      => $u->email,
-                            'tel'        => $u->phone,
+                            'user_id' => $u->id,
+                            'naam' => $u->full_name,
+                            'email' => $u->email,
+                            'tel' => $u->phone,
                             'is_primary' => (bool) $u->pivot->is_primary,
                         ])->values()->toArray(),
                     ],
                     'goed' => [
-                        'adres'       => $building->street . ' ' . $building->house_number
-                            . ', ' . $building->postal_code . ' ' . $building->city,
-                        'kamer'       => $room->room_number,
-                        'type'        => $room->type,
+                        'adres' => $building->street.' '.$building->house_number
+                            .', '.$building->postal_code.' '.$building->city,
+                        'kamer' => $room->room_number,
+                        'type' => $room->type,
                         'oppervlakte' => $room->surface_m2,
-                        'gemeubeld'   => $room->is_furnished,
+                        'gemeubeld' => $room->is_furnished,
                     ],
                     'huurperiode' => [
                         'duur_maanden' => $data['duration_months'],
-                        'start'        => $data['start_date'],
-                        'einde'        => $data['end_date'] ?? null,
+                        'start' => $data['start_date'],
+                        'einde' => $data['end_date'] ?? null,
                     ],
                     'financieel' => [
                         'huurprijs' => $room->price_per_month,
-                        'borgsom'   => $room->deposit_amount,
+                        'borgsom' => $room->deposit_amount,
                     ],
                     'bijzondere_voorwaarden' => $data['special_conditions'] ?? null,
                     'wettelijk' => [
                         'toepasselijk_recht' => 'Vlaamse Codex Wonen 2021 — Studentenhuurovereenkomst',
                     ],
                     'ondertekening' => [
-                        'aangemaakt_op'    => now()->toIso8601String(),
-                        'aangemaakt_door'  => $landlord->full_name,
+                        'aangemaakt_op' => now()->toIso8601String(),
+                        'aangemaakt_door' => $landlord->full_name,
                         'huurder_getekend' => null,
                     ],
                 ];
@@ -158,18 +158,18 @@ trait HasDocumentActions
                 if ($activePeriod) {
                     $activePeriod->update([
                         'start_date' => $data['start_date'],
-                        'end_date'   => $data['end_date'] ?? null,
+                        'end_date' => $data['end_date'] ?? null,
                     ]);
                 }
 
                 Document::create([
-                    'user_id'          => $landlord->id,
-                    'name'             => $data['name'],
-                    'type'             => 'contract',
-                    'is_public'        => true,
+                    'user_id' => $landlord->id,
+                    'name' => $data['name'],
+                    'type' => 'contract',
+                    'is_public' => true,
                     'rental_period_id' => $activePeriod?->id,
-                    'status'           => 'draft',
-                    'blocks'           => $blocks,
+                    'status' => 'draft',
+                    'blocks' => $blocks,
                 ]);
 
                 Notification::make()
@@ -180,7 +180,7 @@ trait HasDocumentActions
             });
     }
 
-    public function getTenantDocuments(): \Illuminate\Support\Collection
+    public function getTenantDocuments(): Collection
     {
         $tenants = $this->record->activeTenants();
 
@@ -211,7 +211,7 @@ trait HasDocumentActions
                 $documentId = $arguments['documentId'] ?? null;
 
                 $contract = Document::where('type', 'contract')
-                    ->whereHas('rentalPeriod.room.building', fn($q) => $q->where('landlord_id', auth()->id()))
+                    ->whereHas('rentalPeriod.room.building', fn ($q) => $q->where('landlord_id', auth()->id()))
                     ->findOrFail($documentId);
 
                 $contract->delete();
@@ -238,7 +238,7 @@ trait HasDocumentActions
                 $user = auth()->user();
 
                 $contract = Document::where('type', 'contract')
-                    ->whereHas('rentalPeriod', fn($q) => $q->where('room_id', $this->record->id))
+                    ->whereHas('rentalPeriod', fn ($q) => $q->where('room_id', $this->record->id))
                     ->where('status', 'draft')
                     ->with('rentalPeriod.tenants')
                     ->findOrFail($documentId);
@@ -251,18 +251,18 @@ trait HasDocumentActions
                 }
 
                 $handtekeningen[] = [
-                    'user_id'    => $user->id,
-                    'naam'       => $user->full_name ?? $user->name,
+                    'user_id' => $user->id,
+                    'naam' => $user->full_name ?? $user->name,
                     'is_verhuurder' => true,
-                    'signed_at'  => now()->toIso8601String(),
+                    'signed_at' => now()->toIso8601String(),
                 ];
 
                 $blocks['ondertekening']['handtekeningen'] = $handtekeningen;
 
                 // Volledig ondertekend als verhuurder + alle huurders getekend hebben
-                $tenantIds     = $contract->rentalPeriod->tenants->pluck('id');
+                $tenantIds = $contract->rentalPeriod->tenants->pluck('id');
                 $signedUserIds = collect($handtekeningen)->pluck('user_id');
-                $allSigned     = $signedUserIds->contains($user->id)
+                $allSigned = $signedUserIds->contains($user->id)
                     && $tenantIds->diff($signedUserIds)->isEmpty();
 
                 $contract->update([
@@ -281,7 +281,7 @@ trait HasDocumentActions
             });
     }
 
-    public function getRoomContracts(): \Illuminate\Support\Collection
+    public function getRoomContracts(): Collection
     {
         return Document::where('type', 'contract')
             ->where(fn ($q) => $q

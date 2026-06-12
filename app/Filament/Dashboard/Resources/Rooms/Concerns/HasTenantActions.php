@@ -23,10 +23,10 @@ trait HasTenantActions
                 Select::make('status')
                     ->label('Status')
                     ->options([
-                        'available'   => 'Beschikbaar',
-                        'rented'      => 'Verhuurd',
+                        'available' => 'Beschikbaar',
+                        'rented' => 'Verhuurd',
                         'maintenance' => 'Onderhoud',
-                        'archived'    => 'Gearchiveerd',
+                        'archived' => 'Gearchiveerd',
                     ])
                     ->default(fn () => $this->record->status)
                     ->required(),
@@ -65,7 +65,7 @@ trait HasTenantActions
                     ->required(),
             ])
             ->action(function (array $data): void {
-                $room      = $this->record;
+                $room = $this->record;
                 $newTenant = User::findOrFail($data['tenant_id']);
 
                 DB::transaction(function () use ($room, $newTenant) {
@@ -78,9 +78,9 @@ trait HasTenantActions
 
                     // Nieuwe periode aanmaken — datums worden ingevuld via het contract
                     $period = RentalPeriod::create([
-                        'room_id'    => $room->id,
+                        'room_id' => $room->id,
                         'start_date' => now()->toDateString(),
-                        'end_date'   => null,
+                        'end_date' => null,
                     ]);
 
                     $period->tenants()->attach($newTenant->id, ['is_primary' => true]);
@@ -88,7 +88,7 @@ trait HasTenantActions
                     // tenant_id op room bewaren voor RoomObserver (review invitations)
                     $room->update([
                         'tenant_id' => $newTenant->id,
-                        'status'    => 'rented',
+                        'status' => 'rented',
                     ]);
                 });
 
@@ -227,7 +227,7 @@ trait HasTenantActions
             ->modalSubmitActionLabel('Beëindigen')
             ->color('danger')
             ->action(function (): void {
-                $room   = $this->record;
+                $room = $this->record;
                 $tenant = $room->tenant;
 
                 DB::transaction(function () use ($room) {
@@ -241,7 +241,7 @@ trait HasTenantActions
                     // tenant_id wissen → triggert RoomObserver → review invitation
                     $room->update([
                         'tenant_id' => null,
-                        'status'    => 'available',
+                        'status' => 'available',
                     ]);
                 });
 

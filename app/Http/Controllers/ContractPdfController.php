@@ -32,10 +32,10 @@ class ContractPdfController extends Controller
 
         $pdf = Pdf::loadView('pdf.contract', [
             'document' => $document,
-            'blocks'   => $document->blocks ?? [],
+            'blocks' => $document->blocks ?? [],
         ])->setPaper('a4');
 
-        $filename = str($document->name ?? 'contract')->slug() . '.pdf';
+        $filename = str($document->name ?? 'contract')->slug().'.pdf';
 
         return $pdf->stream($filename);
     }

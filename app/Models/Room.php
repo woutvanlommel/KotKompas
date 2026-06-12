@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Collection;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
@@ -55,7 +56,7 @@ class Room extends Model implements HasMedia
     }
 
     /** Alle huurders (hoofd + mede) van de actieve huurperiode */
-    public function activeTenants(): \Illuminate\Support\Collection
+    public function activeTenants(): Collection
     {
         $period = $this->rentalPeriods()
             ->where(function ($q) {

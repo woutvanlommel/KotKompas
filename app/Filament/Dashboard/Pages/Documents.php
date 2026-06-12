@@ -56,13 +56,13 @@ class Documents extends Page
 
         if ($user->hasRole('verhuurder')) {
             return Document::where('type', 'contract')
-                ->whereHas('rentalPeriod.room.building', fn($q) => $q->where('landlord_id', $user->id))
+                ->whereHas('rentalPeriod.room.building', fn ($q) => $q->where('landlord_id', $user->id))
                 ->with(['media', 'rentalPeriod.room.building', 'rentalPeriod.tenants'])
                 ->latest()
                 ->get();
         }
 
-        return Document::whereHas('rentalPeriod.tenants', fn($q) => $q->where('users.id', $user->id))
+        return Document::whereHas('rentalPeriod.tenants', fn ($q) => $q->where('users.id', $user->id))
             ->where('type', 'contract')
             ->with(['media', 'rentalPeriod.room.building', 'rentalPeriod.tenants'])
             ->latest()
@@ -71,9 +71,9 @@ class Documents extends Page
 
     public function getActiveRentalPeriods(): Collection
     {
-        return RentalPeriod::whereHas('tenants', fn($q) => $q->where('users.id', auth()->id()))
+        return RentalPeriod::whereHas('tenants', fn ($q) => $q->where('users.id', auth()->id()))
             ->with('room.building')
-            ->where(fn($q) => $q->whereNull('end_date')->orWhere('end_date', '>=', now()))
+            ->where(fn ($q) => $q->whereNull('end_date')->orWhere('end_date', '>=', now()))
             ->latest('start_date')
             ->get();
     }
@@ -95,9 +95,9 @@ class Documents extends Page
                 $query = Document::where('type', 'contract')->where('status', 'draft');
 
                 if ($user->hasRole('verhuurder')) {
-                    $query->whereHas('rentalPeriod.room.building', fn($q) => $q->where('landlord_id', $user->id));
+                    $query->whereHas('rentalPeriod.room.building', fn ($q) => $q->where('landlord_id', $user->id));
                 } else {
-                    $query->whereHas('rentalPeriod.tenants', fn($q) => $q->where('users.id', $user->id));
+                    $query->whereHas('rentalPeriod.tenants', fn ($q) => $q->where('users.id', $user->id));
                 }
 
                 $contract = $query->with('rentalPeriod.tenants')->findOrFail($documentId);
@@ -112,19 +112,19 @@ class Documents extends Page
 
                 $isVerhuurder = $user->hasRole('verhuurder');
                 $handtekeningen[] = [
-                    'user_id'        => $user->id,
-                    'naam'           => $user->full_name ?? $user->name,
-                    'is_verhuurder'  => $isVerhuurder,
-                    'signed_at'      => now()->toIso8601String(),
+                    'user_id' => $user->id,
+                    'naam' => $user->full_name ?? $user->name,
+                    'is_verhuurder' => $isVerhuurder,
+                    'signed_at' => now()->toIso8601String(),
                 ];
 
                 $blocks['ondertekening']['handtekeningen'] = $handtekeningen;
 
                 // Volledig ondertekend als verhuurder én alle huurders getekend hebben
-                $tenantIds     = $contract->rentalPeriod->tenants->pluck('id');
+                $tenantIds = $contract->rentalPeriod->tenants->pluck('id');
                 $signedUserIds = collect($handtekeningen)->pluck('user_id');
                 $verhuurderSigned = collect($handtekeningen)->where('is_verhuurder', true)->isNotEmpty();
-                $allSigned     = $verhuurderSigned && $tenantIds->diff($signedUserIds)->isEmpty();
+                $allSigned = $verhuurderSigned && $tenantIds->diff($signedUserIds)->isEmpty();
 
                 $contract->update([
                     'status' => $allSigned ? 'signed' : 'draft',
@@ -168,9 +168,9 @@ class Documents extends Page
                     Select::make('type')
                         ->label('Type')
                         ->options([
-                            'school'   => 'Schooldocument',
+                            'school' => 'Schooldocument',
                             'identity' => 'Identiteitsbewijs',
-                            'other'    => 'Andere',
+                            'other' => 'Andere',
                         ])
                         ->default('other')
                         ->required(),
@@ -187,9 +187,9 @@ class Documents extends Page
                     $activePeriod = $this->getActiveRentalPeriods()->first();
 
                     $document = $user->documents()->create([
-                        'name'             => $data['name'],
-                        'type'             => $data['type'],
-                        'is_public'        => $data['is_public'],
+                        'name' => $data['name'],
+                        'type' => $data['type'],
+                        'is_public' => $data['is_public'],
                         'rental_period_id' => $activePeriod?->id,
                     ]);
 
@@ -271,20 +271,20 @@ class Documents extends Page
     public static function getTypeLabel(string $type): string
     {
         return match ($type) {
-            'school'   => 'Schooldocument',
+            'school' => 'Schooldocument',
             'identity' => 'Identiteitsbewijs',
             'contract' => 'Contract',
-            default    => 'Andere',
+            default => 'Andere',
         };
     }
 
     public static function getTypeColor(string $type): string
     {
         return match ($type) {
-            'school'   => 'blue',
+            'school' => 'blue',
             'identity' => 'amber',
             'contract' => 'green',
-            default    => 'gray',
+            default => 'gray',
         };
     }
 }

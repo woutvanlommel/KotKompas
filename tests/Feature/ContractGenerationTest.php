@@ -12,6 +12,7 @@ use App\Models\User;
 use Carbon\Carbon;
 use Database\Seeders\RoleSeeder;
 use Filament\Facades\Filament;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 use Tests\TestCase;
@@ -42,17 +43,17 @@ class ContractGenerationTest extends TestCase
         $building = Building::factory()->create(['landlord_id' => $landlord->id]);
 
         $room = Room::factory()->for($building)->create([
-            'tenant_id'       => $tenant->id,
-            'status'          => 'rented',
+            'tenant_id' => $tenant->id,
+            'status' => 'rented',
             'price_per_month' => 600,
-            'deposit_amount'  => 1200,
-            'room_number'     => '12',
+            'deposit_amount' => 1200,
+            'room_number' => '12',
         ]);
 
         $period = RentalPeriod::create([
-            'room_id'    => $room->id,
+            'room_id' => $room->id,
             'start_date' => now()->toDateString(),
-            'end_date'   => null,
+            'end_date' => null,
         ]);
         $period->tenants()->attach($tenant->id, ['is_primary' => true]);
 
@@ -62,15 +63,15 @@ class ContractGenerationTest extends TestCase
     private function createContract(Room $room, User $landlord, array $overrides = []): Document
     {
         $start = $overrides['start_date'] ?? now()->toDateString();
-        $end   = $overrides['end_date']   ?? Carbon::parse($start)->addMonths(10)->toDateString();
+        $end = $overrides['end_date'] ?? Carbon::parse($start)->addMonths(10)->toDateString();
 
         Livewire::actingAs($landlord)
             ->test(ViewRoom::class, ['record' => $room->id])
             ->callAction('createContract', data: array_merge([
-                'name'               => 'Huurcontract 2025-2026',
-                'start_date'         => $start,
-                'duration_months'    => 10,
-                'end_date'           => $end,
+                'name' => 'Huurcontract 2025-2026',
+                'start_date' => $start,
+                'duration_months' => 10,
+                'end_date' => $end,
                 'special_conditions' => null,
             ], $overrides));
 
@@ -88,8 +89,8 @@ class ContractGenerationTest extends TestCase
         $contract = $this->createContract($room, $landlord);
 
         $this->assertDatabaseHas('documents', [
-            'type'             => 'contract',
-            'status'           => 'draft',
+            'type' => 'contract',
+            'status' => 'draft',
             'rental_period_id' => $period->id,
         ]);
 
@@ -105,8 +106,8 @@ class ContractGenerationTest extends TestCase
         ['landlord' => $landlord, 'room' => $room, 'period' => $period] = $this->makeScenario();
 
         $this->createContract($room, $landlord, [
-            'start_date'      => '2025-09-01',
-            'end_date'        => '2026-06-30',
+            'start_date' => '2025-09-01',
+            'end_date' => '2026-06-30',
             'duration_months' => 10,
         ]);
 
@@ -141,10 +142,10 @@ class ContractGenerationTest extends TestCase
         Livewire::actingAs($landlord)
             ->test(ViewRoom::class, ['record' => $room->id])
             ->callAction('createContract', data: [
-                'name'            => 'Test',
-                'start_date'      => now()->toDateString(),
+                'name' => 'Test',
+                'start_date' => now()->toDateString(),
                 'duration_months' => 10,
-                'end_date'        => now()->addMonths(10)->toDateString(),
+                'end_date' => now()->addMonths(10)->toDateString(),
             ]);
 
         $this->assertNull(Document::where('type', 'contract')->first()?->rental_period_id);
@@ -170,7 +171,7 @@ class ContractGenerationTest extends TestCase
         $building = Building::factory()->create(['landlord_id' => $owner->id]);
         $room = Room::factory()->for($building)->create();
 
-        $this->expectException(\Illuminate\Database\Eloquent\ModelNotFoundException::class);
+        $this->expectException(ModelNotFoundException::class);
         Livewire::actingAs($other)->test(ViewRoom::class, ['record' => $room->id]);
     }
 
@@ -202,7 +203,7 @@ class ContractGenerationTest extends TestCase
 
         $contract = $this->createContract($room, $landlord);
 
-        $this->expectException(\Illuminate\Database\Eloquent\ModelNotFoundException::class);
+        $this->expectException(ModelNotFoundException::class);
 
         Livewire::actingAs($stranger)
             ->test(Documents::class)
@@ -327,7 +328,7 @@ class ContractGenerationTest extends TestCase
 
         $this->assertSame('signed', $contract->fresh()->status);
 
-        $this->expectException(\Illuminate\Database\Eloquent\ModelNotFoundException::class);
+        $this->expectException(ModelNotFoundException::class);
 
         Livewire::actingAs($tenant)->test(Documents::class)
             ->callAction('signContract', arguments: ['documentId' => $contract->id]);
@@ -406,12 +407,12 @@ class ContractGenerationTest extends TestCase
 
         // Document zonder rental_period → huurder mag het sowieso niet zien
         $doc = Document::create([
-            'user_id'   => $tenant->id,
-            'name'      => 'Identiteitskaart',
-            'type'      => 'identity',
+            'user_id' => $tenant->id,
+            'name' => 'Identiteitskaart',
+            'type' => 'identity',
             'is_public' => false,
-            'status'    => 'draft',
-            'blocks'    => [],
+            'status' => 'draft',
+            'blocks' => [],
         ]);
 
         $this->actingAs($tenant)
@@ -445,7 +446,7 @@ class ContractGenerationTest extends TestCase
 
         $contract = $this->createContract($room, $landlord);
 
-        $this->expectException(\Illuminate\Database\Eloquent\ModelNotFoundException::class);
+        $this->expectException(ModelNotFoundException::class);
 
         Livewire::actingAs($other)
             ->test(Documents::class)
@@ -517,8 +518,8 @@ class ContractGenerationTest extends TestCase
         ['landlord' => $landlord, 'room' => $room, 'period' => $period] = $this->makeScenario();
 
         $this->createContract($room, $landlord, [
-            'start_date'      => '2025-09-01',
-            'end_date'        => '2026-06-30',
+            'start_date' => '2025-09-01',
+            'end_date' => '2026-06-30',
             'duration_months' => 10,
         ]);
 

@@ -30,7 +30,7 @@ class RentalPeriod extends Model
         return $this->tenants()->wherePivot('is_primary', true)->first();
     }
 
-/** @return HasMany<Document, $this> */
+    /** @return HasMany<Document, $this> */
     public function documents(): HasMany
     {
         return $this->hasMany(Document::class);
@@ -45,7 +45,7 @@ class RentalPeriod extends Model
     {
         return [
             'start_date' => 'date',
-            'end_date'   => 'date',
+            'end_date' => 'date',
         ];
     }
 }

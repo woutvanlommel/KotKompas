@@ -27,10 +27,10 @@ return new class extends Migration
             ->each(function ($rp) {
                 DB::table('rental_period_user')->insert([
                     'rental_period_id' => $rp->id,
-                    'user_id'          => $rp->user_id,
-                    'is_primary'       => true,
-                    'created_at'       => now(),
-                    'updated_at'       => now(),
+                    'user_id' => $rp->user_id,
+                    'is_primary' => true,
+                    'created_at' => now(),
+                    'updated_at' => now(),
                 ]);
             });
 
