@@ -4,6 +4,7 @@ namespace App\Filament\Dashboard\Widgets;
 
 use App\Filament\Dashboard\Resources\Buildings\BuildingResource;
 use App\Models\Building;
+use App\Support\Score;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget;
@@ -63,11 +64,12 @@ class BuildingsOverviewTable extends TableWidget
                 TextColumn::make('score')
                     ->label('Kotscore')
                     ->state(fn ($record) => $record->score !== null
-                        ? number_format($record->score, 1, ',', '.')." ({$record->reviews_count})"
+                        ? Score::format($record->score)." ({$record->reviews_count})"
                         : null)
                     ->placeholder('Geen beoordelingen')
                     ->badge()
-                    ->color(fn ($record) => $record->score !== null && $record->score >= 4.0 ? 'success' : 'gray')
+                    // warning = the brand orange (#ff6700) in this panel.
+                    ->color(fn ($record) => $record->score !== null && $record->score >= 4.0 ? 'success' : 'warning')
                     ->sortable(),
             ])
             ->defaultSort('name')

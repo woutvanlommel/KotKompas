@@ -3,6 +3,7 @@
 namespace App\Filament\Dashboard\Widgets;
 
 use App\Models\Room;
+use App\Support\Score;
 use Filament\Widgets\StatsOverviewWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Database\Eloquent\Builder;
@@ -70,6 +71,6 @@ class ScoreOverview extends StatsOverviewWidget
 
     private function formatScore(?float $score): string
     {
-        return $score === null ? '—' : number_format($score, 1, ',', '.').' / 5';
+        return $score === null ? '—' : Score::format($score).' / 5';
     }
 }

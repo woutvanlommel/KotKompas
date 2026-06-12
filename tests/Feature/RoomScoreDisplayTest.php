@@ -16,7 +16,7 @@ class RoomScoreDisplayTest extends TestCase
     {
         $room = Room::factory()->create();
         RoomReview::factory()->forRoom($room)->create([
-            'score_hygiene' => 4,
+            'score_hygiene' => 5,
             'score_size' => 4,
             'score_value' => 4,
             'score_communication' => 2,
@@ -25,7 +25,7 @@ class RoomScoreDisplayTest extends TestCase
         $this->get(route('rooms.show', $room))
             ->assertOk()
             ->assertSee('Wat zeggen ex-huurders?')
-            ->assertSee('4,0')        // kotscore (badge + section)
+            ->assertSee('4,3')        // kotscore (5+4+4)/3 in badge + section
             ->assertSee('1 beoordeling')
             ->assertSee('Hygiëne')
             // Communication is asked in the survey and counts toward the

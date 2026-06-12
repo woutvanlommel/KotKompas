@@ -50,11 +50,12 @@ class ScoreOverviewWidgetTest extends TestCase
 
         // Landlord: quality (5+4)/2 = 4.5 and communication (5+2)/2 = 3.5 → 4.0.
         // Rooms: average (5.0 + 4.0)/2 = 4.5; best room is Zolderstudio (5.0).
+        // Only a perfect score drops the decimal: "5", never "5,0".
         Livewire::test(ScoreOverview::class)
             ->assertSee('Jouw verhuurderscore')
             ->assertSee('4,0 / 5')
             ->assertSee('4,5 / 5')
-            ->assertSee('5,0 / 5')
+            ->assertSee('5 / 5')
             ->assertSee('Zolderstudio');
     }
 
@@ -114,11 +115,21 @@ class ScoreOverviewWidgetTest extends TestCase
             'score_hygiene' => 4, 'score_size' => 4, 'score_value' => 4, 'score_communication' => 3,
         ]);
 
+        $lowBuilding = Building::factory()->create(['landlord_id' => $landlord->id]);
+        $lowRoom = Room::factory()->for($lowBuilding)->create();
+        RoomReview::factory()->forRoom($lowRoom)->create([
+            'score_hygiene' => 2, 'score_size' => 2, 'score_value' => 2, 'score_communication' => 2,
+        ]);
+
         $this->actingAs($landlord);
         Filament::setCurrentPanel('dashboard');
 
+        // >= 4.0 gets a green badge; below 4.0 the brand orange (warning).
         Livewire::test(BuildingsOverviewTable::class)
             ->assertSee('Kotscore')
-            ->assertSee('4,0 (1)');
+            ->assertSee('4,0 (1)')
+            ->assertSee('2,0 (1)')
+            ->assertSee('fi-color-success')
+            ->assertSee('fi-color-warning');
     }
 }

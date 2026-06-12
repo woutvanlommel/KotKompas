@@ -118,11 +118,16 @@ class RoomScoreFilterTest extends TestCase
     public function test_listing_cards_show_the_score_badge(): void
     {
         $room = Room::factory()->create();
-        $this->reviewTimes($room, 1, kot: 4);
+        RoomReview::factory()->forRoom($room)->create([
+            'score_hygiene' => 5,
+            'score_size' => 4,
+            'score_value' => 4,
+            'score_communication' => 3,
+        ]);
 
         $this->get('/koten')
             ->assertOk()
-            ->assertSee('4,0')
+            ->assertSee('4,3') // (5+4+4)/3
             ->assertSee('(1)');
     }
 }
