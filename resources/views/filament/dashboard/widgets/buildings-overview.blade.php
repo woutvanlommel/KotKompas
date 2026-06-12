@@ -40,6 +40,7 @@
                         <th class="px-4 py-3 text-left text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider border-b border-gray-100 dark:border-white/10 hidden sm:table-cell">Stad</th>
                         <th class="px-4 py-3 text-left text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider border-b border-gray-100 dark:border-white/10 hidden md:table-cell">Bezetting</th>
                         <th class="px-4 py-3 text-right text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider border-b border-gray-100 dark:border-white/10 hidden lg:table-cell">Gem. huurprijs</th>
+                        <th class="px-4 py-3 text-right text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider border-b border-gray-100 dark:border-white/10 hidden sm:table-cell">Kotscore</th>
                         <th class="px-4 py-3 border-b border-gray-100 dark:border-white/10 w-10"></th>
                     </tr>
                 </thead>
@@ -78,6 +79,17 @@
                                     <span class="text-gray-400">—</span>
                                 @endif
                             </td>
+                            <td class="px-4 py-4 text-right hidden sm:table-cell">
+                                @if ($building->score !== null && $building->reviews_count > 0)
+                                    <span class="inline-flex items-center gap-1.5 font-medium text-gray-900 dark:text-white">
+                                        <span class="text-amber-500">★</span>
+                                        {{ number_format($building->score, 1, ',', '.') }}
+                                        <span class="text-xs text-gray-400 font-normal">({{ $building->reviews_count }})</span>
+                                    </span>
+                                @else
+                                    <span class="text-gray-400 dark:text-gray-600">—</span>
+                                @endif
+                            </td>
                             <td class="px-4 py-4 text-center">
                                 <svg
                                     class="w-4 h-4 text-gray-400 dark:text-gray-500 mx-auto transition-transform duration-200"
@@ -91,7 +103,7 @@
 
                         {{-- Expandable room section --}}
                         <tr class="border-b border-gray-100 dark:border-white/[0.06]">
-                            <td colspan="5" class="p-0">
+                            <td colspan="6" class="p-0">
                                 <div
                                     x-show="expanded.includes({{ $bid }})"
                                     x-collapse
