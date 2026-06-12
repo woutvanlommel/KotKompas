@@ -81,7 +81,7 @@ class ViewBuilding extends ViewRecord
                         unset($data[$key]);
                     }
 
-                    // ── Kamer aanmaken en pivots synchroniseren ──────────────
+                    // ── Create room and sync pivots ───────────────────────────
                     $room = Room::create(array_merge($data, ['building_id' => $this->record->id]));
 
                     if (! empty($pendingCostTypes)) {

@@ -1,8 +1,8 @@
 <?php
 
-// Observer op het Building model die automatisch geocoding triggert via GeocodingService:
-// - bij aanmaken van een gebouw (created)
-// - bij bewerken als minstens één adresveld gewijzigd is (updated)
+// Observer on the Building model that automatically triggers geocoding via GeocodingService:
+// - when a building is created (created)
+// - when editing if at least one address field changed (updated)
 
 namespace App\Observers;
 

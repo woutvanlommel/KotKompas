@@ -33,7 +33,7 @@ class RoomWizard
                         ->label('Kamernummer')
                         ->required(),
 
-                    // Adres van het gebouw (read-only)
+                    // Building address (read-only)
                     TextInput::make('_street')
                         ->label('Straat')
                         ->disabled()
