@@ -27,7 +27,7 @@ class BuildingsOverviewTable extends Widget
             ->withCount([
                 'rooms',
                 'rooms as available_rooms_count' => fn (Builder $query) => $query->where('status', 'available'),
-                'rooms as rented_rooms_count'    => fn (Builder $query) => $query->where('status', 'rented'),
+                'rooms as rented_rooms_count' => fn (Builder $query) => $query->where('status', 'rented'),
             ])
             ->withAvg(
                 ['rooms as average_price' => fn (Builder $query) => $query->whereNot('status', 'archived')],
