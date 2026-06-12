@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('name');
             $table->decimal('latitude', 10, 8);
             $table->decimal('longitude', 11,8);
-            $table->timestamp('updated_at');
+            $table->timestamps();
         });
     }
 
