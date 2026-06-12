@@ -16,18 +16,18 @@ class OverpassService
 
     // Overpass tag values → onze interne categorienaam
     private const AMENITY_MAP = [
-        'pharmacy'  => 'pharmacy',
-        'hospital'  => 'hospital',
-        'cafe'      => 'cafe',
-        'restaurant'=> 'restaurant',
-        'fast_food' => 'restaurant',
-        'bar'       => 'cafe',
+        'pharmacy'  => 'Apotheker',
+        'hospital'  => 'Ziekenhuis',
+        'cafe'      => 'Café',
+        'restaurant'=> 'Restaurant',
+        'fast_food' => 'Fast Food',
+        'bar'       => 'Café',
     ];
 
     private const SHOP_MAP = [
-        'supermarket' => 'supermarket',
+        'supermarket' => 'supermarkt',
         'convenience' => 'convenience',
-        'bakery'      => 'convenience',
+        'bakery'      => 'bakker',
     ];
 
     /**
@@ -144,17 +144,17 @@ class OverpassService
         }
 
         if (($tags['highway'] ?? null) === 'bus_stop') {
-            return 'bus_stop';
+            return 'bus_halte';
         }
 
         if (isset($tags['public_transport'])) {
-            return 'bus_stop';
+            return 'bus_halte';
         }
 
         if (isset($tags['railway'])) {
             return match ($tags['railway']) {
-                'station', 'halt' => 'train_station',
-                'tram_stop'       => 'tram_stop',
+                'station', 'halt' => 'trein_station',
+                'tram_stop'       => 'tram_halte',
                 default           => null,
             };
         }

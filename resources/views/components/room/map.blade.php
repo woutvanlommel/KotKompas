@@ -64,6 +64,12 @@
             var pois  = JSON.parse(el.dataset.pois);
             var icons = JSON.parse(el.dataset.icons);
 
+            function esc(s) {
+                var d = document.createElement('div');
+                d.appendChild(document.createTextNode(String(s)));
+                return d.innerHTML;
+            }
+
             function initMap() {
                 var map = L.map(el, { scrollWheelZoom: false });
 
@@ -79,7 +85,7 @@
                     iconAnchor: [0, 32],
                     popupAnchor: [0, -34],
                     html: '<div style="display:flex;flex-direction:column;align-items:center;transform:translateX(-50%);">'
-                        + '<div style="background:#0f172a;color:#fff;font-size:12px;font-weight:700;font-family:inherit;padding:5px 10px;border-radius:999px;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.3);">' + name + '</div>'
+                        + '<div style="background:#0f172a;color:#fff;font-size:12px;font-weight:700;font-family:inherit;padding:5px 10px;border-radius:999px;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.3);">' + esc(name) + '</div>'
                         + '<div style="width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:6px solid #0f172a;"></div>'
                         + '</div>',
                 });
@@ -94,13 +100,14 @@
                         className: '',
                         iconAnchor: [14, 14],
                         popupAnchor: [0, -16],
-                        html: '<div style="width:28px;height:28px;background:#fff;border:2px solid #e2e8f0;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;box-shadow:0 2px 6px rgba(0,0,0,.15);">' + meta.emoji + '</div>',
+                        // meta.emoji is safe: sourced from the server-side $categoryIcons PHP constant, never from user/DB input
+                    html: '<div style="width:28px;height:28px;background:#fff;border:2px solid #e2e8f0;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;box-shadow:0 2px 6px rgba(0,0,0,.15);">' + meta.emoji + '</div>',
                     });
 
                     L.marker([poi.lat, poi.lng], { icon: icon })
                         .bindPopup(
-                            '<div><span style="font-size:.7rem;color:#64748b;">' + meta.label + '</span><br>'
-                            + '<span style="font-size:.85rem;font-weight:600;color:#0f172a;">' + poi.name + '</span></div>',
+                            '<div><span style="font-size:.7rem;color:#64748b;">' + esc(meta.label) + '</span><br>'
+                            + '<span style="font-size:.85rem;font-weight:600;color:#0f172a;">' + esc(poi.name) + '</span></div>',
                             { className: 'poi-popup', maxWidth: 200 }
                         )
                         .addTo(map);
