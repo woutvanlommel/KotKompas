@@ -7,7 +7,6 @@ use App\Models\ReviewInvitation;
 use App\Models\User;
 use App\Services\FilamentNotificationService;
 use Filament\Actions\Action;
-use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\DB;
@@ -64,17 +63,12 @@ trait HasTenantActions
                     ->getOptionLabelUsing(fn ($value): ?string => User::find($value)?->full_name)
                     ->default(fn () => $this->record->tenant_id)
                     ->required(),
-
-                DatePicker::make('start_date')
-                    ->label('Startdatum huurperiode')
-                    ->default(now())
-                    ->required(),
             ])
             ->action(function (array $data): void {
                 $room      = $this->record;
                 $newTenant = User::findOrFail($data['tenant_id']);
 
-                DB::transaction(function () use ($room, $newTenant, $data) {
+                DB::transaction(function () use ($room, $newTenant) {
                     // Sluit lopende periode(s) af
                     $room->rentalPeriods()
                         ->where(fn ($q) => $q->whereNull('end_date')->orWhere('end_date', '>=', now()))
@@ -82,10 +76,10 @@ trait HasTenantActions
                             'end_date' => now()->subDay()->toDateString(),
                         ]));
 
-                    // Nieuwe periode aanmaken
+                    // Nieuwe periode aanmaken — datums worden ingevuld via het contract
                     $period = RentalPeriod::create([
                         'room_id'    => $room->id,
-                        'start_date' => $data['start_date'],
+                        'start_date' => now()->toDateString(),
                         'end_date'   => null,
                     ]);
 

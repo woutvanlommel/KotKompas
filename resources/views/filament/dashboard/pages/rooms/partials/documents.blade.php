@@ -30,39 +30,53 @@
                         $handtekeningen = $contract->blocks['ondertekening']['handtekeningen'] ?? [];
                         $userHasSigned  = collect($handtekeningen)->contains('user_id', auth()->id());
                         $signedCount    = count($handtekeningen);
-                        $totalCount     = ($contract->rentalPeriod?->tenants?->count() ?? 0) + 1; // +1 voor verhuurder
+                        $totalCount     = ($contract->rentalPeriod?->tenants?->count() ?? 0) + 1;
+
+                        $period    = $contract->rentalPeriod;
+                        $startDate = $period?->start_date?->format('d/m/Y') ?? ($contract->blocks['huurperiode']['start'] ? \Carbon\Carbon::parse($contract->blocks['huurperiode']['start'])->format('d/m/Y') : null);
+                        $endDate   = $period?->end_date?->format('d/m/Y') ?? ($contract->blocks['huurperiode']['einde'] ? \Carbon\Carbon::parse($contract->blocks['huurperiode']['einde'])->format('d/m/Y') : null);
 
                         $statusColor = match(true) {
-                            $contract->status === 'signed'   => ['bg' => 'bg-green-50', 'text' => 'text-green-700', 'label' => 'Volledig ondertekend'],
-                            $contract->status === 'archived' => ['bg' => 'bg-gray-100',  'text' => 'text-gray-500',  'label' => 'Gearchiveerd'],
-                            $signedCount > 0                 => ['bg' => 'bg-blue-50',   'text' => 'text-blue-700',  'label' => "{$signedCount}/{$totalCount} ondertekend"],
-                            default                          => ['bg' => 'bg-amber-50',  'text' => 'text-amber-700', 'label' => 'Wacht op ondertekening'],
+                            $contract->status === 'signed'   => ['bg' => 'bg-green-100', 'text' => 'text-green-700', 'dot' => 'bg-green-500', 'label' => 'Volledig ondertekend'],
+                            $contract->status === 'archived' => ['bg' => 'bg-gray-100',  'text' => 'text-gray-500',  'dot' => 'bg-gray-400',  'label' => 'Gearchiveerd'],
+                            $signedCount > 0                 => ['bg' => 'bg-blue-100',  'text' => 'text-blue-700',  'dot' => 'bg-blue-500',  'label' => "{$signedCount}/{$totalCount} ondertekend"],
+                            default                          => ['bg' => 'bg-amber-100', 'text' => 'text-amber-700', 'dot' => 'bg-amber-400', 'label' => 'Wacht op ondertekening'],
                         };
                     @endphp
 
-                    <div class="flex items-center gap-3 px-3 py-2.5 rounded-xl border border-gray-100 bg-gray-50">
-                        <div class="flex-shrink-0 w-8 h-11 bg-green-50 rounded-lg flex items-center justify-center border border-green-100">
+                    <div class="flex items-start gap-3 px-3 py-3 rounded-xl border border-gray-100 bg-gray-50 hover:bg-white hover:border-gray-200 transition-colors">
+                        <div class="flex-shrink-0 w-8 h-10 bg-green-50 rounded-lg flex items-center justify-center border border-green-100 mt-0.5">
                             <x-heroicon-o-document-check class="w-4 h-4 text-green-600" />
                         </div>
 
                         <div class="flex-1 min-w-0">
-                            <p class="text-sm font-medium text-gray-900 truncate">
+                            <p class="text-sm font-semibold text-gray-900 truncate">
                                 {{ $contract->name ?? 'Huurcontract' }}
                             </p>
-                            <div class="flex items-center gap-2 mt-0.5">
-                                <span class="text-xs px-1.5 py-0.5 rounded-full {{ $statusColor['bg'] }} {{ $statusColor['text'] }}">
+
+                            {{-- Periode --}}
+                            @if ($startDate)
+                                <p class="text-xs text-gray-500 mt-0.5 font-medium">
+                                    <x-heroicon-o-calendar-days class="w-3 h-3 inline mr-0.5 text-gray-400" />
+                                    {{ $startDate }}{{ $endDate ? ' → ' . $endDate : ' → heden' }}
+                                </p>
+                            @endif
+
+                            <div class="flex items-center gap-1.5 mt-1.5 flex-wrap">
+                                <span class="inline-flex items-center gap-1 text-xs font-medium px-1.5 py-0.5 rounded-full {{ $statusColor['bg'] }} {{ $statusColor['text'] }}">
+                                    <span class="w-1.5 h-1.5 rounded-full {{ $statusColor['dot'] }} inline-block"></span>
                                     {{ $statusColor['label'] }}
                                 </span>
-                                @if ($contract->rentalPeriod?->tenants?->isNotEmpty())
-                                    <span class="text-xs text-gray-400">
-                                        {{ $contract->rentalPeriod->tenants->pluck('full_name')->join(', ') }}
+
+                                @if ($period?->tenants?->isNotEmpty())
+                                    <span class="text-xs text-gray-400 truncate">
+                                        {{ $period->tenants->pluck('full_name')->join(', ') }}
                                     </span>
                                 @endif
-                                <span class="text-xs text-gray-400">{{ $contract->created_at->format('d/m/Y') }}</span>
                             </div>
                         </div>
 
-                        <div class="flex items-center gap-1.5 flex-shrink-0">
+                        <div class="flex items-center gap-1 flex-shrink-0 mt-0.5">
                             @if ($contract->status === 'draft' && ! $userHasSigned)
                                 <button
                                     wire:click="mountAction('signContract', { documentId: {{ $contract->id }} })"
@@ -72,17 +86,23 @@
                                     Ondertekenen
                                 </button>
                             @elseif ($userHasSigned && $contract->status !== 'signed')
-                                <span class="text-xs text-green-700">
-                                    <x-heroicon-o-check class="w-3.5 h-3.5 inline" />
-                                    Getekend
+                                <span class="text-xs text-green-700 font-medium">
+                                    <x-heroicon-o-check class="w-3.5 h-3.5 inline" /> Getekend
                                 </span>
                             @endif
 
                             <a href="{{ $pdfUrl }}" target="_blank"
                                 class="p-1.5 rounded-lg border border-gray-200 text-gray-400 hover:text-primary-600 hover:border-primary-200 hover:bg-primary-50 transition-colors"
                                 title="PDF bekijken">
-                                <x-heroicon-o-arrow-top-right-on-square class="w-4 h-4" />
+                                <x-heroicon-o-arrow-top-right-on-square class="w-3.5 h-3.5" />
                             </a>
+
+                            <button
+                                wire:click="mountAction('deleteContract', { documentId: {{ $contract->id }} })"
+                                class="p-1.5 rounded-lg border border-gray-200 text-gray-400 hover:text-red-500 hover:border-red-200 hover:bg-red-50 transition-colors"
+                                title="Verwijderen">
+                                <x-heroicon-o-trash class="w-3.5 h-3.5" />
+                            </button>
                         </div>
                     </div>
                 @endforeach

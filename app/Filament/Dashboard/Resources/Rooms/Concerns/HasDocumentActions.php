@@ -154,6 +154,14 @@ trait HasDocumentActions
                     ],
                 ];
 
+                // Start- én einddatum van de huurperiode bepalen via het contract
+                if ($activePeriod) {
+                    $activePeriod->update([
+                        'start_date' => $data['start_date'],
+                        'end_date'   => $data['end_date'] ?? null,
+                    ]);
+                }
+
                 Document::create([
                     'user_id'          => $landlord->id,
                     'name'             => $data['name'],
@@ -187,6 +195,32 @@ trait HasDocumentActions
             ->with('media')
             ->latest()
             ->get();
+    }
+
+    public function deleteContractAction(): Action
+    {
+        return Action::make('deleteContract')
+            ->requiresConfirmation()
+            ->modalHeading('Contract verwijderen')
+            ->modalDescription('Ben je zeker? Een ondertekend contract verwijderen kan juridische gevolgen hebben.')
+            ->modalSubmitActionLabel('Ja, verwijderen')
+            ->modalCancelActionLabel('Annuleren')
+            ->modalIcon('heroicon-o-trash')
+            ->color('danger')
+            ->action(function (array $arguments): void {
+                $documentId = $arguments['documentId'] ?? null;
+
+                $contract = Document::where('type', 'contract')
+                    ->whereHas('rentalPeriod.room.building', fn($q) => $q->where('landlord_id', auth()->id()))
+                    ->findOrFail($documentId);
+
+                $contract->delete();
+
+                Notification::make()
+                    ->title('Contract verwijderd')
+                    ->success()
+                    ->send();
+            });
     }
 
     public function signContractAction(): Action

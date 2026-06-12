@@ -224,6 +224,41 @@ class Documents extends Page
             ->send();
     }
 
+    public function deleteContractAction(): Action
+    {
+        return Action::make('deleteContract')
+            ->requiresConfirmation()
+            ->modalHeading('Contract verwijderen')
+            ->modalDescription('Ben je zeker? Een ondertekend contract verwijderen kan juridische gevolgen hebben.')
+            ->modalSubmitActionLabel('Ja, verwijderen')
+            ->modalCancelActionLabel('Annuleren')
+            ->modalIcon('heroicon-o-trash')
+            ->color('danger')
+            ->action(function (array $arguments): void {
+                $user = auth()->user();
+                $documentId = $arguments['documentId'] ?? null;
+
+                $query = Document::where('type', 'contract');
+
+                if ($user->hasRole('verhuurder')) {
+                    $query->where(fn ($q) => $q
+                        ->whereHas('rentalPeriod.room.building', fn ($q2) => $q2->where('landlord_id', $user->id))
+                        ->orWhere('user_id', $user->id)
+                    );
+                } else {
+                    $query->whereHas('rentalPeriod.tenants', fn ($q) => $q->where('users.id', $user->id));
+                }
+
+                $contract = $query->findOrFail($documentId);
+                $contract->delete();
+
+                Notification::make()
+                    ->title('Contract verwijderd')
+                    ->success()
+                    ->send();
+            });
+    }
+
     public function deleteDocument(int $documentId): void
     {
         $document = auth()->user()->documents()->findOrFail($documentId);
