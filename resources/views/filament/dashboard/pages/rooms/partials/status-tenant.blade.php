@@ -1,3 +1,16 @@
+@php
+    $activePeriod  = $room->rentalPeriods()
+        ->with('tenants')
+        ->where(fn ($q) => $q->whereNull('end_date')->orWhere('end_date', '>=', now()))
+        ->latest('start_date')
+        ->first();
+
+    $primaryTenant = $activePeriod?->primaryTenant();
+    $coTenants     = $activePeriod
+        ? $activePeriod->tenants->where('pivot.is_primary', false)->values()
+        : collect();
+@endphp
+
 <div class="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
     <div class="flex items-center justify-between mb-5">
         <h2 class="text-base font-semibold text-gray-900">Status & Huurder</h2>
@@ -10,23 +23,32 @@
         </button>
     </div>
 
+    {{-- Status badge --}}
     <div class="flex items-center gap-2 mb-6">
         <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold
             {{ $status['bg'] }} {{ $status['text'] }}">
             <span class="w-1.5 h-1.5 rounded-full {{ $status['dot'] }}"></span>
             {{ $status['label'] }}
         </span>
+        @if ($activePeriod)
+            <span class="text-xs text-gray-400">
+                vanaf {{ $activePeriod->start_date->format('d/m/Y') }}
+            </span>
+        @endif
     </div>
 
+    {{-- Huurders --}}
     <div class="border-t border-gray-100 pt-5">
+
+        {{-- Hoofdhuurder --}}
         <div class="flex items-center justify-between mb-3">
-            <p class="text-sm font-medium text-gray-700">Huurder</p>
+            <p class="text-sm font-medium text-gray-700">Hoofdhuurder</p>
             <div class="flex items-center gap-2">
-                @if ($room->tenant)
+                @if ($primaryTenant)
                     <button wire:click="mountAction('linkTenant')"
                             class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-gray-500 hover:bg-gray-100 transition">
                         <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z" />
                         </svg>
                         Wijzigen
                     </button>
@@ -35,7 +57,7 @@
                         <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
                         </svg>
-                        Ontkoppelen
+                        Beëindigen
                     </button>
                 @else
                     <button wire:click="mountAction('linkTenant')"
@@ -49,23 +71,72 @@
             </div>
         </div>
 
-        @if ($room->tenant)
-            <div class="flex items-center gap-3">
+        @if ($primaryTenant)
+            <div class="flex items-center gap-3 mb-4">
                 <div class="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
                     <span class="text-sm font-semibold text-blue-700">
-                        {{ strtoupper(substr($room->tenant->name, 0, 1)) }}
+                        {{ strtoupper(substr($primaryTenant->name, 0, 1)) }}
                     </span>
                 </div>
-                <div>
-                    <p class="text-sm font-semibold text-gray-900">{{ $room->tenant->name }}</p>
-                    <a href="mailto:{{ $room->tenant->email }}" class="text-xs text-gray-500 hover:text-gray-700">{{ $room->tenant->email }}</a>
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm font-semibold text-gray-900">{{ $primaryTenant->full_name }}</p>
+                    <a href="mailto:{{ $primaryTenant->email }}" class="text-xs text-gray-500 hover:text-gray-700 truncate block">
+                        {{ $primaryTenant->email }}
+                    </a>
                 </div>
             </div>
         @else
-            <p class="text-sm text-gray-400 italic">Geen huurder gekoppeld.</p>
+            <p class="text-sm text-gray-400 italic mb-4">Geen huurder gekoppeld.</p>
+        @endif
+
+        {{-- Medehuurders --}}
+        @if ($activePeriod)
+            <div class="flex items-center justify-between mb-2">
+                <p class="text-sm font-medium text-gray-700">Medehuurders</p>
+                <button wire:click="mountAction('addCoTenant')"
+                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-gray-500 hover:bg-gray-100 transition">
+                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zM3 19.235v-.11a6.375 6.375 0 0112.75 0v.109A12.318 12.318 0 019.374 21c-2.331 0-4.512-.645-6.374-1.766z" />
+                    </svg>
+                    Toevoegen
+                </button>
+            </div>
+
+            @if ($coTenants->isEmpty())
+                <p class="text-xs text-gray-400 italic">Geen medehuurders.</p>
+            @else
+                <div class="space-y-2">
+                    @foreach ($coTenants as $coTenant)
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center shrink-0">
+                                <span class="text-xs font-semibold text-gray-600">
+                                    {{ strtoupper(substr($coTenant->name, 0, 1)) }}
+                                </span>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm font-medium text-gray-800">{{ $coTenant->full_name }}</p>
+                                <a href="mailto:{{ $coTenant->email }}" class="text-xs text-gray-400 hover:text-gray-600 truncate block">
+                                    {{ $coTenant->email }}
+                                </a>
+                            </div>
+                            <button
+                                wire:click="mountAction('removeCoTenant', { tenantId: {{ $coTenant->id }} })"
+                                wire:confirm="Ben je zeker dat je {{ $coTenant->full_name }} als medehuurder wil verwijderen?"
+                                class="p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
+                                title="Verwijderen"
+                            >
+                                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+                    @endforeach
+                </div>
+            @endif
         @endif
     </div>
 
+    {{-- Review invitations --}}
     @php $pendingInvitations = $room->pendingReviewInvitations()->with('tenant')->get(); @endphp
     @if ($pendingInvitations->isNotEmpty())
         <div class="border-t border-gray-100 pt-5 mt-5">
@@ -108,7 +179,6 @@
                     </div>
                 @endforeach
             </div>
-            {{-- Mail volgt via "Template mail" (#28); tot dan deel je de link zelf. --}}
             <p class="mt-3 text-xs text-gray-400">De ex-huurder beoordeelt het kot anoniem via zijn link.</p>
         </div>
     @endif

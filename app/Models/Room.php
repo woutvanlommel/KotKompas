@@ -51,7 +51,20 @@ class Room extends Model implements HasMedia
             })
             ->latest('start_date')
             ->first()
-            ?->tenant;
+            ?->primaryTenant();
+    }
+
+    /** Alle huurders (hoofd + mede) van de actieve huurperiode */
+    public function activeTenants(): \Illuminate\Support\Collection
+    {
+        $period = $this->rentalPeriods()
+            ->where(function ($q) {
+                $q->whereNull('end_date')->orWhere('end_date', '>=', now());
+            })
+            ->latest('start_date')
+            ->first();
+
+        return $period?->tenants ?? collect();
     }
 
     /** @return HasMany<RoomReview, $this> */

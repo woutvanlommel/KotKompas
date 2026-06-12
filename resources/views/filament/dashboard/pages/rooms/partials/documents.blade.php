@@ -26,11 +26,17 @@
             <div class="space-y-2">
                 @foreach ($roomContracts as $contract)
                     @php
-                        $url = $contract->getFirstMediaUrl('document');
-                        $statusColor = match($contract->status) {
-                            'signed'   => ['bg' => 'bg-green-50', 'text' => 'text-green-700', 'label' => 'Ondertekend'],
-                            'archived' => ['bg' => 'bg-gray-100', 'text' => 'text-gray-500',  'label' => 'Gearchiveerd'],
-                            default    => ['bg' => 'bg-amber-50', 'text' => 'text-amber-700', 'label' => 'Wacht op ondertekening'],
+                        $pdfUrl         = route('contracts.pdf', $contract);
+                        $handtekeningen = $contract->blocks['ondertekening']['handtekeningen'] ?? [];
+                        $userHasSigned  = collect($handtekeningen)->contains('user_id', auth()->id());
+                        $signedCount    = count($handtekeningen);
+                        $totalCount     = ($contract->rentalPeriod?->tenants?->count() ?? 0) + 1; // +1 voor verhuurder
+
+                        $statusColor = match(true) {
+                            $contract->status === 'signed'   => ['bg' => 'bg-green-50', 'text' => 'text-green-700', 'label' => 'Volledig ondertekend'],
+                            $contract->status === 'archived' => ['bg' => 'bg-gray-100',  'text' => 'text-gray-500',  'label' => 'Gearchiveerd'],
+                            $signedCount > 0                 => ['bg' => 'bg-blue-50',   'text' => 'text-blue-700',  'label' => "{$signedCount}/{$totalCount} ondertekend"],
+                            default                          => ['bg' => 'bg-amber-50',  'text' => 'text-amber-700', 'label' => 'Wacht op ondertekening'],
                         };
                     @endphp
 
@@ -47,21 +53,37 @@
                                 <span class="text-xs px-1.5 py-0.5 rounded-full {{ $statusColor['bg'] }} {{ $statusColor['text'] }}">
                                     {{ $statusColor['label'] }}
                                 </span>
-                                @if ($contract->rentalPeriod?->tenant)
+                                @if ($contract->rentalPeriod?->tenants?->isNotEmpty())
                                     <span class="text-xs text-gray-400">
-                                        {{ $contract->rentalPeriod->tenant->full_name }}
+                                        {{ $contract->rentalPeriod->tenants->pluck('full_name')->join(', ') }}
                                     </span>
                                 @endif
                                 <span class="text-xs text-gray-400">{{ $contract->created_at->format('d/m/Y') }}</span>
                             </div>
                         </div>
 
-                        @if ($url)
-                            <a href="{{ $url }}" target="_blank"
-                                class="flex-shrink-0 p-1.5 rounded-lg border border-gray-200 text-gray-400 hover:text-primary-600 hover:border-primary-200 hover:bg-primary-50 transition-colors">
+                        <div class="flex items-center gap-1.5 flex-shrink-0">
+                            @if ($contract->status === 'draft' && ! $userHasSigned)
+                                <button
+                                    wire:click="mountAction('signContract', { documentId: {{ $contract->id }} })"
+                                    class="text-xs py-1 px-2.5 rounded-lg bg-green-600 hover:bg-green-700 text-white font-medium transition-colors"
+                                >
+                                    <x-heroicon-o-pencil class="w-3 h-3 inline mr-0.5" />
+                                    Ondertekenen
+                                </button>
+                            @elseif ($userHasSigned && $contract->status !== 'signed')
+                                <span class="text-xs text-green-700">
+                                    <x-heroicon-o-check class="w-3.5 h-3.5 inline" />
+                                    Getekend
+                                </span>
+                            @endif
+
+                            <a href="{{ $pdfUrl }}" target="_blank"
+                                class="p-1.5 rounded-lg border border-gray-200 text-gray-400 hover:text-primary-600 hover:border-primary-200 hover:bg-primary-50 transition-colors"
+                                title="PDF bekijken">
                                 <x-heroicon-o-arrow-top-right-on-square class="w-4 h-4" />
                             </a>
-                        @endif
+                        </div>
                     </div>
                 @endforeach
             </div>

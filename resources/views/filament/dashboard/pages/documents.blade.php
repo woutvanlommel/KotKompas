@@ -16,11 +16,17 @@
             <div class="space-y-3">
                 @foreach ($contracts as $contract)
                     @php
-                        $url = $contract->getFirstMediaUrl('document');
-                        $statusColor = match($contract->status) {
-                            'signed'   => ['bg' => 'bg-green-50 dark:bg-green-900/20', 'text' => 'text-green-700 dark:text-green-300', 'label' => 'Ondertekend'],
-                            'archived' => ['bg' => 'bg-gray-100 dark:bg-gray-700', 'text' => 'text-gray-500 dark:text-gray-400', 'label' => 'Gearchiveerd'],
-                            default    => ['bg' => 'bg-amber-50 dark:bg-amber-900/20', 'text' => 'text-amber-700 dark:text-amber-300', 'label' => 'Wacht op ondertekening'],
+                        $pdfUrl = route('contracts.pdf', $contract);
+                        $handtekeningen = $contract->blocks['ondertekening']['handtekeningen'] ?? [];
+                        $userHasSigned  = collect($handtekeningen)->contains('user_id', auth()->id());
+                        $signedCount    = count($handtekeningen);
+                        $totalCount     = ($contract->rentalPeriod?->tenants?->count() ?? 0) + 1; // +1 voor verhuurder
+
+                        $statusColor = match(true) {
+                            $contract->status === 'signed'   => ['bg' => 'bg-green-50 dark:bg-green-900/20', 'text' => 'text-green-700 dark:text-green-300', 'label' => 'Volledig ondertekend'],
+                            $contract->status === 'archived' => ['bg' => 'bg-gray-100 dark:bg-gray-700',      'text' => 'text-gray-500 dark:text-gray-400',  'label' => 'Gearchiveerd'],
+                            $signedCount > 0                 => ['bg' => 'bg-blue-50 dark:bg-blue-900/20',   'text' => 'text-blue-700 dark:text-blue-300',   'label' => "{$signedCount}/{$totalCount} ondertekend"],
+                            default                          => ['bg' => 'bg-amber-50 dark:bg-amber-900/20', 'text' => 'text-amber-700 dark:text-amber-300', 'label' => 'Wacht op ondertekening'],
                         };
                     @endphp
 
@@ -49,26 +55,28 @@
 
                         {{-- Acties --}}
                         <div class="flex items-center gap-2 flex-shrink-0">
-                            @if ($url)
-                                <a
-                                    href="{{ $url }}"
-                                    target="_blank"
-                                    class="text-xs py-1.5 px-3 rounded-lg border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-                                >
-                                    <x-heroicon-o-arrow-top-right-on-square class="w-3.5 h-3.5 inline mr-1" />
-                                    Bekijken
-                                </a>
-                            @endif
+                            <a
+                                href="{{ $pdfUrl }}"
+                                target="_blank"
+                                class="text-xs py-1.5 px-3 rounded-lg border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                            >
+                                <x-heroicon-o-arrow-top-right-on-square class="w-3.5 h-3.5 inline mr-1" />
+                                Bekijken
+                            </a>
 
-                            @if ($contract->status === 'draft')
+                            @if ($contract->status === 'draft' && ! $userHasSigned)
                                 <button
-                                    wire:click="signContract({{ $contract->id }})"
-                                    wire:confirm="Ben je zeker dat je dit contract wil ondertekenen? Dit kan niet ongedaan gemaakt worden."
+                                    wire:click="mountAction('signContract', { documentId: {{ $contract->id }} })"
                                     class="text-xs py-1.5 px-3 rounded-lg bg-green-600 hover:bg-green-700 text-white font-medium transition-colors"
                                 >
                                     <x-heroicon-o-pencil class="w-3.5 h-3.5 inline mr-1" />
                                     Ondertekenen
                                 </button>
+                            @elseif ($userHasSigned && $contract->status !== 'signed')
+                                <span class="text-xs py-1 px-2.5 rounded-full bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 font-medium">
+                                    <x-heroicon-o-check class="w-3 h-3 inline mr-0.5" />
+                                    Jij hebt getekend
+                                </span>
                             @endif
                         </div>
                     </div>

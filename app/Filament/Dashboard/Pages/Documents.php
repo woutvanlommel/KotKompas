@@ -52,41 +52,77 @@ class Documents extends Page
     /** Contracten aangemaakt door de verhuurder, gekoppeld via huurperiodes */
     public function getContracts(): Collection
     {
-        return Document::whereHas('rentalPeriod', fn($q) => $q->where('user_id', auth()->id()))
+        return Document::whereHas('rentalPeriod.tenants', fn($q) => $q->where('users.id', auth()->id()))
             ->where('type', 'contract')
-            ->with(['media', 'rentalPeriod.room.building'])
+            ->with(['media', 'rentalPeriod.room.building', 'rentalPeriod.tenants'])
             ->latest()
             ->get();
     }
 
     public function getActiveRentalPeriods(): Collection
     {
-        return RentalPeriod::where('user_id', auth()->id())
+        return RentalPeriod::whereHas('tenants', fn($q) => $q->where('users.id', auth()->id()))
             ->with('room.building')
             ->where(fn($q) => $q->whereNull('end_date')->orWhere('end_date', '>=', now()))
             ->latest('start_date')
             ->get();
     }
 
-    public function signContract(int $documentId): void
+    public function signContractAction(): Action
     {
-        $contract = Document::whereHas('rentalPeriod', fn($q) => $q->where('user_id', auth()->id()))
-            ->where('type', 'contract')
-            ->where('status', 'draft')
-            ->findOrFail($documentId);
+        return Action::make('signContract')
+            ->requiresConfirmation()
+            ->modalHeading('Contract ondertekenen')
+            ->modalDescription('Door te bevestigen verklaar je dit contract gelezen en goedgekeurd te hebben. Deze actie kan niet ongedaan gemaakt worden.')
+            ->modalSubmitActionLabel('Ja, ondertekenen')
+            ->modalCancelActionLabel('Annuleren')
+            ->modalIcon('heroicon-o-pencil')
+            ->color('success')
+            ->action(function (array $arguments): void {
+                $documentId = $arguments['documentId'] ?? null;
+                $user = auth()->user();
 
-        $contract->update([
-            'status' => 'signed',
-            'blocks' => array_merge($contract->blocks ?? [], [
-                'signed_at' => now()->toIso8601String(),
-                'signed_by' => auth()->id(),
-            ]),
-        ]);
+                $contract = Document::whereHas('rentalPeriod.tenants', fn($q) => $q->where('users.id', $user->id))
+                    ->where('type', 'contract')
+                    ->where('status', 'draft')
+                    ->with('rentalPeriod.tenants')
+                    ->findOrFail($documentId);
 
-        Notification::make()
-            ->title('Contract ondertekend')
-            ->success()
-            ->send();
+                $blocks = $contract->blocks ?? [];
+                $handtekeningen = $blocks['ondertekening']['handtekeningen'] ?? [];
+
+                // Voorkom dubbel ondertekenen
+                if (collect($handtekeningen)->contains('user_id', $user->id)) {
+                    return;
+                }
+
+                $handtekeningen[] = [
+                    'user_id'   => $user->id,
+                    'naam'      => $user->full_name ?? $user->name,
+                    'signed_at' => now()->toIso8601String(),
+                ];
+
+                $blocks['ondertekening']['handtekeningen'] = $handtekeningen;
+
+                // Status op 'signed' zetten enkel als alle huurders getekend hebben
+                $allTenantIds  = $contract->rentalPeriod->tenants->pluck('id');
+                $signedUserIds = collect($handtekeningen)->pluck('user_id');
+                $allSigned     = $allTenantIds->diff($signedUserIds)->isEmpty();
+
+                $contract->update([
+                    'status' => $allSigned ? 'signed' : 'draft',
+                    'blocks' => $blocks,
+                ]);
+
+                Notification::make()
+                    ->title('Handtekening geregistreerd')
+                    ->body($allSigned
+                        ? 'Alle huurders hebben ondertekend. Het contract is nu volledig ondertekend.'
+                        : 'Jouw handtekening is opgeslagen. Het contract wacht nog op de andere huurder(s).')
+                    ->success()
+                    ->persistent()
+                    ->send();
+            });
     }
 
     protected function getHeaderActions(): array
