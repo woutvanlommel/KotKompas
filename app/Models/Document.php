@@ -45,8 +45,8 @@ class Document extends Model implements HasMedia
             ->width(400)
             ->height(566)   // A4 verhouding
             ->quality(80)
-            ->format('webp')
-            ->nonQueued();  // voor snelle preview, kan later naar queued
+            ->format('webp');
+        // ->nonQueued();  // voor snelle preview, kan later naar queued
     }
 
     public function isContract(): bool

@@ -38,7 +38,7 @@ class RentalPeriod extends Model
 
     public function isActive(): bool
     {
-        return $this->end_date === null || $this->end_date->isFuture();
+        return $this->end_date === null || $this->end_date >= now();
     }
 
     protected function casts(): array

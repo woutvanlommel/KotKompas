@@ -28,7 +28,7 @@ trait HasDocumentActions
                 $building = $room->building;
                 $activePeriod = $room->rentalPeriods()
                     ->with('tenants')
-                    ->where(fn ($q) => $q->whereNull('end_date')->orWhere('end_date', '>=', now()))
+                    ->where(fn($q) => $q->whereNull('end_date')->orWhere('end_date', '>=', now()))
                     ->latest('start_date')
                     ->first();
 
@@ -36,8 +36,8 @@ trait HasDocumentActions
                     ? $activePeriod->tenants->map->full_name->join(', ')
                     : '—';
 
-                $address = $building->street.' '.$building->house_number
-                    .', '.$building->postal_code.' '.$building->city;
+                $address = $building->street . ' ' . $building->house_number
+                    . ', ' . $building->postal_code . ' ' . $building->city;
 
                 return [
                     // ── Info (read-only context) ───────────────────────────
@@ -59,7 +59,7 @@ trait HasDocumentActions
                     // ── Huurperiode ────────────────────────────────────────
                     DatePicker::make('start_date')
                         ->label('Startdatum')
-                        ->default($activePeriod?->start_date ?? now())
+                        ->default($activePeriod->start_date ?? now())
                         ->required()
                         ->live()
                         ->afterStateUpdated(function (Get $get, Set $set, ?string $state) {
@@ -105,11 +105,11 @@ trait HasDocumentActions
                 $landlord = auth()->user();
                 $activePeriod = $room->rentalPeriods()
                     ->with('tenants')
-                    ->where(fn ($q) => $q->whereNull('end_date')->orWhere('end_date', '>=', now()))
+                    ->where(fn($q) => $q->whereNull('end_date')->orWhere('end_date', '>=', now()))
                     ->latest('start_date')
                     ->first();
 
-                $tenants = $activePeriod?->tenants ?? collect();
+                $tenants = $activePeriod->tenants ?? collect();
 
                 $blocks = [
                     'partijen' => [
@@ -118,7 +118,7 @@ trait HasDocumentActions
                             'email' => $landlord->email,
                             'tel' => $landlord->phone,
                         ],
-                        'huurders' => $tenants->map(fn ($u) => [
+                        'huurders' => $tenants->map(fn($u) => [
                             'user_id' => $u->id,
                             'naam' => $u->full_name,
                             'email' => $u->email,
@@ -127,8 +127,8 @@ trait HasDocumentActions
                         ])->values()->toArray(),
                     ],
                     'goed' => [
-                        'adres' => $building->street.' '.$building->house_number
-                            .', '.$building->postal_code.' '.$building->city,
+                        'adres' => $building->street . ' ' . $building->house_number
+                            . ', ' . $building->postal_code . ' ' . $building->city,
                         'kamer' => $room->room_number,
                         'type' => $room->type,
                         'oppervlakte' => $room->surface_m2,
@@ -191,7 +191,7 @@ trait HasDocumentActions
         return Document::whereIn('user_id', $tenants->pluck('id'))
             ->where('is_public', true)
             ->where('type', '!=', 'contract')
-            ->whereHas('rentalPeriod', fn ($q) => $q->where('room_id', $this->record->id))
+            ->whereHas('rentalPeriod', fn($q) => $q->where('room_id', $this->record->id))
             ->with('media')
             ->latest()
             ->get();
@@ -211,7 +211,7 @@ trait HasDocumentActions
                 $documentId = $arguments['documentId'] ?? null;
 
                 $contract = Document::where('type', 'contract')
-                    ->whereHas('rentalPeriod.room.building', fn ($q) => $q->where('landlord_id', auth()->id()))
+                    ->whereHas('rentalPeriod.room.building', fn($q) => $q->where('landlord_id', auth()->id()))
                     ->findOrFail($documentId);
 
                 $contract->delete();
@@ -238,7 +238,7 @@ trait HasDocumentActions
                 $user = auth()->user();
 
                 $contract = Document::where('type', 'contract')
-                    ->whereHas('rentalPeriod', fn ($q) => $q->where('room_id', $this->record->id))
+                    ->whereHas('rentalPeriod', fn($q) => $q->where('room_id', $this->record->id))
                     ->where('status', 'draft')
                     ->with('rentalPeriod.tenants')
                     ->findOrFail($documentId);
@@ -284,12 +284,14 @@ trait HasDocumentActions
     public function getRoomContracts(): Collection
     {
         return Document::where('type', 'contract')
-            ->where(fn ($q) => $q
-                ->whereHas('rentalPeriod', fn ($q2) => $q2->where('room_id', $this->record->id))
-                ->orWhere(fn ($q2) => $q2
-                    ->where('user_id', auth()->id())
-                    ->whereNull('rental_period_id')
-                )
+            ->where(
+                fn($q) => $q
+                    ->whereHas('rentalPeriod', fn($q2) => $q2->where('room_id', $this->record->id))
+                    ->orWhere(
+                        fn($q2) => $q2
+                            ->where('user_id', auth()->id())
+                            ->whereNull('rental_period_id')
+                    )
             )
             ->with(['media', 'rentalPeriod.tenants'])
             ->latest()

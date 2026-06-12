@@ -65,7 +65,7 @@ class Room extends Model implements HasMedia
             ->latest('start_date')
             ->first();
 
-        return $period?->tenants ?? collect();
+        return $period->tenants ?? collect();
     }
 
     /** @return HasMany<RoomReview, $this> */
