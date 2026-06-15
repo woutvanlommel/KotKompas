@@ -147,7 +147,7 @@ class ChatWindow extends Component
     private function containsBlacklistedWord(string $text): bool
     {
         foreach (config('chat.blacklist', []) as $word) {
-            if (preg_match('/\b' . preg_quote($word, '/') . '\b/iu', $text)) {
+            if (preg_match('/\b'.preg_quote($word, '/').'\b/iu', $text)) {
                 return true;
             }
         }
