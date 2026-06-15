@@ -151,9 +151,9 @@ $stripeColor = match($type ?? 'info') {
                             {{-- Fallback renders an orange button when $actionUrl  --}}
                             {{-- and $actionText are both provided.                 --}}
                             @hasSection('action')
-                                <p style="margin:24px 0 0;">
+                                <div style="margin:24px 0 0;">
                                     @yield('action')
-                                </p>
+                                </div>
                             @elseif(!empty($actionUrl) && !empty($actionText))
                                 <p style="margin:24px 0 0;">
                                     <a href="{{ $actionUrl }}"
