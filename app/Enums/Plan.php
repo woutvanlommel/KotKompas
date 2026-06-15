@@ -2,6 +2,8 @@
 
 namespace App\Enums;
 
+use App\Models\Plan as PlanModel;
+
 enum Plan: string
 {
     case Starter = 'starter';
@@ -20,5 +22,10 @@ enum Plan: string
             self::Pro => 'Pro',
             self::Premium => 'Premium',
         };
+    }
+
+    public function model(): ?PlanModel
+    {
+        return PlanModel::where('slug', $this->value)->first();
     }
 }
