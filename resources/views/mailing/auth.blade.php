@@ -26,7 +26,11 @@
 |       // resources/views/mailing/verify-email.blade.php
 |       @extends('mailing.auth')
 |
-|       @section('heading', 'Bevestig je e-mailadres')
+|       @section('heading')
+|           <h1 style="margin:0 0 20px;font-size:22px;font-weight:bold;color:#0f1720;letter-spacing:-0.02em;line-height:1.2;">
+|               Bevestig je e-mailadres
+|           </h1>
+|       @endsection
 |
 |       @section('body')
 |           <p style="margin:0 0 14px;font-size:15px;line-height:1.6;color:#586573;">
@@ -95,7 +99,7 @@
     <meta name="format-detection" content="telephone=no, address=no, email=no, date=no">
     <title>{{ config('app.name', 'KotKompas') }}</title>
 </head>
-<body style="margin:0;padding:24px 0;background:#ebebeb;font-family:Arial,Helvetica,sans-serif;color:#0f1720;">
+<body bgcolor="#ebebeb" style="margin:0;padding:24px 0;background:#ebebeb;font-family:Arial,Helvetica,sans-serif;color:#0f1720;">
 
     {{-- ── Outer wrapper: centres the card in all email clients ── --}}
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
@@ -103,6 +107,8 @@
             <td align="center" style="padding:24px 16px;">
 
                 {{-- ── Card: max 560px, white, rounded (where supported) ── --}}
+                {{-- MSO conditional enforces 560px in Outlook (ignores CSS max-width) --}}
+                <!--[if mso]><table role="presentation" width="560" align="center" cellpadding="0" cellspacing="0"><tr><td><![endif]-->
                 <table role="presentation" width="100%" cellpadding="0" cellspacing="0"
                        style="max-width:560px;background:#ffffff;border-radius:8px;overflow:hidden;box-shadow:0 4px 24px rgba(15,23,32,0.08);">
 
@@ -216,6 +222,7 @@
                     </tr>
 
                 </table>
+                <!--[if mso]></td></tr></table><![endif]-->
                 {{-- /Card --}}
 
             </td>
