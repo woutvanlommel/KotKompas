@@ -3,6 +3,7 @@
 namespace App\Filament\Dashboard\Resources\Rooms\Concerns;
 
 use App\Models\Document;
+use App\Services\FilamentNotificationService;
 use Filament\Actions\Action;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Placeholder;
@@ -28,7 +29,7 @@ trait HasDocumentActions
                 $building = $room->building;
                 $activePeriod = $room->rentalPeriods()
                     ->with('tenants')
-                    ->where(fn ($q) => $q->whereNull('end_date')->orWhere('end_date', '>=', now()))
+                    ->where(fn($q) => $q->whereNull('end_date')->orWhere('end_date', '>=', now()))
                     ->latest('start_date')
                     ->first();
 
@@ -36,8 +37,8 @@ trait HasDocumentActions
                     ? $activePeriod->tenants->map->full_name->join(', ')
                     : '—';
 
-                $address = $building->street.' '.$building->house_number
-                    .', '.$building->postal_code.' '.$building->city;
+                $address = $building->street . ' ' . $building->house_number
+                    . ', ' . $building->postal_code . ' ' . $building->city;
 
                 return [
                     // ── Info (read-only context) ───────────────────────────
@@ -105,7 +106,7 @@ trait HasDocumentActions
                 $landlord = auth()->user();
                 $activePeriod = $room->rentalPeriods()
                     ->with('tenants')
-                    ->where(fn ($q) => $q->whereNull('end_date')->orWhere('end_date', '>=', now()))
+                    ->where(fn($q) => $q->whereNull('end_date')->orWhere('end_date', '>=', now()))
                     ->latest('start_date')
                     ->first();
 
@@ -118,7 +119,7 @@ trait HasDocumentActions
                             'email' => $landlord->email,
                             'tel' => $landlord->phone,
                         ],
-                        'huurders' => $tenants->map(fn ($u) => [
+                        'huurders' => $tenants->map(fn($u) => [
                             'user_id' => $u->id,
                             'naam' => $u->full_name,
                             'email' => $u->email,
@@ -127,8 +128,8 @@ trait HasDocumentActions
                         ])->values()->toArray(),
                     ],
                     'goed' => [
-                        'adres' => $building->street.' '.$building->house_number
-                            .', '.$building->postal_code.' '.$building->city,
+                        'adres' => $building->street . ' ' . $building->house_number
+                            . ', ' . $building->postal_code . ' ' . $building->city,
                         'kamer' => $room->room_number,
                         'type' => $room->type,
                         'oppervlakte' => $room->surface_m2,
@@ -172,11 +173,16 @@ trait HasDocumentActions
                     'blocks' => $blocks,
                 ]);
 
-                Notification::make()
-                    ->title('Contract aangemaakt')
-                    ->body('De huurder kan het contract nu bekijken en ondertekenen.')
-                    ->success()
-                    ->send();
+                // Notification::make()
+                //     ->title('Contract aangemaakt')
+                //     ->body('De huurder kan het contract nu bekijken en ondertekenen.')
+                //     ->success()
+                //     ->send();
+                FilamentNotificationService::success(
+                    'Contract aangemaakt',
+                    "De huurder kan het contract nu bekijken en ondertekenen",
+                    icon: 'heroicon-o-pencil'
+                );
             });
     }
 
@@ -191,7 +197,7 @@ trait HasDocumentActions
         return Document::whereIn('user_id', $tenants->pluck('id'))
             ->where('is_public', true)
             ->where('type', '!=', 'contract')
-            ->whereHas('rentalPeriod', fn ($q) => $q->where('room_id', $this->record->id))
+            ->whereHas('rentalPeriod', fn($q) => $q->where('room_id', $this->record->id))
             ->with('media')
             ->latest()
             ->get();
@@ -211,15 +217,20 @@ trait HasDocumentActions
                 $documentId = $arguments['documentId'] ?? null;
 
                 $contract = Document::where('type', 'contract')
-                    ->whereHas('rentalPeriod.room.building', fn ($q) => $q->where('landlord_id', auth()->id()))
+                    ->whereHas('rentalPeriod.room.building', fn($q) => $q->where('landlord_id', auth()->id()))
                     ->findOrFail($documentId);
 
                 $contract->delete();
 
-                Notification::make()
-                    ->title('Contract verwijderd')
-                    ->success()
-                    ->send();
+                // Notification::make()
+                //     ->title('Contract verwijderd')
+                //     ->success()
+                //     ->send();
+
+                FilamentNotificationService::success(
+                    'Contract verwijderd',
+                    icon: 'heroicon-o-pencil',
+                );
             });
     }
 
@@ -238,7 +249,7 @@ trait HasDocumentActions
                 $user = auth()->user();
 
                 $contract = Document::where('type', 'contract')
-                    ->whereHas('rentalPeriod', fn ($q) => $q->where('room_id', $this->record->id))
+                    ->whereHas('rentalPeriod', fn($q) => $q->where('room_id', $this->record->id))
                     ->where('status', 'draft')
                     ->with('rentalPeriod.tenants')
                     ->findOrFail($documentId);
@@ -270,14 +281,22 @@ trait HasDocumentActions
                     'blocks' => $blocks,
                 ]);
 
-                Notification::make()
-                    ->title('Handtekening geregistreerd')
-                    ->body($allSigned
-                        ? 'Alle partijen hebben ondertekend. Het contract is nu volledig ondertekend.'
-                        : 'Jouw handtekening is opgeslagen. Het contract wacht nog op de huurder(s).')
-                    ->success()
-                    ->persistent()
-                    ->send();
+                // Notification::make()
+                //     ->title('Handtekening geregistreerd')
+                //     ->body($allSigned
+                //         ? 'Alle partijen hebben ondertekend. Het contract is nu volledig ondertekend.'
+                //         : 'Jouw handtekening is opgeslagen. Het contract wacht nog op de huurder(s).')
+                //     ->success()
+                //     ->persistent()
+                //     ->send();
+
+                FilamentNotificationService::success(
+                    'Handtekening geregistreerd',
+                    $allSigned
+                        ? 'Alle partijen hebben ondertekend. het contract is nu volledig ondertekend.'
+                        : 'Jouw handtekening is opgeslagen. Het contract wacht nog op de andere partij(en)',
+                    icon: 'heroicon-o-document-check'
+                );
             });
     }
 
@@ -285,10 +304,10 @@ trait HasDocumentActions
     {
         return Document::where('type', 'contract')
             ->where(
-                fn ($q) => $q
-                    ->whereHas('rentalPeriod', fn ($q2) => $q2->where('room_id', $this->record->id))
+                fn($q) => $q
+                    ->whereHas('rentalPeriod', fn($q2) => $q2->where('room_id', $this->record->id))
                     ->orWhere(
-                        fn ($q2) => $q2
+                        fn($q2) => $q2
                             ->where('user_id', auth()->id())
                             ->whereNull('rental_period_id')
                     )
