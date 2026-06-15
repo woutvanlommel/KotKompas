@@ -26,6 +26,12 @@ class KotScoreService
 
     private const OLD_WEIGHT = 1.0;
 
+    // Below this many reviews, a per-criterion breakdown would expose a
+    // single ex-tenant's exact ratings — so the landlord breakdown stays
+    // hidden until enough reviews are pooled to keep them anonymous.
+    // Public: the dashboard widget shows the threshold in its empty state.
+    public const MIN_REVIEWS_FOR_BREAKDOWN = 3;
+
     // "Weight" of the platform mean in the Bayesian score —
     // comparable to ~2.5 recent reviews.
     private const BAYES_CONFIDENCE = 5.0;
@@ -153,6 +159,40 @@ class KotScoreService
             'hygiene' => (float) $hygiene,
             'size' => (float) $size,
             'value' => (float) $value,
+        ];
+    }
+
+    /**
+     * Per-criterion averages across ALL of a landlord's reviews, for the
+     * landlord's own dashboard — so a weak spot becomes actionable
+     * ("communication drags your score down"). Unlike the public room
+     * breakdown this DOES include communication: it is the landlord's own
+     * data, shown only to them.
+     *
+     * Pooled at portfolio level and hidden under MIN_REVIEWS_FOR_BREAKDOWN
+     * to keep the anonymous survey anonymous. Same recency weighting as the
+     * scores themselves, so the breakdown never contradicts the totals.
+     *
+     * @return array{hygiene: float, size: float, value: float, communication: float}|null
+     */
+    public function landlordCriteriaBreakdown(User $landlord): ?array
+    {
+        $reviews = $landlord->landlordReviews()->get();
+
+        if ($reviews->count() < self::MIN_REVIEWS_FOR_BREAKDOWN) {
+            return null;
+        }
+
+        [$hygiene] = $this->weightedAverage($reviews, fn (RoomReview $r) => (float) $r->score_hygiene);
+        [$size] = $this->weightedAverage($reviews, fn (RoomReview $r) => (float) $r->score_size);
+        [$value] = $this->weightedAverage($reviews, fn (RoomReview $r) => (float) $r->score_value);
+        [$communication] = $this->weightedAverage($reviews, fn (RoomReview $r) => (float) $r->score_communication);
+
+        return [
+            'hygiene' => (float) $hygiene,
+            'size' => (float) $size,
+            'value' => (float) $value,
+            'communication' => (float) $communication,
         ];
     }
 

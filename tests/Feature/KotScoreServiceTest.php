@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Building;
 use App\Models\Room;
 use App\Models\RoomReview;
+use App\Services\KotScoreService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -128,6 +129,45 @@ class KotScoreServiceTest extends TestCase
         $this->assertNull($oldRoom->building->refresh()->score);
         $this->assertSame(4.0, $newRoom->refresh()->score);
         $this->assertSame(1, $newRoom->reviews_count);
+    }
+
+    public function test_landlord_criteria_breakdown_averages_each_criterion(): void
+    {
+        $building = Building::factory()->create();
+        $landlord = $building->landlord;
+        $rooms = Room::factory()->count(3)->for($building)->create();
+
+        RoomReview::factory()->forRoom($rooms[0])->create([
+            'score_hygiene' => 5, 'score_size' => 3, 'score_value' => 4, 'score_communication' => 2,
+        ]);
+        RoomReview::factory()->forRoom($rooms[1])->create([
+            'score_hygiene' => 3, 'score_size' => 3, 'score_value' => 4, 'score_communication' => 4,
+        ]);
+        RoomReview::factory()->forRoom($rooms[2])->create([
+            'score_hygiene' => 4, 'score_size' => 3, 'score_value' => 4, 'score_communication' => 3,
+        ]);
+
+        $breakdown = app(KotScoreService::class)->landlordCriteriaBreakdown($landlord);
+
+        // All reviews recent → equal weight, so each criterion is a plain mean.
+        $this->assertSame(4.0, $breakdown['hygiene']);        // (5 + 3 + 4) / 3
+        $this->assertSame(3.0, $breakdown['size']);           // (3 + 3 + 3) / 3
+        $this->assertSame(4.0, $breakdown['value']);          // (4 + 4 + 4) / 3
+        $this->assertSame(3.0, $breakdown['communication']);  // (2 + 4 + 3) / 3 — landlord sees communication
+    }
+
+    public function test_landlord_criteria_breakdown_is_null_below_anonymity_threshold(): void
+    {
+        $building = Building::factory()->create();
+        $landlord = $building->landlord;
+        $rooms = Room::factory()->count(2)->for($building)->create();
+
+        // Two reviews: a per-criterion split would expose one ex-tenant's
+        // exact ratings, so the breakdown stays hidden under the threshold.
+        RoomReview::factory()->forRoom($rooms[0])->create();
+        RoomReview::factory()->forRoom($rooms[1])->create();
+
+        $this->assertNull(app(KotScoreService::class)->landlordCriteriaBreakdown($landlord));
     }
 
     public function test_recompute_all_heals_building_after_room_cascade_delete(): void
