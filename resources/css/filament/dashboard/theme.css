@@ -400,17 +400,26 @@
     .kk-switch { animation: kk-fade 560ms cubic-bezier(0.16, 1, 0.3, 1) 320ms both; }   /* opacity only — it's fixed */
 }
 
-/* ---- Page transition: login ⇄ register ⇄ password-reset ----
-   Cross-document view transitions (the auth pages are full navigations, all share this
-   theme so both sides opt in). Soft crossfade — the shared photo background stays put while
-   the panel/content gently fades over. Unsupported browsers just navigate normally. */
+/* ---- Cross-document view transitions — same "push up" as the public site, so navigation
+   feels consistent everywhere (login / register / password-reset + dashboard): the new page
+   slides up over the old, the old recedes + dims. Degrades gracefully on unsupported browsers. ---- */
 @view-transition { navigation: auto; }
 
 @media (prefers-reduced-motion: no-preference) {
-    ::view-transition-old(root) { animation: kk-xfade-out 320ms ease both; }
-    ::view-transition-new(root) { animation: kk-xfade-in 360ms ease both; }
-    @keyframes kk-xfade-out { from { opacity: 1; } to { opacity: 0; } }
-    @keyframes kk-xfade-in  { from { opacity: 0; } to { opacity: 1; } }
+    ::view-transition-old(root) {
+        animation: kk-vt-out 0.6s cubic-bezier(0.76, 0, 0.24, 1) both;
+    }
+    ::view-transition-new(root) {
+        animation: kk-vt-in 0.6s cubic-bezier(0.76, 0, 0.24, 1) both;
+        box-shadow: 0 -30px 80px rgba(15, 23, 32, 0.3);
+    }
+    @keyframes kk-vt-out {
+        to { transform: translateY(-22%); opacity: 0.35; }
+    }
+    @keyframes kk-vt-in {
+        from { transform: translateY(100%); }
+        to { transform: translateY(0); }
+    }
 }
 
 /* =============================================================================
