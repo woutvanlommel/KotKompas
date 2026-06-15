@@ -4,7 +4,8 @@
     "type": "module",
     "scripts": {
         "build": "vite build",
-        "dev": "cross-env NODE_NO_WARNINGS=1 vite"
+        "dev": "cross-env NODE_NO_WARNINGS=1 vite",
+        "scan": "cross-env NODE_NO_WARNINGS=1 node scripts/scan-pages.ts"
     },
     "devDependencies": {
         "@tailwindcss/vite": "^4.3.0",
@@ -12,6 +13,7 @@
         "cross-env": "^10.1.0",
         "laravel-echo": "^2.3.7",
         "laravel-vite-plugin": "^3.1",
+        "playwright": "^1.61.0",
         "pusher-js": "^8.5.0",
         "tailwindcss": "^4.3.0",
         "typescript": "^6.0.3",
