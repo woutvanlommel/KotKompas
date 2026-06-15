@@ -159,11 +159,6 @@
                         <div class="rounded-2xl border border-dashed border-ink/15 py-20 text-center">
                             <p class="text-lg font-medium">Geen koten gevonden</p>
                             <p class="mt-2 text-sm text-ink/55">Pas je filters aan of zoek in een andere stad.</p>
-                            @if ($filters['q'] || $filters['type'] || $filters['price_min'] || $filters['price_max'] || $filters['surface_min'] || $filters['furnished'] || $filters['score_min'])
-                                <a href="{{ route('rooms.index') }}" class="mt-6 inline-flex items-center gap-1.5 rounded-xl bg-ink px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-ink/90">Wis alle filters</a>
-                            @else
-                                <a href="{{ route('home') }}" class="mt-6 inline-flex items-center gap-1.5 rounded-xl bg-ink px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-ink/90">Terug naar home</a>
-                            @endif
                         </div>
                     @endif
                 </div>
@@ -190,11 +185,6 @@
             <div class="rounded-2xl border border-dashed border-ink/15 py-20 text-center">
                 <p class="text-lg font-medium">Geen koten gevonden</p>
                 <p class="mt-2 text-sm text-ink/55">Pas je filters aan of zoek in een andere stad.</p>
-                            @if ($filters['q'] || $filters['type'] || $filters['price_min'] || $filters['price_max'] || $filters['surface_min'] || $filters['furnished'] || $filters['score_min'])
-                                <a href="{{ route('rooms.index') }}" class="mt-6 inline-flex items-center gap-1.5 rounded-xl bg-ink px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-ink/90">Wis alle filters</a>
-                            @else
-                                <a href="{{ route('home') }}" class="mt-6 inline-flex items-center gap-1.5 rounded-xl bg-ink px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-ink/90">Terug naar home</a>
-                            @endif
             </div>
         @endif
 
