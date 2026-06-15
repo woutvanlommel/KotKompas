@@ -1,4 +1,5 @@
-{{--
+@php
+/*
 |--------------------------------------------------------------------------
 | KotKompas — Base Mail Notification Layout
 |--------------------------------------------------------------------------
@@ -16,12 +17,12 @@
 |               'actionText'     => 'Bekijk je dashboard',
 |               'actionUrl'      => url('/dashboard'),
 |               'type'           => 'success',   // info|success|warning|error
-|               'unsubscribeUrl' => unsubscribeUrl($user),
+|               'unsubscribeUrl' => route('unsubscribe', ['token' => $user->unsubscribe_token]),
 |           ]);
 |
 |   2. EXTENDED — create a new mail template that extends this layout:
 |
-|       {{-- resources/views/mailing/contract-ready.blade.php --}}
+|       // resources/views/mailing/contract-ready.blade.php
 |       @extends('mailing.notification')
 |
 |       @section('heading', 'Je contract is klaar')
@@ -33,20 +34,24 @@
 |       @endsection
 |
 |       @section('action')
-|           <a href="{{ $contractUrl }}" style="...">Onderteken contract</a>
+|           <a href="{{ $contractUrl }}" style="display:inline-block;background:#ff6700;color:#fff;...">
+|               Onderteken contract
+|           </a>
 |       @endsection
 |
 |       @section('extra')
-|           {{-- Any content rendered after the action button --}}
+|           <p style="margin:16px 0 0;font-size:13px;color:#586573;">
+|               Link geldig voor 48 uur.
+|           </p>
 |       @endsection
 |
 |--------------------------------------------------------------------------
 | Available @yield sections (all optional):
 |
-|   @section('heading')   — The main heading. Falls back to $greeting.
-|   @section('body')      — Body paragraphs. Falls back to $lines[].
-|   @section('action')    — CTA button area. Falls back to $actionText/$actionUrl.
-|   @section('extra')     — Additional content after the action. Empty by default.
+|   heading   — The main heading. Falls back to $greeting.
+|   body      — Body paragraphs. Falls back to $lines[].
+|   action    — CTA button area. Falls back to $actionText + $actionUrl button.
+|   extra     — Additional content after the action. Empty by default.
 |
 |--------------------------------------------------------------------------
 | Available PHP variables (all optional):
@@ -56,7 +61,7 @@
 |   $actionText      string|null   null            CTA button label.
 |   $actionUrl       string|null   null            CTA button URL.
 |   $type            string        'info'          Accent stripe colour:
-|                                                  info|success|warning|error
+|                                                  info | success | warning | error
 |   $unsubscribeUrl  string|null   null            Footer unsubscribe link.
 |
 |--------------------------------------------------------------------------
@@ -72,7 +77,8 @@
 |   Divider:           #e2e2e2
 |   Font:              Arial, Helvetica, sans-serif (email-safe fallback for area-normal)
 |
---}}
+*/
+@endphp
 
 @php
 $stripeColor = match($type ?? 'info') {
