@@ -3,6 +3,7 @@
 namespace App\Filament\Dashboard\Resources\Rooms\Concerns;
 
 use App\Models\Document;
+use App\Services\FilamentNotificationService;
 use Filament\Actions\Action;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Placeholder;
@@ -172,11 +173,16 @@ trait HasDocumentActions
                     'blocks' => $blocks,
                 ]);
 
-                Notification::make()
-                    ->title('Contract aangemaakt')
-                    ->body('De huurder kan het contract nu bekijken en ondertekenen.')
-                    ->success()
-                    ->send();
+                // Notification::make()
+                //     ->title('Contract aangemaakt')
+                //     ->body('De huurder kan het contract nu bekijken en ondertekenen.')
+                //     ->success()
+                //     ->send();
+                FilamentNotificationService::success(
+                    'Contract aangemaakt',
+                    'De huurder kan het contract nu bekijken en ondertekenen',
+                    icon: 'heroicon-o-pencil'
+                );
             });
     }
 
@@ -216,10 +222,15 @@ trait HasDocumentActions
 
                 $contract->delete();
 
-                Notification::make()
-                    ->title('Contract verwijderd')
-                    ->success()
-                    ->send();
+                // Notification::make()
+                //     ->title('Contract verwijderd')
+                //     ->success()
+                //     ->send();
+
+                FilamentNotificationService::success(
+                    'Contract verwijderd',
+                    icon: 'heroicon-o-pencil',
+                );
             });
     }
 
@@ -270,14 +281,22 @@ trait HasDocumentActions
                     'blocks' => $blocks,
                 ]);
 
-                Notification::make()
-                    ->title('Handtekening geregistreerd')
-                    ->body($allSigned
-                        ? 'Alle partijen hebben ondertekend. Het contract is nu volledig ondertekend.'
-                        : 'Jouw handtekening is opgeslagen. Het contract wacht nog op de huurder(s).')
-                    ->success()
-                    ->persistent()
-                    ->send();
+                // Notification::make()
+                //     ->title('Handtekening geregistreerd')
+                //     ->body($allSigned
+                //         ? 'Alle partijen hebben ondertekend. Het contract is nu volledig ondertekend.'
+                //         : 'Jouw handtekening is opgeslagen. Het contract wacht nog op de huurder(s).')
+                //     ->success()
+                //     ->persistent()
+                //     ->send();
+
+                FilamentNotificationService::success(
+                    'Handtekening geregistreerd',
+                    $allSigned
+                        ? 'Alle partijen hebben ondertekend. het contract is nu volledig ondertekend.'
+                        : 'Jouw handtekening is opgeslagen. Het contract wacht nog op de andere partij(en)',
+                    icon: 'heroicon-o-document-check'
+                );
             });
     }
 
