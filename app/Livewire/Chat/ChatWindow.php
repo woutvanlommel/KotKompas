@@ -68,6 +68,16 @@ class ChatWindow extends Component
             return;
         }
 
+        if ($this->containsBlacklistedWord($this->newMessage)) {
+            Notification::make()
+                ->title('Ongepaste taal')
+                ->body('Je bericht bevat woorden die niet zijn toegestaan.')
+                ->danger()
+                ->send();
+
+            return;
+        }
+
         $message = Message::create([
             'conversation_id' => $this->conversation->id,
             'sender_id' => auth()->id(),
@@ -98,6 +108,16 @@ class ChatWindow extends Component
             'broadcastBuildingId' => ['required', Rule::exists('buildings', 'id')->where('landlord_id', auth()->id())],
         ]);
 
+        if ($this->containsBlacklistedWord($this->broadcastMessage)) {
+            Notification::make()
+                ->title('Ongepaste taal')
+                ->body('Je bericht bevat woorden die niet zijn toegestaan.')
+                ->danger()
+                ->send();
+
+            return;
+        }
+
         $conversations = Conversation::where('building_id', $this->broadcastBuildingId)
             ->where('landlord_id', auth()->id())
             ->get();
@@ -122,6 +142,17 @@ class ChatWindow extends Component
             ->title('Bericht verstuurd naar alle huurders')
             ->success()
             ->send();
+    }
+
+    private function containsBlacklistedWord(string $text): bool
+    {
+        foreach (config('chat.blacklist', []) as $word) {
+            if (preg_match('/\b'.preg_quote($word, '/').'\b/iu', $text)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public function markAsRead(): void
