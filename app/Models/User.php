@@ -20,6 +20,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Laravel\Cashier\Billable;
 use Spatie\Image\Enums\Fit;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
@@ -30,7 +31,7 @@ use Spatie\Permission\Traits\HasRoles;
 class User extends Authenticatable implements FilamentUser, HasAvatar, HasMedia
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, HasRoles, Notifiable, SoftDeletes;
+    use Billable, HasFactory, HasRoles, Notifiable, SoftDeletes;
 
     use HasImages {
         HasImages::registerMediaCollections as registerBaseMediaCollections;
@@ -82,6 +83,11 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasMedia
     public function documents(): HasMany
     {
         return $this->hasMany(Document::class);
+    }
+
+    public function creditTransactions(): HasMany
+    {
+        return $this->hasMany(CreditTransaction::class);
     }
 
     public function canAccessPanel(Panel $panel): bool
