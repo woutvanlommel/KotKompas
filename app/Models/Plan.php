@@ -19,7 +19,7 @@ class Plan extends Model
         return PlanEnum::tryFrom($this->slug);
     }
 
-    public function pirceId(): ?string
+    public function priceId(): ?string
     {
         return $this->planEnum()?->priceId();
     }
