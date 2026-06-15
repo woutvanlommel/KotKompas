@@ -28,8 +28,12 @@
     </div>
 
     @if ($buildings->isEmpty())
-        <div class="px-6 py-10 text-center text-sm text-gray-400 dark:text-gray-500">
-            Geen gebouwen gevonden.
+        <div class="px-6 py-10 text-center">
+            <p class="text-sm text-gray-400 dark:text-gray-500">Nog geen gebouwen toegevoegd.</p>
+            <a href="{{ BuildingResource::getUrl('index') }}"
+               class="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-500">
+                + Nieuw gebouw
+            </a>
         </div>
     @else
         <div class="overflow-x-auto">
