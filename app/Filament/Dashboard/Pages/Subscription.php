@@ -135,8 +135,8 @@ class Subscription extends Page
         $checkout = auth()->user()
             ->newSubscription('default', $plan->priceId())
             ->checkout([
-                'success_url' => static::getUrl() . '?checkout=success',
-                'cancel_url' => static::getUrl() . '?checkout=cancelled',
+                'success_url' => static::getUrl().'?checkout=success',
+                'cancel_url' => static::getUrl().'?checkout=cancelled',
             ]);
 
         return redirect()->away($checkout->url);
@@ -155,7 +155,7 @@ class Subscription extends Page
                 $when = $this->renewalLabel() ?? 'je volgende verlenging';
 
                 return "Je wijzigt naar {$plan?->name}. Dit gaat in op {$when}. "
-                    . 'Tot dan blijf je gewoon op je huidige plan.';
+                    .'Tot dan blijf je gewoon op je huidige plan.';
             })
             ->modalSubmitActionLabel('Bevestig wijziging')
             ->action(fn (array $arguments) => $this->performSwap($arguments['slug'] ?? ''));
@@ -250,7 +250,7 @@ class Subscription extends Page
             return null;
         }
 
-        return $date->isoFormat('D MMMM YYYY') . ' (' . $date->diffForHumans() . ')';
+        return $date->isoFormat('D MMMM YYYY').' ('.$date->diffForHumans().')';
     }
 
     /** Maakt een Stripe subscription schedule die bij periode-einde naar het nieuwe plan overgaat. */

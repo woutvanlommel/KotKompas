@@ -5,11 +5,10 @@ namespace App\Filament\Resources\Plans\Schemas;
 use App\Enums\Plan as PlanEnum;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TagsInput;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
-
 
 class PlanForm
 {
@@ -20,7 +19,7 @@ class PlanForm
                 Select::make('slug')
                     ->label('Plan')
                     ->options(collect(PlanEnum::cases())->mapWithKeys(
-                        fn(PlanEnum $p) => [$p->value => $p->label()]
+                        fn (PlanEnum $p) => [$p->value => $p->label()]
                     ))
                     ->required()
                     ->unique(ignoreRecord: true)

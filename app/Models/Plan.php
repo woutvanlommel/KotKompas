@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use App\Enums\Plan as PlanEnum;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
-use App\Enums\Plan as PlanEnum;
 
 #[Fillable(['slug', 'name', 'description', 'features', 'is_active', 'sort_order'])]
 class Plan extends Model

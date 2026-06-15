@@ -31,7 +31,7 @@ use Spatie\Permission\Traits\HasRoles;
 class User extends Authenticatable implements FilamentUser, HasAvatar, HasMedia
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, HasRoles, Notifiable, SoftDeletes, Billable;
+    use Billable, HasFactory, HasRoles, Notifiable, SoftDeletes;
 
     use HasImages {
         HasImages::registerMediaCollections as registerBaseMediaCollections;
@@ -118,7 +118,7 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasMedia
     protected function fullName(): Attribute
     {
         return Attribute::make(
-            get: fn() => "{$this->name} {$this->lastname}",
+            get: fn () => "{$this->name} {$this->lastname}",
         );
     }
 
@@ -126,7 +126,7 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasMedia
     {
         return Attribute::make(
             // Uploaded avatar (media library) takes precedence over the OAuth provider picture.
-            get: fn() => $this->getFirstMediaUrl('avatar', 'avatar_thumb')
+            get: fn () => $this->getFirstMediaUrl('avatar', 'avatar_thumb')
                 ?: $this->avatar  // Google/OAuth avatar URL stored as a plain string
                 ?: null,
         );
@@ -154,7 +154,7 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasMedia
     public function sendPasswordResetNotification($token): void
     {
         ResetPasswordNotification::createUrlUsing(
-            fn($notifiable, $token) => Filament::getPanel('dashboard')->getResetPasswordUrl($token, $notifiable)
+            fn ($notifiable, $token) => Filament::getPanel('dashboard')->getResetPasswordUrl($token, $notifiable)
         );
 
         $this->notify(new ResetPasswordNotification($token));
