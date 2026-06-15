@@ -32,9 +32,23 @@
         </div>
 
 
-        {{-- Fixed editorial header — brand left --}}
-        <header class="fixed inset-x-0 top-0 z-10 flex items-start justify-between gap-4 px-[clamp(1.5rem,4vw,3.5rem)] py-[clamp(1rem,2.25vw,1rem)]">
-            <span class="inline-flex"><img src="{{ asset('/img/400pxX100pxWoordLogoLiggendZwart.png') }}" alt="KotKompas" class="h-18 w-auto [filter:brightness(0)_invert(1)]" /></span>
+        {{-- Fixed editorial header — brand left (links home), escape links right --}}
+        <header class="fixed inset-x-0 top-0 z-10 flex items-center justify-between gap-4 px-[clamp(1.5rem,4vw,3.5rem)] py-[clamp(1rem,2.25vw,1rem)]">
+            <a href="{{ url('/') }}" class="inline-flex" aria-label="KotKompas — naar de homepagina"><img src="{{ asset('/img/400pxX100pxWoordLogoLiggendZwart.png') }}" alt="KotKompas" class="h-18 w-auto [filter:brightness(0)_invert(1)]" /></a>
+            <nav class="flex items-center gap-5 sm:gap-8" aria-label="Site-navigatie">
+                <a href="{{ route('rooms.index') }}" class="group inline-flex items-baseline gap-1.5 text-[0.95rem] font-medium tracking-tight text-white/90 transition-colors hover:text-white">
+                    <span class="font-mono text-[0.6rem] text-accent-500">01</span>
+                    <span class="relative">Koten<span class="pointer-events-none absolute -bottom-1 left-0 h-px w-full origin-left scale-x-0 bg-accent transition-transform duration-300 ease-out group-hover:scale-x-100"></span></span>
+                </a>
+                <a href="{{ route('faq') }}" class="group inline-flex items-baseline gap-1.5 text-[0.95rem] font-medium tracking-tight text-white/90 transition-colors hover:text-white">
+                    <span class="font-mono text-[0.6rem] text-accent-500">02</span>
+                    <span class="relative">FAQ<span class="pointer-events-none absolute -bottom-1 left-0 h-px w-full origin-left scale-x-0 bg-accent transition-transform duration-300 ease-out group-hover:scale-x-100"></span></span>
+                </a>
+                <a href="{{ route('contact') }}" class="group inline-flex items-baseline gap-1.5 text-[0.95rem] font-medium tracking-tight text-white/90 transition-colors hover:text-white">
+                    <span class="font-mono text-[0.6rem] text-accent-500">03</span>
+                    <span class="relative">Contact<span class="pointer-events-none absolute -bottom-1 left-0 h-px w-full origin-left scale-x-0 bg-accent transition-transform duration-300 ease-out group-hover:scale-x-100"></span></span>
+                </a>
+            </nav>
         </header>
 
         <div class="fi-simple-main-ctn kk-stage">

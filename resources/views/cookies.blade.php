@@ -1,5 +1,7 @@
-<x-layout title="Cookiebeleid · KotKompas">
-<section class="mx-auto w-full max-w-2xl px-5 py-12 sm:px-6 sm:py-20">
+<x-layout title="Cookiebeleid · KotKompas" body-class="bg-canvas text-ink">
+<x-public-nav />
+
+<section class="mx-auto w-full max-w-2xl px-5 pt-32 pb-16 sm:px-6 sm:pt-36 sm:pb-24">
 
     <header class="mb-10 sm:mb-12">
         <p class="mb-3 text-sm font-semibold uppercase tracking-wider text-accent-500">Juridisch</p>
@@ -94,4 +96,6 @@
     </div>
 
 </section>
+
+<x-footer />
 </x-layout>

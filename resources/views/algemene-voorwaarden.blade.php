@@ -1,5 +1,7 @@
-<x-layout title="Algemene voorwaarden · KotKompas">
-<section class="mx-auto w-full max-w-2xl px-5 py-12 sm:px-6 sm:py-20">
+<x-layout title="Algemene voorwaarden · KotKompas" body-class="bg-canvas text-ink">
+<x-public-nav />
+
+<section class="mx-auto w-full max-w-2xl px-5 pt-32 pb-16 sm:px-6 sm:pt-36 sm:pb-24">
 
     <header class="mb-10 sm:mb-12">
         <p class="mb-3 text-sm font-semibold uppercase tracking-wider text-accent-500">Juridisch</p>
@@ -103,7 +105,7 @@
         </div>
 
         <div>
-            <h2 class="mb-3 text-lg font-semibond text-primary-900">9. Privacy</h2>
+            <h2 class="mb-3 text-lg font-semibold text-primary-900">9. Privacy</h2>
             <p>
                 Het gebruik van je persoonsgegevens wordt beschreven in ons
                 <a href="{{ route('privacy') }}" class="font-medium text-primary-600 underline underline-offset-2 hover:text-primary-700">privacybeleid</a>.
@@ -139,4 +141,6 @@
     </div>
 
 </section>
+
+<x-footer />
 </x-layout>
