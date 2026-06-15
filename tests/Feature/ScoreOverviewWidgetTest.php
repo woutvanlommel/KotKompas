@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Filament\Dashboard\Resources\Buildings\BuildingResource;
 use App\Filament\Dashboard\Widgets\BuildingsOverviewTable;
 use App\Filament\Dashboard\Widgets\ScoreOverview;
 use App\Models\Building;
@@ -137,5 +138,18 @@ class ScoreOverviewWidgetTest extends TestCase
             ->assertSee('2,0 (1)')
             ->assertSee('bg-success-100')
             ->assertSee('bg-warning-100');
+    }
+
+    public function test_buildings_overview_empty_state_links_to_new_building(): void
+    {
+        $landlord = $this->landlord(); // verhuurder with no buildings
+
+        $this->actingAs($landlord);
+        Filament::setCurrentPanel('dashboard');
+
+        // Empty state must offer a way forward instead of stranding a new landlord.
+        Livewire::test(BuildingsOverviewTable::class)
+            ->assertSee('Nieuw gebouw')
+            ->assertSee(BuildingResource::getUrl('index'));
     }
 }
