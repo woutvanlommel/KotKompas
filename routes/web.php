@@ -67,3 +67,36 @@ Route::view('/privacy', 'privacy')->name('privacy');
 Route::view('/cookies', 'cookies')->name('cookies');
 Route::view('/algemene-voorwaarden', 'algemene-voorwaarden')->name('algemene-voorwaarden');
 Route::view('/gegevens-verwijderen', 'gegevens-verwijderen')->name('gegevens-verwijderen');
+
+
+Route::get('/mail-preview', function () {
+    return new \App\Mail\SupportContactMail(
+        senderName: 'Test Gebruiker',
+        senderEmail: 'test@example.com',
+        subjectLine: 'Test onderwerp',
+        body: 'Dit is een testbericht.',
+    );
+});
+
+Route::get('/mail-preview/notification', function () {
+    return view('mailing.notification', [
+        'greeting'   => 'Hallo Jan!',
+        'lines'      => [
+            'Je aanvraag voor het kot aan de Kerkstraat 12 is goedgekeurd.',
+            'De verhuurder heeft je uitgenodigd voor een bezichtiging.',
+        ],
+        'actionText' => 'Bekijk je dashboard',
+        'actionUrl'  => url('/dashboard'),
+        'type'       => 'success',
+    ]);
+});
+
+Route::get('/mail-preview/auth', function () {
+    return view('mailing.auth', [
+        'heading'    => 'Bevestig je e-mailadres',
+        'lines'      => ['Klik op de knop hieronder om je e-mailadres te bevestigen en je account te activeren.'],
+        'actionText' => 'E-mailadres bevestigen',
+        'actionUrl'  => url('/verify-email/example-token'),
+        'expiresIn'  => '60 minuten',
+    ]);
+});
