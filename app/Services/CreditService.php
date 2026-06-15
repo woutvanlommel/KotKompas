@@ -33,11 +33,14 @@ class CreditService
         }
 
         try {
-            return $user->creditTransactions()->create([
+            /** @var CreditTransaction $transaction */
+            $transaction = $user->creditTransactions()->create([
                 'amount' => $amount,
                 'reason' => $reason,
                 'stripe_session_id' => $stripeSessionId,
             ]);
+
+            return $transaction;
         } catch (QueryException $e) {
             // unique-violation = gelijktijdige dubbele webhook; veilig negeren
             if ($stripeSessionId !== null) {
@@ -63,10 +66,13 @@ class CreditService
                 throw new InsufficientCreditsException($amount, $balance);
             }
 
-            return $user->creditTransactions()->create([
+            /** @var CreditTransaction $transaction */
+            $transaction = $user->creditTransactions()->create([
                 'amount' => -$amount,
                 'reason' => $reason,
             ]);
+
+            return $transaction;
         });
     }
 }
