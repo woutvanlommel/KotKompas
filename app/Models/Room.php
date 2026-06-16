@@ -118,6 +118,12 @@ class Room extends Model implements HasMedia
             ->latest('id');
     }
 
+    /** @return BelongsToMany<User, $this> */
+    public function favouritedBy(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'room_user_favourites')->withTimestamps();
+    }
+
     /** @return BelongsToMany<Facility, $this> */
     public function facilities(): BelongsToMany
     {

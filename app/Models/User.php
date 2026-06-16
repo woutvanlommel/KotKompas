@@ -15,12 +15,14 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Laravel\Cashier\Billable;
@@ -178,6 +180,29 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasMedia
     public function creditTransactions(): HasMany
     {
         return $this->hasMany(CreditTransaction::class);
+    }
+
+    /** @return BelongsToMany<Room, $this> */
+    public function favouriteRooms(): BelongsToMany
+    {
+        return $this->belongsToMany(Room::class, 'room_user_favourites')->withTimestamps();
+    }
+
+    /**
+     * IDs of the user's favourited rooms that are currently available.
+     * Memoized for the request so a page rendering many FavouriteButton
+     * components issues a single query instead of one per button.
+     *
+     * @var Collection<int, int>|null
+     */
+    protected ?Collection $availableFavouriteRoomIds = null;
+
+    /** @return Collection<int, int> */
+    public function availableFavouriteRoomIds(): Collection
+    {
+        return $this->availableFavouriteRoomIds ??= $this->favouriteRooms()
+            ->where('status', 'available')
+            ->pluck('rooms.id');
     }
 
     public function canAccessPanel(Panel $panel): bool
