@@ -30,6 +30,7 @@ class Favourites extends Page
     {
         return auth()->user()
             ->favouriteRooms()
+            ->where('status', 'available')
             ->with(['building', 'media'])
             ->latest('room_user_favourites.created_at')
             ->get();

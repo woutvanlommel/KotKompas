@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Models\Room;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
 
@@ -35,7 +36,7 @@ class FavouriteButton extends Component
         if ($this->isFavourited) {
             $user->favouriteRooms()->detach($this->roomId);
             $this->isFavourited = false;
-        } else {
+        } elseif (Room::where('id', $this->roomId)->where('status', 'available')->exists()) {
             $user->favouriteRooms()->attach($this->roomId);
             $this->isFavourited = true;
         }
@@ -49,7 +50,10 @@ class FavouriteButton extends Component
             return false;
         }
 
-        return $user->favouriteRooms()->where('room_id', $this->roomId)->exists();
+        return $user->favouriteRooms()
+            ->where('room_id', $this->roomId)
+            ->where('status', 'available')
+            ->exists();
     }
 
     public function render(): \Illuminate\View\View
