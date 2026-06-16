@@ -197,6 +197,11 @@
                             <p class="text-xs font-medium text-gray-700 dark:text-gray-200 truncate" title="{{ $document->name }}">
                                 {{ $document->name }}
                             </p>
+                            @if ($document->description)
+                                <p class="text-xs italic text-gray-400 dark:text-gray-500 line-clamp-3">
+                                    {{ $document->description }}
+                                </p>
+                            @endif
                             @if ($document->rentalPeriod)
                                 <p class="text-xs text-gray-400 dark:text-gray-500 truncate">
                                     Kamer {{ $document->rentalPeriod->room->room_number }}
@@ -285,6 +290,11 @@
                                     {{ $document->created_at->format('d/m/Y') }}
                                 </span>
                             </div>
+                            @if ($document->description)
+                                <p class="text-xs italic text-gray-400 dark:text-gray-500 line-clamp-3 mt-1">
+                                    {{ $document->description }}
+                                </p>
+                            @endif
                         </div>
 
                         <div class="flex items-center gap-2 flex-shrink-0">
