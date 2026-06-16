@@ -2,6 +2,7 @@
 
 namespace App\Filament\Dashboard\Resources\Rooms\Tables;
 
+use App\Filament\Dashboard\Pages\Subscription;
 use App\Models\Room;
 use App\Services\FeaturedListingService;
 use App\Services\FilamentNotificationService;
@@ -85,6 +86,12 @@ class RoomsTable
                                 'Geen uitlicht-slots beschikbaar',
                                 'Je hebt geen vrije uitlicht-slots meer. Upgrade je abonnement om meer koten uit te lichten.',
                                 icon: 'heroicon-o-star',
+                                actions: [
+                                    Action::make('upgrade')
+                                        ->label('Bekijk abonnementen')
+                                        ->url(Subscription::getUrl())
+                                        ->button(),
+                                ],
                             );
 
                             return;

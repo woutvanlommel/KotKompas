@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 
 /**
@@ -31,8 +32,9 @@ class FilamentNotificationService
         ?string $body = null,
         ?string $emoji = null,
         ?string $icon = null,
+        ?array $actions = null,
     ): void {
-        static::send($title, $body, $emoji, $icon, 'success');
+        static::send($title, $body, $emoji, $icon, 'success', $actions);
     }
 
     /**
@@ -43,8 +45,9 @@ class FilamentNotificationService
         ?string $body = null,
         ?string $emoji = null,
         ?string $icon = null,
+        ?array $actions = null,
     ): void {
-        static::send($title, $body, $emoji, $icon, 'warning');
+        static::send($title, $body, $emoji, $icon, 'warning', $actions);
     }
 
     /**
@@ -55,8 +58,9 @@ class FilamentNotificationService
         ?string $body = null,
         ?string $emoji = null,
         ?string $icon = null,
+        ?array $actions = null,
     ): void {
-        static::send($title, $body, $emoji, $icon, 'danger');
+        static::send($title, $body, $emoji, $icon, 'danger', $actions);
     }
 
     /**
@@ -67,14 +71,16 @@ class FilamentNotificationService
         ?string $body = null,
         ?string $emoji = null,
         ?string $icon = null,
+        ?array $actions = null,
     ): void {
-        static::send($title, $body, $emoji, $icon, 'info');
+        static::send($title, $body, $emoji, $icon, 'info', $actions);
     }
 
     /**
      * Core send method. Called by the convenience methods above.
      *
      * @param  string  $status  'success' | 'warning' | 'danger' | 'info'
+     * @param  array<Action>|null  $actions  Optional action buttons (e.g. a link to another page).
      */
     public static function send(
         ?string $title = null,
@@ -82,6 +88,7 @@ class FilamentNotificationService
         ?string $emoji = null,
         ?string $icon = null,
         string $status = 'success',
+        ?array $actions = null,
     ): void {
         $resolvedTitle = static::buildTitle($title, $emoji, $status);
 
@@ -97,6 +104,10 @@ class FilamentNotificationService
         // so it always matches the KotKompas palette from DashboardPanelProvider.
         if ($icon !== null) {
             $notification->icon($icon)->iconColor($status);
+        }
+
+        if ($actions !== null) {
+            $notification->actions($actions);
         }
 
         $notification->send();
