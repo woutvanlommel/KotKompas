@@ -50,7 +50,15 @@
     </div>
 
     {{-- Prijs --}}
-    <div class="shrink-0 text-right">
+    <div class="flex shrink-0 flex-col items-end gap-3">
+
+        @auth
+            @if(auth()->user()->hasRole('huurder'))
+                <livewire:favourite-button :room-id="$room->id" :key="'fav-show-' . $room->id" />
+            @endif
+        @endauth
+
+        <div class="text-right">
         <p class="text-[clamp(1.6rem,3vw,2.8rem)] font-medium leading-none tracking-[-0.04em]">
             €{{ number_format($totalPrice, 0, ',', '.') }}
         </p>
@@ -74,6 +82,8 @@
                 + variabele kosten / maand
             </p>
         @endif
+        </div>{{-- /text-right --}}
+
     </div>
 
 </div>

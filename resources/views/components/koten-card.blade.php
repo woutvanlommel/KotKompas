@@ -22,7 +22,18 @@
 @endphp
 
 {{-- Display card: image-dominant, square. City top-left · price top-right · pixel glyph
-     bottom-left · spec tags reveal on hover (always shown on touch). --}}
+     bottom-left · spec tags reveal on hover (always shown on touch).
+     Wrapper div allows the favourite button to sit outside the <a> (valid HTML). --}}
+<div class="relative">
+
+@auth
+    @if(auth()->user()->hasRole('huurder'))
+        <div class="absolute bottom-3 right-3 z-10">
+            <livewire:favourite-button :room-id="$room->id" :key="'fav-card-' . $room->id" />
+        </div>
+    @endif
+@endauth
+
 <a href="{{ route('rooms.show', $room) }}" data-card-cursor
    class="kk-koten group relative block aspect-square overflow-hidden rounded-[1.25rem] bg-primary-900">
 
@@ -71,3 +82,5 @@
         </span>
     </div>
 </a>
+
+</div>{{-- /relative wrapper --}}

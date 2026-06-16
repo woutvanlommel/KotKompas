@@ -23,8 +23,10 @@
 
 {{-- Lijst-rij: editorial index-rij — foto links, stad + specs midden, prijs rechts.
      Hairline-scheiding, hover schuift de pijl in beeld. --}}
+<div class="relative flex items-center gap-5 border-t border-hairline last:border-b sm:gap-7">
+
 <a href="{{ route('rooms.show', $room) }}"
-   class="group flex items-center gap-5 border-t border-hairline py-4 transition-colors duration-200 last:border-b hover:bg-canvas-deep/50 sm:gap-7">
+   class="group flex flex-1 items-center gap-5 py-4 transition-colors duration-200 hover:bg-canvas-deep/50 sm:gap-7">
 
     <span class="relative block h-20 w-28 shrink-0 overflow-hidden rounded-xl bg-primary-900 sm:h-24 sm:w-36">
         @if ($photo)
@@ -57,3 +59,13 @@
         <span class="hidden text-ink-soft transition-all duration-300 group-hover:translate-x-1 group-hover:text-secondary-600 sm:block" aria-hidden="true">→</span>
     </span>
 </a>
+
+@auth
+    @if(auth()->user()->hasRole('huurder'))
+        <div class="shrink-0 pr-1">
+            <livewire:favourite-button :room-id="$room->id" :key="'fav-row-' . $room->id" />
+        </div>
+    @endif
+@endauth
+
+</div>{{-- /relative wrapper --}}
