@@ -3,8 +3,6 @@
 namespace Tests\Feature;
 
 use App\Filament\Dashboard\Widgets\SubscriptionOverview;
-use App\Models\Building;
-use App\Models\Room;
 use App\Models\User;
 use Database\Seeders\RoleSeeder;
 use Filament\Facades\Filament;
@@ -43,21 +41,21 @@ class SubscriptionOverviewWidgetTest extends TestCase
         ]);
     }
 
-    public function test_widget_shows_current_plan_and_slot_usage(): void
+    public function test_widget_shows_current_plan_and_renewal(): void
     {
         $landlord = $this->landlord();
-        $this->subscribe($landlord, 'premium'); // 3 slots
-
-        $building = Building::factory()->create(['landlord_id' => $landlord->id]);
-        Room::factory()->for($building)->create(['is_featured' => true, 'featured_until' => now()->addMonth()]);
+        $this->subscribe($landlord, 'premium');
 
         $this->actingAs($landlord->refresh());
         Filament::setCurrentPanel('dashboard');
 
+        // Slot usage lives in the FeaturedRoomsManager widget; this card stays
+        // focused on plan + renewal + a link to manage the subscription.
         Livewire::test(SubscriptionOverview::class)
             ->assertSee('Premium')
-            ->assertSee('1 / 3')
-            ->assertSee('Beheer abonnement');
+            ->assertSee('Verlengt op')
+            ->assertSee('Beheer abonnement')
+            ->assertDontSee('slots');
     }
 
     public function test_widget_prompts_to_subscribe_without_a_plan(): void

@@ -167,23 +167,21 @@
                                     </span>
                                 </div>
 
-                                {{-- Uitgelicht-badge (status) --}}
-                                @if ($room->isFeatured())
-                                    <div class="absolute bottom-3 left-3">
-                                        <x-featured-badge variant="light" />
-                                    </div>
-                                @endif
-
-                                {{-- Uitlicht-toggle (control). Stop/prevent: de card zelf is een link. --}}
+                                {{-- Uitlicht-toggle: één element dat status (goud = uitgelicht)
+                                     én de actie draagt. Stop/prevent: de card is zelf een link. --}}
+                                @php $featured = $room->isFeatured(); @endphp
                                 <button type="button"
                                         wire:click.prevent.stop="mountAction('featureRoom', { room: {{ $room->id }} })"
-                                        class="absolute bottom-3 right-3 inline-flex items-center gap-1.5 rounded-full bg-white/90 px-2.5 py-1 text-xs font-semibold text-gray-700 shadow-sm transition hover:bg-white">
-                                    <svg class="w-3.5 h-3.5 {{ $room->isFeatured() ? 'text-featured-500' : 'text-gray-400' }}"
-                                         viewBox="0 0 24 24" fill="{{ $room->isFeatured() ? 'currentColor' : 'none' }}"
+                                        @class([
+                                            'absolute bottom-3 right-3 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold shadow-sm transition',
+                                            'bg-featured-100 text-featured-700 hover:bg-featured-200' => $featured,
+                                            'bg-white/90 text-gray-700 hover:bg-white' => ! $featured,
+                                        ])>
+                                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="{{ $featured ? 'currentColor' : 'none' }}"
                                          stroke="currentColor" stroke-width="1.5" aria-hidden="true">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.5l2.6 5.27 5.82.85-4.21 4.1 1 5.79L11.48 17l-5.2 2.5 1-5.79-4.21-4.1 5.82-.85z" />
                                     </svg>
-                                    {{ $room->isFeatured() ? 'Niet meer uitlichten' : 'Uitlichten' }}
+                                    {{ $featured ? 'Uitgelicht' : 'Uitlichten' }}
                                 </button>
                             </div>
 

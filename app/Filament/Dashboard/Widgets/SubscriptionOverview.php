@@ -28,8 +28,6 @@ class SubscriptionOverview extends Widget
         return [
             'isSubscribed' => $plan !== null,
             'planLabel' => $plan?->label(),
-            'slotsUsed' => $user->featuredSlotsUsed(),
-            'slotsTotal' => $plan ? (int) config("subscriptions.featured_slots.{$plan->value}", 0) : 0,
             'renewsAt' => $plan ? $user->subscriptionRenewsAt() : null,
             'manageUrl' => Subscription::getUrl(),
         ];
