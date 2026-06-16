@@ -2,6 +2,7 @@
 
 namespace App\Filament\Dashboard\Pages;
 
+use App\Jobs\ProcessDocumentOcr;
 use App\Models\Document;
 use App\Models\RentalPeriod;
 use BackedEnum;
@@ -197,6 +198,8 @@ class Documents extends Page
                         $document
                             ->addMediaFromDisk($data['file'], 'public')
                             ->toMediaCollection('document');
+
+                        ProcessDocumentOcr::dispatch($document);
                     }
 
                     Notification::make()
