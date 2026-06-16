@@ -4,9 +4,11 @@ namespace App\Models;
 
 use App\Concerns\HasImages;
 use App\Observers\RoomObserver;
+use Carbon\Carbon;
 use Database\Factories\RoomFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -17,6 +19,10 @@ use Illuminate\Support\Collection;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
+/**
+ * @property bool $is_featured
+ * @property Carbon|null $featured_until
+ */
 #[Fillable(['building_id', 'tenant_id', 'bus', 'room_number', 'type', 'title', 'description', 'price_per_month', 'deposit_amount', 'costs_included', 'surface_m2', 'is_furnished', 'available_from', 'status'])]
 #[ObservedBy(RoomObserver::class)]
 class Room extends Model implements HasMedia
@@ -42,6 +48,24 @@ class Room extends Model implements HasMedia
     public function rentalPeriods(): HasMany
     {
         return $this->hasMany(RentalPeriod::class);
+    }
+
+    /**
+     * "Uitgelicht": flagged by the landlord and still within its paid window.
+     *
+     * @param  Builder<Room>  $query
+     */
+    public function scopeFeatured(Builder $query): void
+    {
+        $query->where('is_featured', true)->where('featured_until', '>', now());
+    }
+
+    /** Whether this room is currently featured (intent set and window still open). */
+    public function isFeatured(): bool
+    {
+        return $this->is_featured
+            && $this->featured_until !== null
+            && $this->featured_until->isFuture();
     }
 
     public function activeTenant(): ?User
@@ -155,6 +179,8 @@ class Room extends Model implements HasMedia
             'score' => 'float',
             'score_bayesian' => 'float',
             'reviews_count' => 'integer',
+            'is_featured' => 'boolean',
+            'featured_until' => 'datetime',
             'available_from' => 'date',
             'costs_included' => 'boolean',
             'is_furnished' => 'boolean',

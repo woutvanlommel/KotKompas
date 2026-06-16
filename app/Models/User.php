@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Concerns\HasImages;
+use App\Enums\Plan as PlanEnum;
 use Database\Factories\UserFactory;
 use Filament\Facades\Filament;
 use Filament\Models\Contracts\FilamentUser;
@@ -15,9 +16,11 @@ use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Laravel\Cashier\Billable;
@@ -73,10 +76,97 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasMedia
         return $this->hasMany(RoomReview::class, 'landlord_id');
     }
 
+    /**
+     * Buildings owned by this user as a landlord.
+     *
+     * @return HasMany<Building, $this>
+     */
+    public function buildings(): HasMany
+    {
+        return $this->hasMany(Building::class, 'landlord_id');
+    }
+
+    /**
+     * All rooms across this landlord's buildings.
+     *
+     * @return HasManyThrough<Room, Building, $this>
+     */
+    public function rooms(): HasManyThrough
+    {
+        return $this->hasManyThrough(Room::class, Building::class, 'landlord_id', 'building_id');
+    }
+
     /** @return HasMany<RentalPeriod, $this> */
     public function rentalPeriods(): HasMany
     {
         return $this->hasMany(RentalPeriod::class);
+    }
+
+    public function currentPlan(): ?PlanEnum
+    {
+        $subscription = $this->subscription('default');
+
+        if (! $subscription?->valid()) {
+            return null;
+        }
+
+        foreach (PlanEnum::cases() as $plan) {
+            if ($plan->priceId() === $subscription->stripe_price) {
+                return $plan;
+            }
+        }
+
+        return null;
+    }
+
+    /** How many rooms this landlord may feature, per their plan tier (0 if none). */
+    public function featuredSlots(): int
+    {
+        $plan = $this->currentPlan();
+
+        return $plan
+            ? (int) config("subscriptions.featured_slots.{$plan->value}", 0)
+            : 0;
+    }
+
+    /** Featured slots currently in use (own rooms with an open featured window). */
+    public function featuredSlotsUsed(): int
+    {
+        return $this->rooms()->featured()->count();
+    }
+
+    /** Free featured slots left for this landlord (never negative). */
+    public function remainingFeaturedSlots(): int
+    {
+        return max(0, $this->featuredSlots() - $this->featuredSlotsUsed());
+    }
+
+    /**
+     * End of the current subscription period — our synced renews_at, with a
+     * live Stripe lookup as fallback. Drives how long a featured room stays
+     * featured; the WebhookHandled listener bumps it forward on each renewal.
+     */
+    public function subscriptionRenewsAt(): ?Carbon
+    {
+        $subscription = $this->subscription('default');
+
+        if (! $subscription) {
+            return null;
+        }
+
+        if ($subscription->renews_at) {
+            return Carbon::parse($subscription->renews_at);
+        }
+
+        try {
+            $stripeSub = $subscription->asStripeSubscription();
+            $ts = $stripeSub->items->data[0]->current_period_end
+                ?? ($stripeSub->current_period_end ?? null);
+
+            return $ts ? Carbon::createFromTimestamp($ts) : null;
+        } catch (\Throwable) {
+            return null;
+        }
     }
 
     /** @return HasMany<Document, $this> */

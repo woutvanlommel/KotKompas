@@ -40,6 +40,9 @@
     </span>
 
     <span class="min-w-0 flex-1">
+        @if ($room->isFeatured())
+            <x-featured-badge class="mb-1" />
+        @endif
         <span class="block truncate text-lg font-medium leading-tight tracking-[-0.02em] text-ink">{{ $city }}</span>
         <span class="mt-0.5 block text-[0.65rem] font-medium uppercase tracking-[0.14em] text-ink-soft">{{ $type }}</span>
         @if ($tags)
