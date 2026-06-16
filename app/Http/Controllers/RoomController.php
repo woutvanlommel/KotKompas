@@ -152,6 +152,8 @@ class RoomController extends Controller
      */
     private function query(array $filters)
     {
+        $now = now();
+
         return Room::query()
             ->where('status', 'available')
             ->with(['building', 'media'])
@@ -170,6 +172,13 @@ class RoomController extends Controller
             // Filtering uses the displayed score; rooms without reviews
             // (score null) drop out automatically.
             ->when($filters['score_min'], fn ($query, $min) => $query->where('score', '>=', $min))
+            // "Uitgelicht" always wins: featured rooms rank first whatever the
+            // chosen sort, ordered among themselves by kotscore (reviewed
+            // before unreviewed). Non-featured rooms share an equal key here,
+            // so the sort below decides their order. score_bayesian is >= 0,
+            // so -1 reliably sinks unreviewed featured and all non-featured.
+            ->orderByRaw('case when featured_until > ? then 0 else 1 end', [$now])
+            ->orderByRaw('case when featured_until > ? then coalesce(score_bayesian, -1) else -1 end desc', [$now])
             ->when($filters['sort'] === 'price_asc', fn ($query) => $query->orderBy('price_per_month'))
             ->when($filters['sort'] === 'price_desc', fn ($query) => $query->orderByDesc('price_per_month'))
             ->when($filters['sort'] === 'surface_desc', fn ($query) => $query->orderByDesc('surface_m2'))
