@@ -85,7 +85,7 @@
 
         {{-- Messages --}}
         <div
-            class="flex-1 overflow-y-auto bg-gray-50 dark:bg-gray-900/40"
+            class="chat-messages flex-1 overflow-y-auto bg-gray-50 dark:bg-gray-900/40"
             x-data
             x-init="$el.scrollTop = $el.scrollHeight"
             x-on:scroll-to-bottom.window="$nextTick(() => $el.scrollTop = $el.scrollHeight)"
@@ -101,7 +101,7 @@
                                 <p class="text-sm leading-relaxed break-words whitespace-pre-wrap">{{ $message['body'] }}</p>
                             </div>
                             <p class="text-xs text-gray-400 mt-1 {{ $message['is_mine'] ? 'text-right mr-1' : 'ml-1' }}">
-                                {{ \Carbon\Carbon::parse($message['created_at'])->format('H:i') }}
+                                {{ \Carbon\Carbon::parse($message['created_at'])->setTimezone(config('app.timezone'))->format('H:i') }}
                             </p>
                         </div>
                     </div>
@@ -112,18 +112,21 @@
         {{-- Input --}}
         <div class="border-t border-gray-200 dark:border-gray-700 shrink-0">
             <form wire:submit="sendMessage" class="max-w-3xl mx-auto w-full flex items-end gap-3 px-4 sm:px-6 py-4">
+                <div
+                    class="chat-input-wrapper flex-1 rounded-2xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 focus-within:ring-2 focus-within:ring-primary-500 focus-within:border-primary-500"
+                >
                 <textarea
                     wire:model.blur="newMessage"
                     rows="1"
                     placeholder="Schrijf een bericht..."
-                    class="flex-1 rounded-2xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 resize-none overflow-y-auto"
-                    style="max-height: 160px;"
+                    class="block w-full bg-transparent pl-5 pr-2 py-2.5 text-sm focus:outline-none resize-none overflow-hidden"
                     autocomplete="off"
                     x-data
-                    x-on:input="$el.style.height = 'auto'; $el.style.height = Math.min($el.scrollHeight, 160) + 'px'"
-                    x-on:livewire:updated="if (!$el.value) $el.style.height = 'auto'"
-                    x-on:keydown.enter.prevent="if (!$event.shiftKey) { $wire.newMessage = $el.value; $wire.sendMessage(); $el.style.height = 'auto' }"
+                    x-on:input="$el.style.height = 'auto'; $el.style.height = $el.scrollHeight + 'px';"
+                    x-on:livewire:updated="if (!$el.value) { $el.style.height = 'auto'; }"
+                    x-on:keydown.enter.prevent="if (!$event.shiftKey) { $wire.newMessage = $el.value; $wire.sendMessage(); $el.style.height = 'auto'; }"
                 ></textarea>
+                </div>
                 <button
                     type="submit"
                     class="flex items-center justify-center w-11 h-11 shrink-0 rounded-full bg-primary-600 text-white hover:bg-primary-700 transition-colors"

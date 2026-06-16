@@ -585,3 +585,87 @@
     /* the password-reset back link spacing can relax on mobile */
     .kk-stage .fi-simple-header:has(.fi-ac-link-action) { margin-bottom: 1.5rem; }
 }
+
+/* =============================================================================
+   KotKompas — Chat scrollbars (input wrapper + message list)
+   The chat lives inside this Filament dashboard panel, so the styling must live
+   in THIS theme stylesheet — app.css is not loaded on Filament pages.
+
+   Thin, arrow-less, rounded pill thumb that sits cleanly INSIDE the element.
+   Defining ::-webkit-scrollbar at all replaces the native scrollbar, which is
+   what removes the OS arrow buttons in Chrome/Edge; the explicit -button rule
+   below is belt-and-suspenders. Firefox uses scrollbar-width/color.
+
+   The input wrapper is the DIV scroll container, never the textarea: the
+   textarea keeps overflow:hidden and auto-grows to its full content height,
+   while this wrapper caps that height (~2 lines) and scrolls past a 3rd line.
+   ============================================================================= */
+.chat-input-wrapper {
+    max-height: 64px;            /* ~2 lines of text-sm; a 3rd line triggers scroll */
+    overflow-y: auto;            /* scrollbar only renders when content overflows */
+}
+.chat-input-wrapper,
+.chat-messages {
+    scrollbar-width: thin;       /* Firefox: thin pill, no arrows */
+    scrollbar-color: rgba(15, 23, 32, 0.25) transparent;
+}
+.chat-input-wrapper::-webkit-scrollbar,
+.chat-messages::-webkit-scrollbar {
+    width: 10px;
+}
+.chat-input-wrapper::-webkit-scrollbar-track,
+.chat-messages::-webkit-scrollbar-track {
+    background: transparent;
+    margin-block: 8px;           /* keep the thumb clear of the rounded corners */
+}
+/* The transparent border + background-clip:content-box insets the thumb so it
+   never overlaps the element's (rounded) border. */
+.chat-input-wrapper::-webkit-scrollbar-thumb,
+.chat-messages::-webkit-scrollbar-thumb {
+    background-color: rgba(15, 23, 32, 0.22);
+    border-radius: 999px;
+    border: 3px solid transparent;
+    background-clip: content-box;
+}
+.chat-input-wrapper::-webkit-scrollbar-thumb:hover,
+.chat-messages::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(15, 23, 32, 0.4);
+}
+/* Remove the scrollbar arrow buttons on the TEXT INPUT only (the message
+   overview keeps its native arrows). On Windows Chromium `display:none` alone
+   is not enough — the buttons keep their reserved size, so they must also be
+   collapsed to 0x0. The :single-button / :start / :end variants cover every
+   button Chromium renders. (Kept as separate rules so an unrecognised pseudo
+   on one browser can't invalidate the whole group.) */
+.chat-input-wrapper::-webkit-scrollbar-button {
+    display: none;
+    width: 0;
+    height: 0;
+}
+.chat-input-wrapper::-webkit-scrollbar-button:single-button {
+    display: none;
+    width: 0;
+    height: 0;
+}
+.chat-input-wrapper::-webkit-scrollbar-button:start {
+    display: none;
+    width: 0;
+    height: 0;
+}
+.chat-input-wrapper::-webkit-scrollbar-button:end {
+    display: none;
+    width: 0;
+    height: 0;
+}
+.dark .chat-input-wrapper,
+.dark .chat-messages {
+    scrollbar-color: rgba(255, 255, 255, 0.25) transparent;
+}
+.dark .chat-input-wrapper::-webkit-scrollbar-thumb,
+.dark .chat-messages::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.22);
+}
+.dark .chat-input-wrapper::-webkit-scrollbar-thumb:hover,
+.dark .chat-messages::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(255, 255, 255, 0.4);
+}
