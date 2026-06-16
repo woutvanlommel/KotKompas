@@ -9,7 +9,7 @@ use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
-#[Fillable(['user_id', 'name', 'rental_period_id', 'type', 'is_public', 'blocks', 'status', 'ocr_text'])]
+#[Fillable(['user_id', 'name', 'rental_period_id', 'type', 'is_public', 'blocks', 'status', 'ocr_text', 'description'])]
 class Document extends Model implements HasMedia
 {
     use InteractsWithMedia;
