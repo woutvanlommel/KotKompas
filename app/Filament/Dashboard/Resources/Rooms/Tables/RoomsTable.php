@@ -2,10 +2,8 @@
 
 namespace App\Filament\Dashboard\Resources\Rooms\Tables;
 
-use App\Filament\Dashboard\Pages\Subscription;
+use App\Filament\Dashboard\Support\FeatureRoomToggle;
 use App\Models\Room;
-use App\Services\FeaturedListingService;
-use App\Services\FilamentNotificationService;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -71,34 +69,7 @@ class RoomsTable
                     ->modalDescription(fn (Room $record): string => $record->isFeatured()
                         ? 'Het kot verdwijnt uit de uitgelichte sectie en zakt terug naar de normale volgorde.'
                         : 'Uitgelichte koten staan bovenaan de zoekresultaten. Dit gebruikt één uitlicht-slot van je abonnement.')
-                    ->action(function (Room $record): void {
-                        $service = app(FeaturedListingService::class);
-
-                        if ($record->isFeatured()) {
-                            $service->unfeature($record);
-                            FilamentNotificationService::info('Niet meer uitgelicht', 'Je kot staat niet langer bovenaan.', icon: 'heroicon-o-star');
-
-                            return;
-                        }
-
-                        if (! $service->feature($record)) {
-                            FilamentNotificationService::warning(
-                                'Geen uitlicht-slots beschikbaar',
-                                'Je hebt geen vrije uitlicht-slots meer. Upgrade je abonnement om meer koten uit te lichten.',
-                                icon: 'heroicon-o-star',
-                                actions: [
-                                    Action::make('upgrade')
-                                        ->label('Bekijk abonnementen')
-                                        ->url(Subscription::getUrl())
-                                        ->button(),
-                                ],
-                            );
-
-                            return;
-                        }
-
-                        FilamentNotificationService::success('Kot uitgelicht', 'Je kot staat nu bovenaan de zoekresultaten.', icon: 'heroicon-o-star');
-                    }),
+                    ->action(fn (Room $record) => FeatureRoomToggle::handle($record)),
                 EditAction::make(),
             ])
             ->toolbarActions([

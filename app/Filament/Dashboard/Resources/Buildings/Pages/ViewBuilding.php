@@ -4,6 +4,7 @@ namespace App\Filament\Dashboard\Resources\Buildings\Pages;
 
 use App\Filament\Dashboard\Resources\Buildings\BuildingResource;
 use App\Filament\Dashboard\Resources\Rooms\Schemas\RoomWizard;
+use App\Filament\Dashboard\Support\FeatureRoomToggle;
 use App\Models\Building;
 use App\Models\Room;
 use App\Services\FilamentNotificationService;
@@ -150,5 +151,28 @@ class ViewBuilding extends ViewRecord
                     );
                 }),
         ];
+    }
+
+    /**
+     * Per-room "uitlichten" toggle, triggered from the room cards in the
+     * building view via mountAction('featureRoom', { room: id }).
+     */
+    public function featureRoomAction(): Action
+    {
+        return Action::make('featureRoom')
+            ->requiresConfirmation()
+            ->modalHeading(fn (array $arguments): string => $this->roomFromArguments($arguments)->isFeatured()
+                ? 'Kot niet meer uitlichten?'
+                : 'Kot uitlichten?')
+            ->modalDescription(fn (array $arguments): string => $this->roomFromArguments($arguments)->isFeatured()
+                ? 'Het kot verdwijnt uit de uitgelichte sectie en zakt terug naar de normale volgorde.'
+                : 'Uitgelichte koten staan bovenaan de zoekresultaten. Dit gebruikt één uitlicht-slot van je abonnement.')
+            ->action(fn (array $arguments) => FeatureRoomToggle::handle($this->roomFromArguments($arguments)));
+    }
+
+    /** Resolve the room from the action arguments, scoped to this building. */
+    private function roomFromArguments(array $arguments): Room
+    {
+        return $this->record->rooms()->findOrFail($arguments['room']);
     }
 }
