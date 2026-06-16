@@ -101,7 +101,7 @@
                                 <p class="text-sm leading-relaxed break-words whitespace-pre-wrap">{{ $message['body'] }}</p>
                             </div>
                             <p class="text-xs text-gray-400 mt-1 {{ $message['is_mine'] ? 'text-right mr-1' : 'ml-1' }}">
-                                {{ \Carbon\Carbon::parse($message['created_at'])->format('H:i') }}
+                                {{ \Carbon\Carbon::parse($message['created_at'])->setTimezone(config('app.timezone'))->format('H:i') }}
                             </p>
                         </div>
                     </div>
