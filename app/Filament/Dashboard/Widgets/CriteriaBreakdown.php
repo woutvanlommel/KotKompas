@@ -20,6 +20,8 @@ class CriteriaBreakdown extends StatsOverviewWidget
 {
     protected static ?int $sort = 5;
 
+    protected int|string|array $columnSpan = 'full';
+
     protected ?string $heading = 'Score per criterium';
 
     // Scores only change on a review submit and the nightly recompute.

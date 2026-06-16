@@ -10,6 +10,8 @@ class TenantLandlordInfo extends Widget
 {
     protected static ?int $sort = 2;
 
+    protected int|string|array $columnSpan = 'full';
+
     protected string $view = 'filament.dashboard.widgets.tenant-landlord-info';
 
     public static function canView(): bool

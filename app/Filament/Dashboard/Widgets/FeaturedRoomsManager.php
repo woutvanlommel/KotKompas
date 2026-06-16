@@ -15,9 +15,9 @@ use Illuminate\Database\Eloquent\Collection;
  */
 class FeaturedRoomsManager extends Widget
 {
-    protected static ?int $sort = 2;
+    protected static ?int $sort = 1;
 
-    protected int|string|array $columnSpan = 'full';
+    protected int|string|array $columnSpan = ['default' => 1, 'lg' => 7];
 
     protected string $view = 'filament.dashboard.widgets.featured-rooms-manager';
 

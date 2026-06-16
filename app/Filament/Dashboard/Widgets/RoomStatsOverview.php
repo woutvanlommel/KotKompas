@@ -10,7 +10,9 @@ use Illuminate\Support\Number;
 
 class RoomStatsOverview extends StatsOverviewWidget
 {
-    protected static ?int $sort = 1;
+    protected static ?int $sort = 6;
+
+    protected int|string|array $columnSpan = ['default' => 1, 'lg' => 5];
 
     protected ?string $heading = 'Koten overzicht';
 

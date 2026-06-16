@@ -12,6 +12,8 @@ class MessagesStats extends StatsOverviewWidget
 {
     protected static ?int $sort = 8;
 
+    protected int|string|array $columnSpan = 'full';
+
     protected ?string $heading = 'Berichten';
 
     public static function canView(): bool

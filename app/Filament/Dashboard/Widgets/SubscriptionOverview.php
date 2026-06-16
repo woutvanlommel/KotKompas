@@ -11,7 +11,9 @@ use Filament\Widgets\Widget;
  */
 class SubscriptionOverview extends Widget
 {
-    protected static ?int $sort = 5;
+    protected static ?int $sort = 2;
+
+    protected int|string|array $columnSpan = ['default' => 1, 'lg' => 5];
 
     protected string $view = 'filament.dashboard.widgets.subscription-overview';
 

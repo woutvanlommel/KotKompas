@@ -20,6 +20,8 @@ class ScoreOverview extends StatsOverviewWidget
 {
     protected static ?int $sort = 4;
 
+    protected int|string|array $columnSpan = 'full';
+
     protected ?string $heading = 'Score overzicht';
 
     // Scores only change on a review submit and the nightly

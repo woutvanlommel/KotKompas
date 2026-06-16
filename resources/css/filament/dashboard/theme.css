@@ -1819,3 +1819,29 @@ body:has(.fi-layout) .tippy-box[data-theme~="light"][data-placement^="right"] > 
     line-height: 0.95; letter-spacing: -0.03em; color: #0f1720; font-variant-numeric: tabular-nums;
 }
 .fi-layout .fi-wi-stats-overview-stat-description { margin-top: 0.5rem; color: #586573; }
+
+/* ===========================================================================
+   MOTION — page entrance. Every dashboard page content rises in; because
+   wire:navigate swaps the content, this re-fires on each SPA navigation,
+   giving the shell a consistent motion signature. Reduced-motion guarded.
+   =========================================================================== */
+@media (prefers-reduced-motion: no-preference) {
+    .fi-layout .fi-page {
+        animation: kk-page-in 460ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+}
+@keyframes kk-page-in {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: none; }
+}
+
+/* Cross-document view transition — the public site's "push-up" carried into the
+   dashboard, so full-document navigations (and the public ↔ dashboard crossing)
+   read as one continuous surface. SPA wire:navigate uses the page rise above. */
+@view-transition { navigation: auto; }
+@media (prefers-reduced-motion: no-preference) {
+    ::view-transition-old(root) { animation: kk-vt-out 0.42s cubic-bezier(0.76, 0, 0.24, 1) both; }
+    ::view-transition-new(root) { animation: kk-vt-in 0.42s cubic-bezier(0.76, 0, 0.24, 1) both; }
+}
+@keyframes kk-vt-out { to { opacity: 0; transform: translateY(-1.5%); } }
+@keyframes kk-vt-in { from { opacity: 0; transform: translateY(2.5%); } }
