@@ -43,6 +43,9 @@
     {{-- City (title) top-left + price top-right --}}
     <div class="absolute inset-x-0 top-0 flex items-start justify-between gap-3 p-5 text-white">
         <div class="min-w-0">
+            @if ($room->isFeatured())
+                <x-featured-badge variant="dark" class="mb-1.5" />
+            @endif
             <h3 class="truncate text-xl font-medium leading-none tracking-[-0.03em]">{{ $city }}</h3>
             <p class="mt-1.5 text-[0.65rem] font-medium uppercase tracking-[0.14em] text-white/60">{{ $type }}</p>
         </div>
