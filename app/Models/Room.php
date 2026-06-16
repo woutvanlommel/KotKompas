@@ -7,6 +7,7 @@ use App\Observers\RoomObserver;
 use Database\Factories\RoomFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -42,6 +43,22 @@ class Room extends Model implements HasMedia
     public function rentalPeriods(): HasMany
     {
         return $this->hasMany(RentalPeriod::class);
+    }
+
+    /**
+     * "Uitgelicht": only rooms whose featured window has not yet elapsed.
+     *
+     * @param  Builder<Room>  $query
+     */
+    public function scopeFeatured(Builder $query): void
+    {
+        $query->where('featured_until', '>', now());
+    }
+
+    /** Whether this room is currently featured (window still open). */
+    public function isFeatured(): bool
+    {
+        return $this->featured_until !== null && $this->featured_until->isFuture();
     }
 
     public function activeTenant(): ?User
@@ -155,6 +172,7 @@ class Room extends Model implements HasMedia
             'score' => 'float',
             'score_bayesian' => 'float',
             'reviews_count' => 'integer',
+            'featured_until' => 'datetime',
             'available_from' => 'date',
             'costs_included' => 'boolean',
             'is_furnished' => 'boolean',
