@@ -60,7 +60,7 @@ class FeaturedRoomsManagerWidgetTest extends TestCase
 
         Livewire::test(FeaturedRoomsManager::class)
             ->assertSee('Uitgelichte koten')
-            ->assertSee('0 / 3 slots')
+            ->assertSee('Slots in gebruik')
             // Both buildings appear as group headers, each with its room + toggle.
             ->assertSee('Residentie Park')
             ->assertSee('Zolderstudio')

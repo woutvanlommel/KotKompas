@@ -1,18 +1,26 @@
 <x-filament-widgets::widget>
     <x-filament::section>
-        {{-- Header: titel + slot-teller --}}
-        <div class="flex items-start justify-between gap-3">
+        {{-- Header: uitgelicht as a paid moment — gold display count + fill bar --}}
+        <div class="flex items-end justify-between gap-4">
             <div>
-                <h3 class="text-base font-semibold text-gray-950 dark:text-white">Uitgelichte koten</h3>
-                <p class="mt-0.5 text-sm text-gray-500 dark:text-gray-400">Zet je beste koten bovenaan de zoekresultaten</p>
+                <p class="text-[0.625rem] font-semibold uppercase tracking-[0.14em] text-[#586573]">Uitgelicht · betalend</p>
+                <h3 class="mt-1.5 text-[clamp(1.25rem,1.6vw,1.6rem)] font-medium leading-none tracking-[-0.02em] text-[#0f1720]">Uitgelichte koten</h3>
             </div>
 
             @if ($slotsTotal > 0)
-                <x-filament::badge color="featured">
-                    {{ $slotsUsed }} / {{ $slotsTotal }} slots
-                </x-filament::badge>
+                <div class="shrink-0 text-right">
+                    <p class="text-[clamp(1.75rem,2.4vw,2.5rem)] font-medium leading-none tracking-[-0.02em] tabular-nums text-[#7b6118]">{{ $slotsUsed }}<span class="text-[#caa12a]">/{{ $slotsTotal }}</span></p>
+                    <p class="mt-1 text-[0.625rem] font-semibold uppercase tracking-[0.14em] text-[#586573]">Slots in gebruik</p>
+                </div>
             @endif
         </div>
+
+        @if ($slotsTotal > 0)
+            <div class="mt-3.5 h-1.5 w-full overflow-hidden rounded-full bg-[#e1e6ed]">
+                <div class="h-full rounded-full bg-[#caa12a] transition-[width] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]"
+                     style="width: {{ min(100, (int) round($slotsUsed / max(1, $slotsTotal) * 100)) }}%"></div>
+            </div>
+        @endif
 
         {{-- Koten gegroepeerd per gebouw, elk met ster-toggle --}}
         <div class="mt-4 space-y-5">

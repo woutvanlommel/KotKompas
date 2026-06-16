@@ -66,7 +66,7 @@ class SubscriptionOverviewWidgetTest extends TestCase
         Filament::setCurrentPanel('dashboard');
 
         Livewire::test(SubscriptionOverview::class)
-            ->assertSee('geen actief abonnement')
+            ->assertSee('Geen actief plan')
             ->assertSee('Kies een abonnement');
     }
 

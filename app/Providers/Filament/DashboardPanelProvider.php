@@ -17,7 +17,6 @@ use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
 use Filament\View\PanelsRenderHook;
-use Filament\Widgets\AccountWidget;
 use Illuminate\Contracts\View\View;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
@@ -37,6 +36,7 @@ class DashboardPanelProvider extends PanelProvider
             ->path('dashboard')
             ->viteTheme('resources/css/filament/dashboard/theme.css')
             ->brandName('KotKompas')
+            ->brandLogo(fn () => view('filament.dashboard.brand-logo'))
             ->favicon(asset('img/favicon-256.png'))
             ->darkMode(false)
             ->login(Login::class)
@@ -116,9 +116,7 @@ class DashboardPanelProvider extends PanelProvider
                 Dashboard::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Dashboard/Widgets'), for: 'App\Filament\Dashboard\Widgets')
-            ->widgets([
-                AccountWidget::class,
-            ])
+            ->widgets([])
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,
