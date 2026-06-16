@@ -101,6 +101,7 @@ class DashboardPanelProvider extends PanelProvider
                 'info' => Color::hex('#3a6ea5'),
                 'warning' => Color::hex('#ff6700'),
                 'gray' => Color::hex('#c0c0c0'),
+                'featured' => Color::hex('#caa12a'),
             ])
             ->navigationItems([
                 NavigationItem::make('Naar de website')

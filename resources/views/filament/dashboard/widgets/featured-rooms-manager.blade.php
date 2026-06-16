@@ -8,7 +8,7 @@
             </div>
 
             @if ($slotsTotal > 0)
-                <x-filament::badge :color="$slotsUsed >= $slotsTotal ? 'warning' : 'primary'">
+                <x-filament::badge color="featured">
                     {{ $slotsUsed }} / {{ $slotsTotal }} slots
                 </x-filament::badge>
             @endif
@@ -37,8 +37,8 @@
                                     wire:target="toggle({{ $room->id }})"
                                     @class([
                                         'inline-flex shrink-0 items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold transition disabled:opacity-50',
-                                        'bg-amber-100 text-amber-700 hover:bg-amber-200 dark:bg-amber-500/20 dark:text-amber-400' => $featured,
-                                        'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-white/5 dark:text-gray-300 dark:hover:bg-white/10' => ! $featured,
+                                        'bg-featured-100 text-featured-700 hover:bg-featured-200' => $featured,
+                                        'bg-gray-100 text-gray-600 hover:bg-gray-200' => ! $featured,
                                     ])
                                 >
                                     <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="{{ $featured ? 'currentColor' : 'none' }}"

@@ -51,6 +51,21 @@ export default {
           800: '#172c42',
           900: '#0c1621',
         },
+        // Featured: Gold (#CAA12A)
+        // Gebruik: "uitgelicht"/premium-markeringen — bewust onderscheiden van
+        // accent-oranje (CTA's/lage score), primary-blauw en succes-groen.
+        featured: {
+          DEFAULT: '#caa12a',
+          100: '#f9f0d6',
+          200: '#f0dca3',
+          300: '#e6c66f',
+          400: '#d9b148',
+          500: '#caa12a',
+          600: '#a3811f',
+          700: '#7b6118',
+          800: '#524110',
+          900: '#2a2108',
+        },
         // Base-een: Platinum (#EBEBEB)
         // Gebruik: Pagina achtergronden, cards, grote vlakken
         'base-een': {

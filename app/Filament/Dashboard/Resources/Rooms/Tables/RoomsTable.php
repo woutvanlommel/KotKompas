@@ -63,7 +63,7 @@ class RoomsTable
                 Action::make('feature')
                     ->label(fn (Room $record): string => $record->isFeatured() ? 'Niet meer uitlichten' : 'Uitlichten')
                     ->icon(fn (Room $record): string => $record->isFeatured() ? 'heroicon-s-star' : 'heroicon-o-star')
-                    ->color(fn (Room $record): string => $record->isFeatured() ? 'warning' : 'gray')
+                    ->color(fn (Room $record): string => $record->isFeatured() ? 'featured' : 'gray')
                     ->requiresConfirmation()
                     ->modalHeading(fn (Room $record): string => $record->isFeatured() ? 'Kot niet meer uitlichten?' : 'Kot uitlichten?')
                     ->modalDescription(fn (Room $record): string => $record->isFeatured()

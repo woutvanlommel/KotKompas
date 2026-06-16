@@ -1,9 +1,10 @@
 @props(['variant' => 'light'])
 
 @php
+    // dark = on a dark photo (public grid card); light = on a white card.
     $tone = $variant === 'dark'
-        ? 'bg-secondary-300 text-primary-900'
-        : 'bg-secondary-600 text-white';
+        ? 'bg-featured-300 text-featured-900'
+        : 'bg-featured-100 text-featured-700';
 @endphp
 
 {{-- "Uitgelicht" marker for featured (betalende) koten. --}}
