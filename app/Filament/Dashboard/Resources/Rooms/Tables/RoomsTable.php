@@ -2,6 +2,9 @@
 
 namespace App\Filament\Dashboard\Resources\Rooms\Tables;
 
+use App\Filament\Dashboard\Support\FeatureRoomToggle;
+use App\Models\Room;
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -40,6 +43,10 @@ class RoomsTable
                     ->sortable(),
                 TextColumn::make('status')
                     ->badge(),
+                IconColumn::make('featured')
+                    ->label('Uitgelicht')
+                    ->boolean()
+                    ->getStateUsing(fn (Room $record): bool => $record->isFeatured()),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -53,6 +60,16 @@ class RoomsTable
                 //
             ])
             ->recordActions([
+                Action::make('feature')
+                    ->label(fn (Room $record): string => $record->isFeatured() ? 'Niet meer uitlichten' : 'Uitlichten')
+                    ->icon(fn (Room $record): string => $record->isFeatured() ? 'heroicon-s-star' : 'heroicon-o-star')
+                    ->color(fn (Room $record): string => $record->isFeatured() ? 'warning' : 'gray')
+                    ->requiresConfirmation()
+                    ->modalHeading(fn (Room $record): string => $record->isFeatured() ? 'Kot niet meer uitlichten?' : 'Kot uitlichten?')
+                    ->modalDescription(fn (Room $record): string => $record->isFeatured()
+                        ? 'Het kot verdwijnt uit de uitgelichte sectie en zakt terug naar de normale volgorde.'
+                        : 'Uitgelichte koten staan bovenaan de zoekresultaten. Dit gebruikt één uitlicht-slot van je abonnement.')
+                    ->action(fn (Room $record) => FeatureRoomToggle::handle($record)),
                 EditAction::make(),
             ])
             ->toolbarActions([
