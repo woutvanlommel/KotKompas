@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\Room;
+use Illuminate\View\View;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
 
@@ -33,11 +34,20 @@ class FavouriteButton extends Component
             return;
         }
 
-        if ($this->isFavourited) {
+        // Derive the real state server-side — never trust $this->isFavourited,
+        // which is client-controllable. Detach is allowed regardless of status
+        // so stale favourites (room no longer available) can still be removed.
+        $alreadyFavourited = $user->favouriteRooms()
+            ->where('room_id', $this->roomId)
+            ->exists();
+
+        if ($alreadyFavourited) {
             $user->favouriteRooms()->detach($this->roomId);
             $this->isFavourited = false;
         } elseif (Room::where('id', $this->roomId)->where('status', 'available')->exists()) {
-            $user->favouriteRooms()->attach($this->roomId);
+            // syncWithoutDetaching is idempotent — avoids a unique-constraint
+            // violation if the row somehow already exists.
+            $user->favouriteRooms()->syncWithoutDetaching([$this->roomId]);
             $this->isFavourited = true;
         }
     }
@@ -50,13 +60,10 @@ class FavouriteButton extends Component
             return false;
         }
 
-        return $user->favouriteRooms()
-            ->where('room_id', $this->roomId)
-            ->where('status', 'available')
-            ->exists();
+        return $user->availableFavouriteRoomIds()->contains($this->roomId);
     }
 
-    public function render(): \Illuminate\View\View
+    public function render(): View
     {
         return view('livewire.favourite-button');
     }
