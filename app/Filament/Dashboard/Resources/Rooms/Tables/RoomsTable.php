@@ -2,6 +2,10 @@
 
 namespace App\Filament\Dashboard\Resources\Rooms\Tables;
 
+use App\Models\Room;
+use App\Services\FeaturedListingService;
+use App\Services\FilamentNotificationService;
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -40,6 +44,10 @@ class RoomsTable
                     ->sortable(),
                 TextColumn::make('status')
                     ->badge(),
+                IconColumn::make('featured')
+                    ->label('Uitgelicht')
+                    ->boolean()
+                    ->getStateUsing(fn (Room $record): bool => $record->isFeatured()),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -53,6 +61,37 @@ class RoomsTable
                 //
             ])
             ->recordActions([
+                Action::make('feature')
+                    ->label(fn (Room $record): string => $record->isFeatured() ? 'Niet meer uitlichten' : 'Uitlichten')
+                    ->icon(fn (Room $record): string => $record->isFeatured() ? 'heroicon-s-star' : 'heroicon-o-star')
+                    ->color(fn (Room $record): string => $record->isFeatured() ? 'warning' : 'gray')
+                    ->requiresConfirmation()
+                    ->modalHeading(fn (Room $record): string => $record->isFeatured() ? 'Kot niet meer uitlichten?' : 'Kot uitlichten?')
+                    ->modalDescription(fn (Room $record): string => $record->isFeatured()
+                        ? 'Het kot verdwijnt uit de uitgelichte sectie en zakt terug naar de normale volgorde.'
+                        : 'Uitgelichte koten staan bovenaan de zoekresultaten. Dit gebruikt één uitlicht-slot van je abonnement.')
+                    ->action(function (Room $record): void {
+                        $service = app(FeaturedListingService::class);
+
+                        if ($record->isFeatured()) {
+                            $service->unfeature($record);
+                            FilamentNotificationService::info('Niet meer uitgelicht', 'Je kot staat niet langer bovenaan.', icon: 'heroicon-o-star');
+
+                            return;
+                        }
+
+                        if (! $service->feature($record)) {
+                            FilamentNotificationService::warning(
+                                'Geen uitlicht-slots beschikbaar',
+                                'Je hebt geen vrije uitlicht-slots meer. Upgrade je abonnement om meer koten uit te lichten.',
+                                icon: 'heroicon-o-star',
+                            );
+
+                            return;
+                        }
+
+                        FilamentNotificationService::success('Kot uitgelicht', 'Je kot staat nu bovenaan de zoekresultaten.', icon: 'heroicon-o-star');
+                    }),
                 EditAction::make(),
             ])
             ->toolbarActions([

@@ -20,6 +20,7 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Laravel\Cashier\Billable;
@@ -138,6 +139,34 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasMedia
     public function remainingFeaturedSlots(): int
     {
         return max(0, $this->featuredSlots() - $this->featuredSlotsUsed());
+    }
+
+    /**
+     * End of the current subscription period — our synced renews_at, with a
+     * live Stripe lookup as fallback. Drives how long a featured room stays
+     * featured; the WebhookHandled listener bumps it forward on each renewal.
+     */
+    public function subscriptionRenewsAt(): ?Carbon
+    {
+        $subscription = $this->subscription('default');
+
+        if (! $subscription) {
+            return null;
+        }
+
+        if ($subscription->renews_at) {
+            return Carbon::parse($subscription->renews_at);
+        }
+
+        try {
+            $stripeSub = $subscription->asStripeSubscription();
+            $ts = $stripeSub->items->data[0]->current_period_end
+                ?? ($stripeSub->current_period_end ?? null);
+
+            return $ts ? Carbon::createFromTimestamp($ts) : null;
+        } catch (\Throwable) {
+            return null;
+        }
     }
 
     /** @return HasMany<Document, $this> */
