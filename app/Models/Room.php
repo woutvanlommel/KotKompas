@@ -46,19 +46,21 @@ class Room extends Model implements HasMedia
     }
 
     /**
-     * "Uitgelicht": only rooms whose featured window has not yet elapsed.
+     * "Uitgelicht": flagged by the landlord and still within its paid window.
      *
      * @param  Builder<Room>  $query
      */
     public function scopeFeatured(Builder $query): void
     {
-        $query->where('featured_until', '>', now());
+        $query->where('is_featured', true)->where('featured_until', '>', now());
     }
 
-    /** Whether this room is currently featured (window still open). */
+    /** Whether this room is currently featured (intent set and window still open). */
     public function isFeatured(): bool
     {
-        return $this->featured_until !== null && $this->featured_until->isFuture();
+        return $this->is_featured
+            && $this->featured_until !== null
+            && $this->featured_until->isFuture();
     }
 
     public function activeTenant(): ?User
@@ -172,6 +174,7 @@ class Room extends Model implements HasMedia
             'score' => 'float',
             'score_bayesian' => 'float',
             'reviews_count' => 'integer',
+            'is_featured' => 'boolean',
             'featured_until' => 'datetime',
             'available_from' => 'date',
             'costs_included' => 'boolean',
