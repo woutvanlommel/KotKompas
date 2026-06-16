@@ -21,6 +21,7 @@ class Building extends Model implements HasMedia
     /** @use HasFactory<BuildingFactory> */
     use HasFactory, HasImages;
 
+    /** @return HasMany<Room, $this> */
     public function rooms(): HasMany
     {
         return $this->hasMany(Room::class);

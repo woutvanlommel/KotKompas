@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Concerns\HasImages;
 use App\Observers\RoomObserver;
+use Carbon\Carbon;
 use Database\Factories\RoomFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
@@ -18,6 +19,10 @@ use Illuminate\Support\Collection;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
+/**
+ * @property bool $is_featured
+ * @property Carbon|null $featured_until
+ */
 #[Fillable(['building_id', 'tenant_id', 'bus', 'room_number', 'type', 'title', 'description', 'price_per_month', 'deposit_amount', 'costs_included', 'surface_m2', 'is_furnished', 'available_from', 'status'])]
 #[ObservedBy(RoomObserver::class)]
 class Room extends Model implements HasMedia

@@ -53,7 +53,7 @@ class FeaturedRoomsManager extends Widget
 
         return [
             // Grouped per building (name-ordered), featured rooms first within each.
-            'groups' => $this->getRooms()->groupBy(fn (Room $room) => $room->building?->name ?? 'Onbekend gebouw'),
+            'groups' => $this->getRooms()->groupBy(fn (Room $room) => $room->building->name),
             'slotsUsed' => $user->featuredSlotsUsed(),
             'slotsTotal' => $plan ? (int) config("subscriptions.featured_slots.{$plan->value}", 0) : 0,
             'manageUrl' => Subscription::getUrl(),

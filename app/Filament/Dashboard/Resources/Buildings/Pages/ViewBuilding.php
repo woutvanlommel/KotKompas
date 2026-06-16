@@ -173,6 +173,6 @@ class ViewBuilding extends ViewRecord
     /** Resolve the room from the action arguments, scoped to this building. */
     private function roomFromArguments(array $arguments): Room
     {
-        return $this->record->rooms()->findOrFail($arguments['room']);
+        return $this->record->rooms()->findOrFail((int) $arguments['room']);
     }
 }

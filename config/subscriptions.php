@@ -7,7 +7,6 @@ return [
         'premium' => env('STRIPE_PRICE_PREMIUM'),
     ],
 
-
     'featured_slots' => [
         'starter' => 0,
         'pro' => 1,
