@@ -46,7 +46,7 @@ class RecentActivity extends Widget
                 'date' => $r->created_at,
                 'title' => 'Nieuwe review',
                 'subtitle' => $this->roomLabel($r->room),
-                'meta' => '★ ' . Score::format($r->room_score),
+                'meta' => '★ '.Score::format($r->room_score),
                 'url' => $this->buildingUrl($r->room),
             ]);
 
@@ -61,7 +61,7 @@ class RecentActivity extends Widget
                 'date' => $p->start_date,
                 'title' => 'Nieuwe verhuur',
                 'subtitle' => $this->roomLabel($p->room),
-                'meta' => $p->start_date?->format('d/m/Y'),
+                'meta' => $p->start_date->format('d/m/Y'),
                 'url' => $this->buildingUrl($p->room),
             ]);
 
@@ -80,9 +80,9 @@ class RecentActivity extends Widget
             return 'Onbekend kot';
         }
 
-        $name = $room->title ?: 'Kot ' . $room->room_number;
+        $name = $room->title ?: 'Kot '.$room->room_number;
 
-        return $room->building ? $name . ' · ' . $room->building->name : $name;
+        return $room->building ? $name.' · '.$room->building->name : $name;
     }
 
     private function buildingUrl(?Room $room): ?string

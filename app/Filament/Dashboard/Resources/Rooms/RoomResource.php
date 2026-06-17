@@ -48,7 +48,7 @@ class RoomResource extends Resource
     public static function getGlobalSearchResultDetails(Model $record): array
     {
         return [
-            'Gebouw' => $record->building?->name ?? '',
+            'Gebouw' => $record->building->name ?? '',
         ];
     }
 

@@ -88,7 +88,7 @@ class MastheadOverview extends Widget
             'potential' => $potential,
             'yearly' => $revenue * 12,
             'newRentals' => $newRentals->count(),
-            'newRevenue' => (int) $newRentals->sum(fn (RentalPeriod $p) => $p->room?->price_per_month ?? 0),
+            'newRevenue' => (int) $newRentals->sum(fn (RentalPeriod $p) => (float) $p->room->price_per_month),
             'newReviews' => $newReviews,
             'manageUrl' => BuildingResource::getUrl(),
         ];
