@@ -67,7 +67,7 @@ class SubscriptionOverviewWidgetTest extends TestCase
 
         Livewire::test(SubscriptionOverview::class)
             ->assertSee('Geen actief plan')
-            ->assertSee('Kies een abonnement');
+            ->assertSee('Kies een plan');
     }
 
     public function test_widget_is_hidden_for_non_landlords(): void
