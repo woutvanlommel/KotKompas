@@ -21,10 +21,10 @@ class RoomStatusChart extends Widget
 
     /** @var array<string, array{label: string, color: string}> */
     private const STATUSES = [
-        'available' => ['label' => 'Beschikbaar', 'color' => '#004e98'],
+        'available' => ['label' => 'Beschikbaar', 'color' => '#15803d'],
         'rented' => ['label' => 'Verhuurd', 'color' => '#3a6ea5'],
         'maintenance' => ['label' => 'Onderhoud', 'color' => '#ff6700'],
-        'archived' => ['label' => 'Gearchiveerd', 'color' => '#c0c0c0'],
+        'archived' => ['label' => 'Gearchiveerd', 'color' => '#9aa6b4'],
     ];
 
     public static function canView(): bool

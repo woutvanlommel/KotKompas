@@ -7,7 +7,7 @@
         <div class="mt-6 flex h-2.5 w-full gap-1">
             @forelse ($segments as $seg)
                 @if ($seg['count'] > 0)
-                    <div class="h-full rounded-full transition-[width] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]"
+                    <div class="h-full rounded-full transition-[width] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
                          style="width: {{ $seg['pct'] }}%; background: {{ $seg['color'] }};"
                          title="{{ $seg['label'] }}: {{ $seg['count'] }}"></div>
                 @endif

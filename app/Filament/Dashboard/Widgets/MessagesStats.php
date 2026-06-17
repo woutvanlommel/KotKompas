@@ -4,33 +4,27 @@ namespace App\Filament\Dashboard\Widgets;
 
 use App\Filament\Dashboard\Pages\Chat;
 use App\Models\Message;
-use Filament\Widgets\StatsOverviewWidget;
-use Filament\Widgets\StatsOverviewWidget\Stat;
+use Filament\Widgets\Widget;
 use Illuminate\Database\Eloquent\Builder;
 
-class MessagesStats extends StatsOverviewWidget
+class MessagesStats extends Widget
 {
     protected static ?int $sort = 8;
 
     protected int|string|array $columnSpan = 'full';
 
-    protected ?string $heading = 'Berichten';
+    protected string $view = 'filament.dashboard.widgets.messages-stats';
 
     public static function canView(): bool
     {
         return Chat::canAccess();
     }
 
-    protected function getStats(): array
+    protected function getViewData(): array
     {
-        $unread = $this->unreadCount();
-
         return [
-            Stat::make('Ongelezen berichten', $unread)
-                ->description($unread > 0 ? 'Open je chat' : 'Je bent helemaal bij')
-                ->descriptionIcon('heroicon-m-chat-bubble-left-right')
-                ->color($unread > 0 ? 'warning' : 'gray')
-                ->url(Chat::getUrl()),
+            'unread' => $this->unreadCount(),
+            'chatUrl' => Chat::getUrl(),
         ];
     }
 

@@ -3,9 +3,7 @@
 namespace App\Filament\Dashboard\Widgets;
 
 use App\Services\KotScoreService;
-use App\Support\Score;
-use Filament\Widgets\StatsOverviewWidget;
-use Filament\Widgets\StatsOverviewWidget\Stat;
+use Filament\Widgets\Widget;
 
 /**
  * Breaks the landlord's score open per criterion (hygiëne / grootte /
@@ -16,13 +14,13 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
  * below the anonymity threshold; this widget then shows an empty state
  * explaining how many reviews are still needed.
  */
-class CriteriaBreakdown extends StatsOverviewWidget
+class CriteriaBreakdown extends Widget
 {
+    protected string $view = 'filament.dashboard.widgets.criteria-breakdown';
+
     protected static ?int $sort = 5;
 
     protected int|string|array $columnSpan = 'full';
-
-    protected ?string $heading = 'Score per criterium';
 
     // Scores only change on a review submit and the nightly recompute.
     protected ?string $pollingInterval = null;
@@ -32,20 +30,31 @@ class CriteriaBreakdown extends StatsOverviewWidget
         return auth()->user()?->hasRole('verhuurder') ?? false;
     }
 
-    protected function getStats(): array
+    protected function getViewData(): array
     {
         $landlord = auth()->user();
 
+        $minReviews = KotScoreService::MIN_REVIEWS_FOR_BREAKDOWN;
+
         if (! $landlord) {
-            return [];
+            return [
+                'hasBreakdown' => false,
+                'criteria' => [],
+                'reviewsCount' => 0,
+                'minReviews' => $minReviews,
+            ];
         }
+
+        $reviewsCount = $landlord->landlordReviews()->count();
 
         $breakdown = app(KotScoreService::class)->landlordCriteriaBreakdown($landlord);
 
         if ($breakdown === null) {
             return [
-                Stat::make('Score per criterium', '—')
-                    ->description('Minstens '.KotScoreService::MIN_REVIEWS_FOR_BREAKDOWN.' beoordelingen nodig voor een anonieme opsplitsing'),
+                'hasBreakdown' => false,
+                'criteria' => [],
+                'reviewsCount' => $reviewsCount,
+                'minReviews' => $minReviews,
             ];
         }
 
@@ -56,9 +65,19 @@ class CriteriaBreakdown extends StatsOverviewWidget
             'communication' => 'Communicatie',
         ];
 
-        return collect($labels)
-            ->map(fn (string $label, string $key): Stat => Stat::make($label, Score::format($breakdown[$key]).' / 5'))
+        $criteria = collect($labels)
+            ->map(fn (string $label, string $key): array => [
+                'label' => $label,
+                'score' => (float) $breakdown[$key],
+            ])
             ->values()
             ->all();
+
+        return [
+            'hasBreakdown' => true,
+            'criteria' => $criteria,
+            'reviewsCount' => $reviewsCount,
+            'minReviews' => $minReviews,
+        ];
     }
 }
