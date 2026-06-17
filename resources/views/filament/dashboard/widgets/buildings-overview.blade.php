@@ -33,7 +33,7 @@
                 Je hebt nog geen gebouwen toegevoegd. Voeg een gebouw toe om kamers, bezetting en kotscore te beheren.
             </p>
             <a href="{{ BuildingResource::getUrl('create') }}"
-               class="group inline-flex h-11 w-fit items-center gap-3 rounded-[4px] bg-[#00101e] pl-5 pr-1.5 text-xs font-medium uppercase tracking-[0.04em] text-white transition-colors duration-300 hover:bg-[#001f3d] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3a6ea5] focus-visible:ring-offset-2">
+               class="group inline-flex h-11 w-fit items-center gap-3 rounded-[4px] bg-[#002f5b] pl-5 pr-1.5 text-xs font-medium uppercase tracking-[0.04em] text-white transition-colors duration-300 hover:bg-[#001f3d] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3a6ea5] focus-visible:ring-offset-2">
                 Gebouw toevoegen
                 <span class="inline-flex h-8 w-8 items-center justify-center rounded-[3px] bg-[#ff6700]">
                     <svg class="h-4 w-4 transition-transform duration-500 ease-[cubic-bezier(0.65,0,0.35,1)] group-hover:translate-x-0.5 motion-reduce:transition-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round" /></svg>

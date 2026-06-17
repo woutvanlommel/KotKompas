@@ -1,35 +1,70 @@
 <x-filament-widgets::widget>
     <x-filament::section>
-        {{-- DOMINANT — jouw verhuurderscore owns the card. --}}
-        <p class="text-[0.625rem] font-semibold uppercase tracking-[0.14em] text-[#586573]">Verhuurderscore</p>
+        <div class="grid gap-8 lg:grid-cols-12 lg:gap-12">
+            {{-- TOTAAL — de verhuurderscore: het portfolio-totaal (50% kotkwaliteit, 50% communicatie). --}}
+            <div class="lg:col-span-5 lg:border-r lg:border-[#0f17201f] lg:pr-12">
+                <p class="text-[0.625rem] font-semibold uppercase tracking-[0.14em] text-[#586573]">Verhuurderscore</p>
 
-        @if ($landlordScore === '—')
-            {{-- Zero-state recedes — no figure, no display-scale dash; reserve the dominant slot for real data. --}}
-            <p class="mt-4 text-sm tracking-[-0.01em] text-[#586573]">Nog geen beoordelingen ontvangen</p>
-        @else
-            <p class="mt-4 flex items-baseline leading-none text-[clamp(3.25rem,5vw,4.5rem)]">
-                <span class="font-medium tracking-[-0.03em] tabular-nums text-[#0f1720]">{{ \Illuminate\Support\Str::before($landlordScore, ' /') }}</span>
-                <span class="text-[0.34em] font-medium tracking-[-0.01em] tabular-nums text-[#586573]"> / 5</span>
-            </p>
-
-            <p class="mt-3 text-sm tracking-[-0.01em] text-[#586573]">{{ $landlordDescription }}</p>
-        @endif
-
-        {{-- Hairline — divides the dominant figure from supporting metrics. --}}
-        <div class="mt-6 border-t border-[#0f17201f]"></div>
-
-        {{-- Supporting 2-up — recedes to ~1.5rem under micro-caps labels. --}}
-        <div class="mt-6 grid grid-cols-2 gap-6">
-            <div>
-                <p class="text-[0.625rem] font-semibold uppercase tracking-[0.12em] text-[#586573]">Gemiddelde gebouwscore</p>
-                <p class="mt-2 text-[1.5rem] font-medium leading-none tracking-[-0.02em] tabular-nums {{ $scoredCount > 0 ? 'text-[#0f1720]' : 'text-[#586573]' }}">{{ $averageScore }}</p>
-                <p class="mt-1.5 text-xs tracking-[-0.01em] text-[#586573]">{{ $averageDescription }}</p>
+                @if ($landlordScore === '—')
+                    <p class="mt-4 text-sm tracking-[-0.01em] text-[#586573]">Nog geen beoordelingen ontvangen.</p>
+                @else
+                    <p class="mt-4 flex items-baseline leading-none text-[clamp(3.25rem,5vw,4.5rem)]">
+                        <span class="font-medium tracking-[-0.03em] tabular-nums text-[#0f1720]">{{ \Illuminate\Support\Str::before($landlordScore, ' /') }}</span>
+                        <span class="text-[0.34em] font-medium tracking-[-0.01em] tabular-nums text-[#586573]"> / 5</span>
+                    </p>
+                    <p class="mt-3 max-w-[42ch] text-sm tracking-[-0.01em] text-[#586573]">{{ $landlordDescription }}</p>
+                @endif
             </div>
 
-            <div>
-                <p class="text-[0.625rem] font-semibold uppercase tracking-[0.12em] text-[#586573]">Best scorend gebouw</p>
-                <p class="mt-2 text-[1.5rem] font-medium leading-none tracking-[-0.02em] tabular-nums {{ $bestBuildingScore === '—' ? 'text-[#586573]' : 'text-[#0f1720]' }}">{{ $bestBuildingScore }}</p>
-                <p class="mt-1.5 truncate text-xs tracking-[-0.01em] text-[#586573]">{{ $bestBuildingName }}</p>
+            {{-- OPSPLITSING — exact de criteria waar het totaal uit opbouwt. --}}
+            <div class="lg:col-span-7">
+                <p class="text-[0.625rem] font-semibold uppercase tracking-[0.14em] text-[#586573]">Per criterium · gemiddeld</p>
+
+                @if (! $hasBreakdown)
+                    {{-- Verborgen tot genoeg beoordelingen — anoniem houden. --}}
+                    @php $maskedPct = min(100, max(0, $minReviews > 0 ? $reviewsCount / $minReviews * 100 : 0)); @endphp
+                    @if ($reviewsCount === 0)
+                        <p class="mt-6 text-sm tracking-[-0.01em] text-[#586573]">
+                            Nog <span class="tabular-nums">{{ $minReviews }}</span> beoordelingen nodig voor een anonieme opsplitsing per criterium.
+                        </p>
+                    @else
+                        <div class="mt-6 flex items-baseline gap-2">
+                            <span class="text-[clamp(1.75rem,2.4vw,2.5rem)] font-medium leading-none tracking-[-0.03em] tabular-nums text-[#0f1720]">{{ $reviewsCount }}</span>
+                            <span class="text-[1.25rem] font-medium leading-none tracking-[-0.02em] tabular-nums text-[#586573]">/ {{ $minReviews }}</span>
+                            <span class="text-[0.625rem] font-semibold uppercase tracking-[0.12em] text-[#586573]">beoordelingen</span>
+                        </div>
+                    @endif
+                    <div class="mt-3 h-1.5 w-full max-w-md overflow-hidden rounded-[2px] bg-[#e1e6ed]">
+                        <div class="h-full rounded-[2px] bg-[#3a6ea5] transition-[width] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none" style="width: {{ $maskedPct }}%"></div>
+                    </div>
+                    @if ($reviewsCount > 0)
+                        <p class="mt-3 text-sm tracking-[-0.01em] text-[#586573]">Nog <span class="tabular-nums">{{ max(0, $minReviews - $reviewsCount) }}</span> te gaan.</p>
+                    @endif
+                @else
+                    {{-- De vier criteria; een zwakke plek (< 3,5) warmt op naar #c2510a. --}}
+                    <div class="mt-6 grid gap-x-10 gap-y-5 sm:grid-cols-2">
+                        @foreach ($criteria as $criterion)
+                            @php
+                                $score = $criterion['score'];
+                                $pct = min(100, max(0, $score / 5 * 100));
+                                $isWeak = $score < 3.5;
+                                $fill = $isWeak ? '#c2510a' : '#3a6ea5';
+                                $numeralColor = $isWeak ? '#c2510a' : '#0f1720';
+                            @endphp
+                            <div>
+                                <div class="flex items-baseline justify-between gap-3">
+                                    <p class="text-[0.625rem] font-semibold uppercase tracking-[0.12em] text-[#586573]">{{ $criterion['label'] }}</p>
+                                    <span class="shrink-0">
+                                        <span class="text-[1.25rem] font-medium leading-none tracking-[-0.02em] tabular-nums" style="color: {{ $numeralColor }};">{{ number_format($score, 1, ',', '.') }}</span><span class="text-sm text-[#586573]"> /5</span>
+                                    </span>
+                                </div>
+                                <div class="mt-2 h-1.5 w-full overflow-hidden rounded-[2px] bg-[#e1e6ed]">
+                                    <div class="h-full rounded-[2px] transition-[width] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none" style="width: {{ $pct }}%; background: {{ $fill }};"></div>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                @endif
             </div>
         </div>
     </x-filament::section>

@@ -1,7 +1,7 @@
 <x-filament-widgets::widget>
     @if ($isSubscribed)
         {{-- Active: invert to navy — the "you're in" moment. --}}
-        <div class="kk-rise relative overflow-hidden rounded-[1.25rem] bg-[#00101e] p-6 text-white">
+        <div class="kk-rise relative overflow-hidden rounded-[1.25rem] bg-[#002f5b] p-6 text-white">
             <p class="text-[0.625rem] font-semibold uppercase tracking-[0.14em] text-white/45">Abonnement</p>
             <p class="mt-2 text-[clamp(1.75rem,2.4vw,2.4rem)] font-medium leading-[0.95] tracking-[-0.02em]">{{ $planLabel }}</p>
 

@@ -1,5 +1,4 @@
 @php
-    $scoreFmt = $score !== null ? number_format((float) $score, 1, ',', '.') : '—';
     $revFmt = number_format($revenue, 0, ',', '.');
 @endphp
 
@@ -35,21 +34,6 @@
                 {{ $rented }} van {{ $total }} koten verhuurd<span class="kk-mh-dot">·</span>{{ $available }} beschikbaar
             </p>
 
-            <dl class="kk-mh-rail">
-                <div>
-                    <dt class="kk-mh-eyebrow">Omzet · /mnd</dt>
-                    <dd class="kk-mh-stat">€&thinsp;{{ $revFmt }}</dd>
-                </div>
-                <div>
-                    <dt class="kk-mh-eyebrow">Uitgelicht</dt>
-                    <dd class="kk-mh-stat">{{ $featured }}</dd>
-                </div>
-                <div>
-                    <dt class="kk-mh-eyebrow">Gebouwen</dt>
-                    <dd class="kk-mh-stat">{{ $buildings }}</dd>
-                </div>
-            </dl>
-
             <a href="{{ $manageUrl }}" class="kk-mh-cta">
                 <span>Beheer koten</span>
                 <span class="kk-mh-cta-chip" aria-hidden="true">
@@ -60,10 +44,26 @@
             </a>
         </div>
 
-        <aside class="kk-mh-score">
-            <p class="kk-mh-eyebrow">Kotscore · gemiddeld</p>
-            <p class="kk-mh-score-num">{{ $scoreFmt }}<span class="kk-mh-score-max">/5</span></p>
-            <p class="kk-mh-score-meta">{{ $reviews }} {{ $reviews === 1 ? 'beoordeling' : 'beoordelingen' }}</p>
+        {{-- Kerncijfers-paneel: vult de rechterkolom met de portfolio-cijfers. --}}
+        <aside class="kk-mh-summary flex flex-col justify-center gap-6 rounded-[1.25rem] bg-[#e1e6ed] p-8">
+            <div class="flex items-baseline justify-between gap-4">
+                <p class="text-[0.625rem] font-semibold uppercase tracking-[0.14em] text-[#586573]">Omzet · /mnd</p>
+                <p class="text-[clamp(1.75rem,2.4vw,2.5rem)] font-medium leading-none tracking-[-0.02em] tabular-nums text-[#0f1720]">€&thinsp;{{ $revFmt }}</p>
+            </div>
+
+            <div class="h-px w-full bg-[#0f17201f]"></div>
+
+            <div class="flex items-baseline justify-between gap-4">
+                <p class="text-[0.625rem] font-semibold uppercase tracking-[0.14em] text-[#586573]">Uitgelicht</p>
+                <p class="text-[clamp(1.5rem,2vw,2rem)] font-medium leading-none tracking-[-0.02em] tabular-nums text-[#0f1720]">{{ $featured }}</p>
+            </div>
+
+            <div class="h-px w-full bg-[#0f17201f]"></div>
+
+            <div class="flex items-baseline justify-between gap-4">
+                <p class="text-[0.625rem] font-semibold uppercase tracking-[0.14em] text-[#586573]">Gebouwen</p>
+                <p class="text-[clamp(1.5rem,2vw,2rem)] font-medium leading-none tracking-[-0.02em] tabular-nums text-[#0f1720]">{{ $buildings }}</p>
+            </div>
         </aside>
     </div>
 </div>

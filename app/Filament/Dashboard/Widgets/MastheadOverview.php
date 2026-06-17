@@ -47,8 +47,6 @@ class MastheadOverview extends Widget
             'revenue' => $revenue,
             'featured' => $user->featuredSlotsUsed(),
             'buildings' => $user->buildings()->count(),
-            'score' => $user->landlord_score,
-            'reviews' => (int) $user->landlord_reviews_count,
             'manageUrl' => BuildingResource::getUrl(),
         ];
     }
