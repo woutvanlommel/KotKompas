@@ -8,7 +8,6 @@ use App\Models\Room;
 use App\Models\User;
 use Database\Seeders\RoleSeeder;
 use Filament\Facades\Filament;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Livewire\Livewire;
@@ -59,8 +58,8 @@ class FeaturedRoomsManagerWidgetTest extends TestCase
         Filament::setCurrentPanel('dashboard');
 
         Livewire::test(FeaturedRoomsManager::class)
-            ->assertSee('Uitgelichte koten')
-            ->assertSee('0 / 3 slots')
+            ->assertSee('Uitgelicht')
+            ->assertSee('Slots in gebruik')
             // Both buildings appear as group headers, each with its room + toggle.
             ->assertSee('Residentie Park')
             ->assertSee('Zolderstudio')
@@ -131,9 +130,14 @@ class FeaturedRoomsManagerWidgetTest extends TestCase
         $this->actingAs($landlord->refresh());
         Filament::setCurrentPanel('dashboard');
 
-        $this->expectException(ModelNotFoundException::class);
+        // The toggle resolves the room through the landlord's own rooms()
+        // relation with findOrFail; a foreign room is out of scope, so the
+        // request is rejected (403) and the room is left untouched.
+        Livewire::test(FeaturedRoomsManager::class)
+            ->call('toggle', $foreignRoom->id)
+            ->assertStatus(403);
 
-        Livewire::test(FeaturedRoomsManager::class)->call('toggle', $foreignRoom->id);
+        $this->assertFalse($foreignRoom->fresh()->isFeatured());
     }
 
     public function test_widget_is_hidden_for_non_landlords(): void

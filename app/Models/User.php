@@ -98,6 +98,27 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasMedia
         return $this->hasManyThrough(Room::class, Building::class, 'landlord_id', 'building_id');
     }
 
+    /** Whether this landlord owns at least one building. */
+    public function hasBuildings(): bool
+    {
+        return $this->buildings()->exists();
+    }
+
+    /** Memoized result of hasRooms() — every data widget's canView() asks once per request. */
+    private ?bool $hasRoomsCache = null;
+
+    /** Whether this landlord has at least one room across their buildings. */
+    public function hasRooms(): bool
+    {
+        if ($this->hasRoomsCache !== null) {
+            return $this->hasRoomsCache;
+        }
+
+        return $this->hasRoomsCache = Room::query()
+            ->whereHas('building', fn ($query) => $query->where('landlord_id', $this->id))
+            ->exists();
+    }
+
     /** @return HasMany<RentalPeriod, $this> */
     public function rentalPeriods(): HasMany
     {

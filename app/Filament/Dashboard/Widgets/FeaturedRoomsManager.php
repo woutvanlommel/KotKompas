@@ -15,15 +15,17 @@ use Illuminate\Database\Eloquent\Collection;
  */
 class FeaturedRoomsManager extends Widget
 {
-    protected static ?int $sort = 2;
+    protected static ?int $sort = 1;
 
-    protected int|string|array $columnSpan = 'full';
+    protected int|string|array $columnSpan = ['default' => 1, 'lg' => 7];
 
     protected string $view = 'filament.dashboard.widgets.featured-rooms-manager';
 
     public static function canView(): bool
     {
-        return auth()->user()?->hasRole('verhuurder') ?? false;
+        $user = auth()->user();
+
+        return ($user?->hasRole('verhuurder') ?? false) && $user->hasRooms();
     }
 
     /** Toggle a room's featured state (scoped to the landlord's own rooms). */

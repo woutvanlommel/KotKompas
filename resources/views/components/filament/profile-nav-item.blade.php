@@ -1,16 +1,16 @@
 @props(['user' => auth()->user()])
 
-<div class="w-full pb-4 pt-3 border-t border-gray-200 dark:border-white/10">
+<div class="w-full pb-4 pt-3 border-t border-[#0f17201f]">
     <a
         href="{{ route('filament.dashboard.pages.profile') }}"
-        class="flex flex-col items-center gap-3 rounded-lg px-3 py-4 cursor-pointer transition-colors duration-150 hover:bg-gray-100 dark:hover:bg-white/5"
+        class="flex flex-col items-center gap-3 rounded-lg px-3 py-4 cursor-pointer transition-colors duration-150 hover:bg-[#edf0f4]"
     >
         <img
             src="{{ \Filament\Facades\Filament::getUserAvatarUrl($user) }}"
             alt="{{ $user->full_name }}"
-            class="w-16 h-16 rounded-full object-cover"
+            class="w-16 h-16 rounded-full object-cover ring-2 ring-[#0f17201f]"
         />
-        <span class="text-xs font-medium text-gray-700 dark:text-gray-200 truncate w-full text-center">
+        <span class="text-xs font-medium text-[#586573] truncate w-full text-center">
             {{ $user->full_name }}
         </span>
     </a>

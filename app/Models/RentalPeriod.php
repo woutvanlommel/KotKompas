@@ -2,12 +2,19 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @property int $id
+ * @property int $room_id
+ * @property Carbon $start_date
+ * @property Carbon|null $end_date
+ */
 #[Fillable(['room_id', 'start_date', 'end_date'])]
 class RentalPeriod extends Model
 {

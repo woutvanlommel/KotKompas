@@ -15,6 +15,7 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 
 class RoomResource extends Resource
 {
@@ -24,11 +25,31 @@ class RoomResource extends Resource
 
     protected static bool $shouldRegisterNavigation = false;
 
+    protected static ?string $recordTitleAttribute = 'room_number';
+
     public static function canAccess(): bool
     {
         $user = auth()->user();
 
         return $user?->hasRole('verhuurder') ?? false;
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['room_number', 'title'];
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public static function getGlobalSearchResultDetails(Model $record): array
+    {
+        return [
+            'Gebouw' => $record->building->name ?? '',
+        ];
     }
 
     /**
