@@ -16,6 +16,7 @@ class ListBuildings extends ListRecords
         return [
             CreateAction::make()
                 ->label('Nieuw gebouw')
+                ->icon('heroicon-m-plus')
                 ->slideOver()
                 ->mutateFormDataUsing(function (array $data): array {
                     $data['landlord_id'] = auth()->id();

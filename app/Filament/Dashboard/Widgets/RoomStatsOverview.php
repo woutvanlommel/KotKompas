@@ -17,17 +17,26 @@ class RoomStatsOverview extends Widget
 
     public static function canView(): bool
     {
-        return auth()->user()?->hasRole('verhuurder') ?? false;
+        return (auth()->user()?->hasRole('verhuurder') ?? false)
+            && auth()->user()->hasRooms();
     }
 
     protected function getViewData(): array
     {
-        $rooms = $this->roomsQuery();
+        // One grouped pass for the counts (total/available/rented) instead of three cloned queries.
+        $countsByStatus = $this->roomsQuery()
+            ->selectRaw('status, count(*) as c')
+            ->groupBy('status')
+            ->pluck('c', 'status');
 
-        $total = (clone $rooms)->count();
-        $available = (clone $rooms)->where('status', 'available')->count();
-        $rented = (clone $rooms)->where('status', 'rented')->count();
-        $averagePrice = (clone $rooms)->whereNot('status', 'archived')->avg('price_per_month');
+        $total = (int) $countsByStatus->sum();
+        $available = (int) $countsByStatus->get('available', 0);
+        $rented = (int) $countsByStatus->get('rented', 0);
+
+        // Average keeps its own aggregate — it excludes archived, a different scope than the counts.
+        $averagePrice = $this->roomsQuery()
+            ->whereNot('status', 'archived')
+            ->avg('price_per_month');
 
         return [
             'total' => $total,

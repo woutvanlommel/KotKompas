@@ -1,30 +1,21 @@
 @php
     use App\Filament\Dashboard\Resources\Buildings\BuildingResource;
-    use App\Filament\Dashboard\Resources\Rooms\RoomResource;
 
     $buildings = $this->getBuildings();
-
-    // Brand status badges — rounded-md, arbitrary-hex tints (navy-editorial).
-    $statusBadge = [
-        'available'   => 'bg-[#e7f6ec] text-[#15803d]',
-        'rented'      => 'bg-[#eaf1f8] text-[#2e5884]',
-        'maintenance' => 'bg-[#fff0e6] text-[#c2510a]',
-        'archived'    => 'bg-[#e1e6ed] text-[#586573]',
-    ];
-    $statusLabel = [
-        'available'   => 'Beschikbaar',
-        'rented'      => 'Verhuurd',
-        'maintenance' => 'Onderhoud',
-        'archived'    => 'Gearchiveerd',
-    ];
 @endphp
 
 <x-filament-widgets::widget class="fi-wi relative col-span-full bg-white">
-<div class="relative overflow-hidden rounded-[1.25rem]" x-data="{ expanded: [] }">
+<div class="relative overflow-hidden rounded-[1.25rem]">
 
     {{-- Section marker --}}
-    <div class="px-6 py-5 border-b border-[#0f17201f]">
+    <div class="flex items-center justify-between gap-4 px-6 py-5 border-b border-[#0f17201f]">
         <p class="text-[0.6875rem] font-semibold uppercase tracking-[0.16em] text-[#586573]">003 / Portefeuille</p>
+        @unless ($buildings->isEmpty())
+            <a href="{{ BuildingResource::getUrl() }}" class="kk-card-link">
+                Bekijk alles
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true"><path d="M7 17 17 7M17 7H9M17 7v8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
+        @endunless
     </div>
 
     @if ($buildings->isEmpty())
@@ -41,151 +32,81 @@
             </a>
         </div>
     @else
-        <div class="overflow-x-auto">
-            <table class="w-full border-collapse text-sm">
-                <thead>
-                    <tr class="bg-[#e1e6ed]">
-                        <th class="px-6 py-2.5 text-left text-[0.6875rem] font-semibold uppercase tracking-[0.12em] text-[#586573]">Gebouw</th>
-                        <th class="px-4 py-2.5 text-left text-[0.6875rem] font-semibold uppercase tracking-[0.12em] text-[#586573] hidden sm:table-cell">Stad</th>
-                        <th class="px-4 py-2.5 text-left text-[0.6875rem] font-semibold uppercase tracking-[0.12em] text-[#586573] hidden md:table-cell">Bezetting</th>
-                        <th class="px-4 py-2.5 text-right text-[0.6875rem] font-semibold uppercase tracking-[0.12em] text-[#586573] tabular-nums hidden lg:table-cell">Gem. huurprijs</th>
-                        <th class="px-4 py-2.5 text-right text-[0.6875rem] font-semibold uppercase tracking-[0.12em] text-[#586573] tabular-nums hidden sm:table-cell">Kotscore</th>
-                        <th class="px-4 py-2.5 w-10"></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($buildings as $building)
-                        @php
-                            $bid         = $building->id;
-                            $buildingUrl = BuildingResource::getUrl('view', ['record' => $building]);
-                        @endphp
+        <div class="grid gap-5 p-6 sm:grid-cols-2 xl:grid-cols-3">
+            @foreach ($buildings as $building)
+                @php
+                    $buildingUrl = BuildingResource::getUrl('view', ['record' => $building]);
+                    $hasReviews  = $building->score !== null && $building->reviews_count > 0;
+                @endphp
 
-                        {{-- Building row --}}
-                        <tr
-                            role="button"
-                            tabindex="0"
-                            :aria-expanded="expanded.includes({{ $bid }})"
-                            aria-controls="building-rooms-{{ $bid }}"
-                            class="cursor-pointer border-b border-[#0f17201f] transition-colors duration-[160ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-[rgba(225,230,237,0.5)] focus-visible:outline-none focus-visible:bg-[rgba(225,230,237,0.5)] focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#3a6ea5] motion-reduce:transition-none"
-                            @click="expanded.includes({{ $bid }}) ? expanded = expanded.filter(i => i !== {{ $bid }}) : expanded.push({{ $bid }})"
-                            @keydown.enter.prevent="expanded.includes({{ $bid }}) ? expanded = expanded.filter(i => i !== {{ $bid }}) : expanded.push({{ $bid }})"
-                            @keydown.space.prevent="expanded.includes({{ $bid }}) ? expanded = expanded.filter(i => i !== {{ $bid }}) : expanded.push({{ $bid }})"
-                        >
-                            <td class="px-6 py-4">
-                                <span class="font-medium tracking-[-0.01em] text-[#0f1720]">{{ $building->name }}</span>
-                                <span class="ml-2 text-xs tracking-[-0.01em] text-[#586573] sm:hidden">{{ $building->city }}</span>
-                            </td>
-                            <td class="px-4 py-4 tracking-[-0.01em] text-[#586573] hidden sm:table-cell">
-                                {{ $building->city }}
-                            </td>
-                            <td class="px-4 py-4 hidden md:table-cell">
-                                @if ($building->rooms_count > 0)
-                                    <span class="inline-flex items-center rounded-[0.375rem] px-2 py-0.5 text-xs font-medium tabular-nums {{ $building->available_rooms_count > 0 ? 'bg-[#e7f6ec] text-[#15803d]' : 'bg-[#eaf1f8] text-[#2e5884]' }}">
-                                        {{ $building->rented_rooms_count }} / {{ $building->rooms_count }}
-                                    </span>
-                                @else
-                                    <span class="text-xs tracking-[-0.01em] text-[#586573]">Geen koten</span>
-                                @endif
-                            </td>
-                            <td class="px-4 py-4 text-right font-medium tabular-nums text-[#0f1720] hidden lg:table-cell">
-                                @if ($building->average_price !== null)
-                                    € {{ number_format($building->average_price, 2, ',', '.') }}
-                                @else
-                                    <span class="text-[#586573]">—</span>
-                                @endif
-                            </td>
-                            <td class="px-4 py-4 text-right hidden sm:table-cell">
-                                @if ($building->score !== null && $building->reviews_count > 0)
-                                    <span class="inline-flex items-baseline gap-1 tabular-nums">
-                                        <span class="font-medium {{ $building->score < 3.5 ? 'text-[#c2510a]' : 'text-[#0f1720]' }}">{{ \App\Support\Score::format($building->score) }}</span>
-                                        <span class="text-[#586573]">/5</span>
-                                        <span class="text-[#586573]">({{ $building->reviews_count }})</span>
-                                    </span>
-                                @else
-                                    <span class="text-[#586573]">—</span>
-                                @endif
-                            </td>
-                            <td class="px-4 py-4 text-center">
-                                <svg
-                                    class="mx-auto h-4 w-4 text-[#586573] transition-transform duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
-                                    :class="expanded.includes({{ $bid }}) ? 'rotate-180' : ''"
-                                    fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"
-                                >
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
-                                </svg>
-                            </td>
-                        </tr>
+                <div class="group relative flex flex-col rounded-[1rem] border border-[#0f17201f] bg-white p-5 transition-shadow duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:shadow-[0_18px_40px_-24px_rgba(0,47,91,0.45)] focus-within:shadow-[0_18px_40px_-24px_rgba(0,47,91,0.45)] motion-reduce:transition-none">
 
-                        {{-- Expandable room section --}}
-                        <tr class="border-b border-[#0f17201f]">
-                            <td colspan="6" class="p-0">
-                                <div
-                                    id="building-rooms-{{ $bid }}"
-                                    x-show="expanded.includes({{ $bid }})"
-                                    x-collapse
-                                    x-cloak
-                                >
-                                    @if ($building->rooms->isEmpty())
-                                        <p class="px-10 py-4 text-sm tracking-[-0.01em] text-[#586573]">
-                                            Geen koten gevonden.
-                                        </p>
-                                    @else
-                                        <table class="w-full text-sm">
-                                            <thead>
-                                                <tr class="bg-[#e1e6ed]">
-                                                    <th class="pl-10 pr-4 py-2 text-left text-[0.6875rem] font-semibold uppercase tracking-[0.12em] text-[#586573]">Kamer</th>
-                                                    <th class="px-4 py-2 text-left text-[0.6875rem] font-semibold uppercase tracking-[0.12em] text-[#586573] hidden sm:table-cell">Status</th>
-                                                    <th class="px-4 py-2 text-left text-[0.6875rem] font-semibold uppercase tracking-[0.12em] text-[#586573] hidden md:table-cell">Huurder</th>
-                                                    <th class="px-4 py-2 text-right text-[0.6875rem] font-semibold uppercase tracking-[0.12em] text-[#586573] tabular-nums hidden lg:table-cell">Huurprijs/mnd</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @foreach ($building->rooms as $room)
-                                                    @php
-                                                        $roomUrl = RoomResource::getUrl('view', ['record' => $room]);
-                                                        $badge   = $statusBadge[$room->status] ?? $statusBadge['archived'];
-                                                        $label   = $statusLabel[$room->status] ?? $room->status;
-                                                    @endphp
-                                                    <tr
-                                                        onclick="window.location.href='{{ $roomUrl }}'"
-                                                        class="cursor-pointer border-b border-[#0f17201f] transition-colors duration-[160ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-[rgba(225,230,237,0.5)] motion-reduce:transition-none"
-                                                    >
-                                                        <td class="pl-10 pr-4 py-3">
-                                                            <div class="flex items-center gap-2.5">
-                                                                <span class="h-1 w-1 shrink-0 rounded-full bg-[#b8c2cf]"></span>
-                                                                <a href="{{ $roomUrl }}"
-                                                                   class="font-medium tracking-[-0.01em] text-[#0f1720] rounded-[2px] hover:text-[#00101e] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3a6ea5] focus-visible:ring-offset-2">
-                                                                    {{ $room->title ?? ('Kamer ' . $room->room_number) }}
-                                                                </a>
-                                                                <span class="inline-flex items-center rounded-[0.375rem] px-2 py-0.5 text-xs font-medium {{ $badge }} sm:hidden">{{ $label }}</span>
-                                                            </div>
-                                                        </td>
-                                                        <td class="px-4 py-3 hidden sm:table-cell">
-                                                            <span class="inline-flex items-center rounded-[0.375rem] px-2 py-0.5 text-xs font-medium {{ $badge }}">
-                                                                {{ $label }}
-                                                            </span>
-                                                        </td>
-                                                        <td class="px-4 py-3 tracking-[-0.01em] text-[#586573] hidden md:table-cell">
-                                                            {{ $room->tenant?->name ?? '—' }}
-                                                        </td>
-                                                        <td class="px-4 py-3 text-right font-medium tabular-nums text-[#0f1720] hidden lg:table-cell">
-                                                            @if ($room->price_per_month !== null)
-                                                                € {{ number_format($room->price_per_month, 2, ',', '.') }}
-                                                            @else
-                                                                <span class="text-[#586573]">—</span>
-                                                            @endif
-                                                        </td>
-                                                    </tr>
-                                                @endforeach
-                                            </tbody>
-                                        </table>
-                                    @endif
-                                </div>
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
+                    {{-- Head --}}
+                    <div class="flex items-start justify-between gap-3">
+                        <div class="min-w-0">
+                            <h3 class="truncate text-base font-medium tracking-[-0.01em] text-[#0f1720]">
+                                <a href="{{ $buildingUrl }}"
+                                   class="rounded-[2px] before:absolute before:inset-0 before:content-[''] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3a6ea5] focus-visible:ring-offset-2">
+                                    {{ $building->name }}
+                                </a>
+                            </h3>
+                            <p class="mt-0.5 truncate text-xs tracking-[-0.01em] text-[#586573]">{{ $building->city }}</p>
+                        </div>
+                        <svg class="mt-0.5 h-4 w-4 shrink-0 text-[#9aa6b4] transition-transform duration-500 ease-[cubic-bezier(0.65,0,0.35,1)] group-hover:translate-x-0.5 motion-reduce:transition-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                            <path d="M9 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </div>
+
+                    {{-- Body: dominant occupancy figure --}}
+                    <div class="mt-5 flex flex-col gap-1.5">
+                        <p class="text-[0.625rem] font-semibold uppercase tracking-[0.12em] text-[#586573]">Bezetting</p>
+                        @if ($building->rooms_count > 0)
+                            <p class="flex items-baseline gap-1.5 text-[clamp(1.5rem,2vw,2rem)] font-medium leading-none tracking-[-0.02em] tabular-nums text-[#0f1720]">
+                                {{ $building->rented_rooms_count }}<span class="text-[#9aa6b4]">/</span>{{ $building->rooms_count }}
+                                <span class="ml-1 inline-flex items-center rounded-[0.375rem] px-2 py-0.5 text-xs font-medium tabular-nums {{ $building->available_rooms_count > 0 ? 'bg-[#e7f6ec] text-[#15803d]' : 'bg-[#eaf1f8] text-[#2e5884]' }}">
+                                    {{ $building->available_rooms_count > 0 ? $building->available_rooms_count . ' vrij' : 'Vol' }}
+                                </span>
+                            </p>
+                        @else
+                            <p class="text-[clamp(1.5rem,2vw,2rem)] font-medium leading-none tracking-[-0.02em] text-[#586573]">Geen koten</p>
+                        @endif
+                    </div>
+
+                    {{-- Body: supporting metrics --}}
+                    <div class="mt-4 grid grid-cols-2 gap-4">
+                        {{-- Kotscore --}}
+                        <div class="flex flex-col gap-1">
+                            <p class="text-[0.625rem] font-semibold uppercase tracking-[0.12em] text-[#586573]">Kotscore</p>
+                            @if ($hasReviews)
+                                <span class="inline-flex items-baseline gap-1 text-xs tabular-nums">
+                                    <span class="text-[#3a6ea5]" aria-hidden="true">&starf;</span>
+                                    <span class="font-medium {{ $building->score < 3.5 ? 'border-b border-[#c2510a]/30 text-[#c2510a]' : 'text-[#0f1720]' }}">{{ \App\Support\Score::format($building->score) }}</span>
+                                    <span class="text-[0.6875rem] text-[#586573]">({{ $building->reviews_count }})</span>
+                                </span>
+                            @else
+                                <span class="text-xs text-[#586573]">&mdash;</span>
+                            @endif
+                        </div>
+
+                        {{-- Gem. huurprijs --}}
+                        <div class="flex flex-col gap-1">
+                            <p class="text-[0.625rem] font-semibold uppercase tracking-[0.12em] text-[#586573]">Gem. huurprijs</p>
+                            @if ($building->average_price !== null)
+                                <span class="text-xs font-medium tabular-nums text-[#0f1720]">&euro; {{ number_format($building->average_price, 2, ',', '.') }}</span>
+                            @else
+                                <span class="text-xs text-[#586573]">&mdash;</span>
+                            @endif
+                        </div>
+                    </div>
+
+                    {{-- Footer --}}
+                    <div class="mt-5 flex items-center gap-3 border-t border-[#0f17201f] pt-4">
+                        <p class="truncate text-xs tracking-[-0.01em] text-[#586573]">
+                            {{ $building->rooms_count }} {{ $building->rooms_count === 1 ? 'kamer' : 'kamers' }} &middot; {{ $building->available_rooms_count }} beschikbaar
+                        </p>
+                    </div>
+                </div>
+            @endforeach
         </div>
     @endif
 </div>

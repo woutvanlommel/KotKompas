@@ -13,7 +13,7 @@
         </div>
         <div class="flex items-start gap-3 shrink-0">
             <div class="text-right">
-                <p class="text-3xl font-bold text-gray-900">€ {{ number_format($room->price_per_month, 2, ',', '.') }}</p>
+                <p class="text-3xl font-medium tracking-[-0.02em] tabular-nums text-[#0f1720]">€ {{ number_format($room->price_per_month, 2, ',', '.') }}</p>
                 <p class="text-sm text-gray-500">per maand</p>
             </div>
             <button wire:click="mountAction('editBasics')"

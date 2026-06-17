@@ -30,7 +30,9 @@ class ScoreOverview extends Widget
 
     public static function canView(): bool
     {
-        return auth()->user()?->hasRole('verhuurder') ?? false;
+        $user = auth()->user();
+
+        return ($user?->hasRole('verhuurder') ?? false) && $user->hasRooms();
     }
 
     protected function getViewData(): array

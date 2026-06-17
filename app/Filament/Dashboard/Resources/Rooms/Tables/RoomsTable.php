@@ -18,30 +18,39 @@ class RoomsTable
     {
         return $table
             ->columns([
-                TextColumn::make('building_id')
-                    ->numeric()
+                TextColumn::make('building.name')
+                    ->label('Gebouw')
                     ->sortable(),
                 TextColumn::make('room_number')
+                    ->label('Kamernummer')
                     ->searchable(),
                 TextColumn::make('type')
+                    ->label('Type')
                     ->badge(),
                 TextColumn::make('title')
+                    ->label('Titel')
                     ->searchable(),
                 TextColumn::make('price_per_month')
+                    ->label('Huurprijs/maand')
                     ->numeric()
                     ->sortable(),
                 IconColumn::make('costs_included')
+                    ->label('Kosten inbegrepen')
                     ->boolean()
                     ->getStateUsing(fn ($record) => $record->costTypes->where('pivot.frequency', 'monthly')->isEmpty()),
                 TextColumn::make('surface_m2')
+                    ->label('Oppervlakte (m²)')
                     ->numeric()
                     ->sortable(),
                 IconColumn::make('is_furnished')
+                    ->label('Gemeubileerd')
                     ->boolean(),
                 TextColumn::make('available_from')
+                    ->label('Beschikbaar vanaf')
                     ->date()
                     ->sortable(),
                 TextColumn::make('status')
+                    ->label('Status')
                     ->badge(),
                 IconColumn::make('featured')
                     ->label('Uitgelicht')

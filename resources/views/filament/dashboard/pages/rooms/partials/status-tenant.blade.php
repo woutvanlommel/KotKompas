@@ -25,7 +25,7 @@
 
     {{-- Status badge --}}
     <div class="flex items-center gap-2 mb-6">
-        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold
+        <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-[0.375rem] text-xs font-semibold tabular-nums
             {{ $status['bg'] }} {{ $status['text'] }}">
             <span class="w-1.5 h-1.5 rounded-full {{ $status['dot'] }}"></span>
             {{ $status['label'] }}

@@ -38,6 +38,7 @@ class DashboardPanelProvider extends PanelProvider
             ->brandLogo(fn () => view('filament.dashboard.brand-logo'))
             ->favicon(asset('img/favicon-256.png'))
             ->darkMode(false)
+            ->databaseNotifications()
             ->login(Login::class)
             ->registration(Register::class)
             ->passwordReset(RequestPasswordReset::class, ResetPassword::class)

@@ -12,10 +12,10 @@
         ];
 
         $statusConfig = [
-            'available'   => ['label' => 'Beschikbaar',  'bg' => 'bg-green-50',  'text' => 'text-green-700',  'dot' => 'bg-green-500'],
-            'rented'      => ['label' => 'Verhuurd',     'bg' => 'bg-blue-50',   'text' => 'text-blue-700',   'dot' => 'bg-blue-500'],
-            'maintenance' => ['label' => 'Onderhoud',    'bg' => 'bg-yellow-50', 'text' => 'text-yellow-700', 'dot' => 'bg-yellow-500'],
-            'archived'    => ['label' => 'Gearchiveerd', 'bg' => 'bg-gray-100',  'text' => 'text-gray-600',   'dot' => 'bg-gray-400'],
+            'available'   => ['label' => 'Beschikbaar',  'bg' => 'bg-[#e7f6ec]', 'text' => 'text-[#15803d]', 'dot' => 'bg-[#15803d]'],
+            'rented'      => ['label' => 'Verhuurd',     'bg' => 'bg-[#eaf1f8]', 'text' => 'text-[#2e5884]', 'dot' => 'bg-[#2e5884]'],
+            'maintenance' => ['label' => 'Onderhoud',    'bg' => 'bg-[#fff3e0]', 'text' => 'text-[#c2510a]', 'dot' => 'bg-[#c2510a]'],
+            'archived'    => ['label' => 'Gearchiveerd', 'bg' => 'bg-[#e1e6ed]', 'text' => 'text-[#586573]', 'dot' => 'bg-[#586573]'],
         ];
     @endphp
 
@@ -27,8 +27,8 @@
     <div class="space-y-8">
 
         {{-- Hero --}}
-        <div class="w-full h-72 rounded-2xl overflow-hidden bg-gray-100 relative shadow-sm">
-            <div class="w-full h-full flex flex-col items-center justify-center gap-3 text-gray-300">
+        <div class="w-full h-72 rounded-2xl overflow-hidden bg-[#e1e6ed] relative shadow-sm">
+            <div class="w-full h-full flex flex-col items-center justify-center gap-3 text-[#9aa6b4]">
                 <svg class="w-16 h-16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
                     <path stroke-linecap="round" stroke-linejoin="round"
                           d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21" />
@@ -39,10 +39,10 @@
             {{-- Kamers badge --}}
             @if ($rooms->count())
                 <div class="absolute top-4 right-4">
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold shadow-sm bg-white/90 text-gray-700">
+                    <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-[0.375rem] text-xs font-semibold tabular-nums shadow-sm bg-[#0f1720] text-white">
                         {{ $rooms->count() }} {{ Str::plural('kamer', $rooms->count()) }}
                         @if ($availableCount)
-                            &middot; <span class="text-green-600">{{ $availableCount }} beschikbaar</span>
+                            &middot; <span class="text-[#caa12a]">{{ $availableCount }} beschikbaar</span>
                         @endif
                     </span>
                 </div>
@@ -51,7 +51,7 @@
 
         {{-- Titel & meta --}}
         <div>
-            <h1 class="text-4xl font-bold text-gray-900">{{ $record->name }}</h1>
+            <h1 class="text-4xl font-medium tracking-[-0.02em] text-[#0f1720]">{{ $record->name }}</h1>
             <p class="mt-1 text-gray-500 text-base">{{ $record->full_address }} &middot; {{ $record->country }}</p>
             @if ($record->description)
                 <div class="mt-4 prose prose-sm max-w-none text-gray-600">
@@ -62,8 +62,8 @@
 
         {{-- Locatie kaart --}}
         <div class="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
-            <h2 class="text-base font-semibold text-gray-900 mb-5 flex items-center gap-2">
-                <svg class="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+            <h2 class="text-sm font-semibold tracking-[-0.01em] text-[#0f1720] mb-5 flex items-center gap-2">
+                <svg class="w-4 h-4 text-[#9aa6b4]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
                     <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
                 </svg>
@@ -103,10 +103,10 @@
 
         <div>
             <div class="flex items-center justify-between mb-6">
-                <h2 class="text-xl font-semibold text-gray-900">
+                <h2 class="text-sm font-semibold tracking-[-0.01em] text-[#0f1720]">
                     Kamers
                     @if ($rooms->count())
-                        <span class="ml-2 inline-flex items-center justify-center w-6 h-6 rounded-full bg-gray-100 text-gray-600 text-xs font-semibold">
+                        <span class="ml-2 inline-flex items-center justify-center rounded-[0.375rem] px-2 py-0.5 bg-[#e1e6ed] text-[#586573] text-xs font-semibold tabular-nums">
                             {{ $rooms->count() }}
                         </span>
                     @endif
@@ -136,13 +136,13 @@
                            class="group flex flex-col bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden transition hover:shadow-md hover:border-gray-300">
 
                             {{-- Afbeelding --}}
-                            <div class="relative h-48 bg-gray-100 overflow-hidden">
+                            <div class="relative h-48 bg-[#e1e6ed] overflow-hidden">
                                 @if ($imageUrl)
                                     <img src="{{ $imageUrl }}"
                                          alt="{{ $room->title }}"
                                          class="w-full h-full object-cover transition group-hover:scale-105 duration-300">
                                 @else
-                                    <div class="w-full h-full flex flex-col items-center justify-center gap-2 text-gray-300">
+                                    <div class="w-full h-full flex flex-col items-center justify-center gap-2 text-[#9aa6b4]">
                                         <svg class="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
                                             <path stroke-linecap="round" stroke-linejoin="round"
                                                   d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75" />
@@ -153,7 +153,7 @@
 
                                 {{-- Status badge --}}
                                 <div class="absolute top-3 right-3">
-                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold shadow-sm
+                                    <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-[0.375rem] text-xs font-semibold tabular-nums shadow-sm
                                         {{ $status['bg'] }} {{ $status['text'] }}">
                                         <span class="w-1.5 h-1.5 rounded-full {{ $status['dot'] }}"></span>
                                         {{ $status['label'] }}
@@ -162,7 +162,7 @@
 
                                 {{-- Kamernummer badge --}}
                                 <div class="absolute top-3 left-3">
-                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-white/90 text-gray-700 shadow-sm">
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-[0.375rem] text-xs font-semibold tabular-nums bg-[#0f1720] text-white shadow-sm">
                                         #{{ $room->room_number }}
                                     </span>
                                 </div>
@@ -200,7 +200,7 @@
 
                                 {{-- Prijs --}}
                                 <div class="flex items-baseline gap-1">
-                                    <span class="text-xl font-bold text-gray-900">€ {{ number_format($room->price_per_month, 0, ',', '.') }}</span>
+                                    <span class="text-xl font-medium tracking-[-0.02em] tabular-nums text-[#0f1720]">€ {{ number_format($room->price_per_month, 0, ',', '.') }}</span>
                                     <span class="text-xs text-gray-400">/ maand</span>
                                 </div>
 

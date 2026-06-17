@@ -23,7 +23,9 @@ class FeaturedRoomsManager extends Widget
 
     public static function canView(): bool
     {
-        return auth()->user()?->hasRole('verhuurder') ?? false;
+        $user = auth()->user();
+
+        return ($user?->hasRole('verhuurder') ?? false) && $user->hasRooms();
     }
 
     /** Toggle a room's featured state (scoped to the landlord's own rooms). */
