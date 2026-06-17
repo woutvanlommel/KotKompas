@@ -4,8 +4,7 @@ namespace App\Filament\Dashboard\Widgets;
 
 use App\Models\Building;
 use App\Support\Score;
-use Filament\Widgets\StatsOverviewWidget;
-use Filament\Widgets\StatsOverviewWidget\Stat;
+use Filament\Widgets\Widget;
 use Illuminate\Database\Eloquent\Builder;
 
 /**
@@ -16,13 +15,13 @@ use Illuminate\Database\Eloquent\Builder;
  * de-anonymise reviews — with one tenant per room, the landlord would know
  * exactly who wrote what.
  */
-class ScoreOverview extends StatsOverviewWidget
+class ScoreOverview extends Widget
 {
+    protected string $view = 'filament.dashboard.widgets.score-overview';
+
     protected static ?int $sort = 4;
 
-    protected int|string|array $columnSpan = 'full';
-
-    protected ?string $heading = 'Score overzicht';
+    protected int|string|array $columnSpan = ['default' => 1, 'lg' => 5];
 
     // Scores only change on a review submit and the nightly
     // recompute — the 5s polling default is wasted queries here.
@@ -33,7 +32,7 @@ class ScoreOverview extends StatsOverviewWidget
         return auth()->user()?->hasRole('verhuurder') ?? false;
     }
 
-    protected function getStats(): array
+    protected function getViewData(): array
     {
         $landlord = auth()->user();
 
@@ -51,17 +50,18 @@ class ScoreOverview extends StatsOverviewWidget
             ->first();
 
         return [
-            Stat::make('Jouw verhuurderscore', $this->formatScore($landlord->landlord_score))
-                ->description($landlord->landlord_reviews_count > 0
-                    ? "Op basis van {$landlord->landlord_reviews_count} ".($landlord->landlord_reviews_count === 1 ? 'beoordeling' : 'beoordelingen').' — 50% kotkwaliteit, 50% communicatie'
-                    : 'Nog geen beoordelingen ontvangen')
-                ->color('info'),
-            Stat::make('Gemiddelde gebouwscore', $this->formatScore($averageScore !== null ? (float) $averageScore : null))
-                ->description($scoredCount > 0
-                    ? "Over {$scoredCount} ".($scoredCount === 1 ? 'beoordeeld gebouw' : 'beoordeelde gebouwen')
-                    : 'Nog geen beoordeelde gebouwen'),
-            Stat::make('Best scorend gebouw', $this->formatScore($bestBuilding?->score))
-                ->description($bestBuilding->name ?? 'Nog geen beoordeelde gebouwen'),
+            'landlordScore' => $this->formatScore($landlord->landlord_score),
+            'landlordReviewsCount' => $landlord->landlord_reviews_count,
+            'landlordDescription' => $landlord->landlord_reviews_count > 0
+                ? "Op basis van {$landlord->landlord_reviews_count} ".($landlord->landlord_reviews_count === 1 ? 'beoordeling' : 'beoordelingen').' — 50% kotkwaliteit, 50% communicatie'
+                : 'Nog geen beoordelingen ontvangen',
+            'averageScore' => $this->formatScore($averageScore !== null ? (float) $averageScore : null),
+            'scoredCount' => $scoredCount,
+            'averageDescription' => $scoredCount > 0
+                ? "Over {$scoredCount} ".($scoredCount === 1 ? 'beoordeeld gebouw' : 'beoordeelde gebouwen')
+                : 'Nog geen beoordeelde gebouwen',
+            'bestBuildingScore' => $this->formatScore($bestBuilding?->score),
+            'bestBuildingName' => $bestBuilding?->name ?? 'Nog geen beoordeelde gebouwen',
         ];
     }
 

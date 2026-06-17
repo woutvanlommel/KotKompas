@@ -21,18 +21,17 @@
             </a>
         </div>
     @else
-        {{-- Inactive: dim, dashed — clearly "not on yet". --}}
-        <div class="kk-rise rounded-[1.25rem] border border-dashed border-[#0f172033] bg-white/40 p-6">
-            <p class="text-[0.625rem] font-semibold uppercase tracking-[0.14em] text-[#586573]">Abonnement</p>
-            <p class="mt-2 text-[clamp(1.5rem,2vw,2rem)] font-medium leading-none tracking-[-0.02em] text-[#9aa6b4]">Geen actief plan</p>
-            <p class="mt-3 max-w-sm text-sm text-[#586573]">Kies een plan om koten uit te lichten en bovenaan de zoekresultaten te verschijnen.</p>
+        {{-- Inactive (Rule 5): zero-state recedes — hairline row, no display numeral, no navy CTA --}}
+        <div class="kk-rise flex items-center justify-between gap-4 rounded-[1.25rem] border border-[#0f17201f] bg-white px-6 py-4">
+            <div>
+                <p class="text-[0.625rem] font-semibold uppercase tracking-[0.14em] text-[#586573]">Abonnement</p>
+                <p class="mt-1.5 text-sm tracking-[-0.01em] text-[#586573]">Geen actief plan</p>
+            </div>
 
             <a href="{{ $manageUrl }}"
-               class="group mt-6 inline-flex h-11 items-center gap-3 rounded-[4px] bg-[#00101e] pl-5 pr-1.5 text-xs font-medium uppercase tracking-[0.04em] text-white transition-colors duration-300 hover:bg-[#001f3d]">
-                Kies een abonnement
-                <span class="inline-flex h-8 w-8 items-center justify-center rounded-[3px] bg-[#ff6700]">
-                    <svg class="h-4 w-4 transition-transform duration-500 ease-[cubic-bezier(0.65,0,0.35,1)] group-hover:translate-x-0.5 motion-reduce:transition-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round" /></svg>
-                </span>
+               class="group inline-flex shrink-0 items-center gap-1.5 text-sm font-medium tracking-[-0.01em] text-[#3a6ea5] transition-colors duration-300 hover:text-[#00101e] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3a6ea5] focus-visible:ring-offset-2">
+                Kies een plan
+                <svg class="h-3.5 w-3.5 transition-transform duration-500 ease-[cubic-bezier(0.65,0,0.35,1)] group-hover:translate-x-0.5 motion-reduce:transition-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round" /></svg>
             </a>
         </div>
     @endif

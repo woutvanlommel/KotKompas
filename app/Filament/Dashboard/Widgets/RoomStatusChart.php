@@ -23,8 +23,8 @@ class RoomStatusChart extends Widget
     private const STATUSES = [
         'available' => ['label' => 'Beschikbaar', 'color' => '#15803d'],
         'rented' => ['label' => 'Verhuurd', 'color' => '#3a6ea5'],
-        'maintenance' => ['label' => 'Onderhoud', 'color' => '#ff6700'],
-        'archived' => ['label' => 'Gearchiveerd', 'color' => '#9aa6b4'],
+        'maintenance' => ['label' => 'Onderhoud', 'color' => '#c2510a'],
+        'archived' => ['label' => 'Gearchiveerd', 'color' => '#586573'],
     ];
 
     public static function canView(): bool
@@ -43,16 +43,30 @@ class RoomStatusChart extends Widget
         $total = (int) $counts->sum();
 
         $segments = [];
+        $dominantStatus = null;
+        $dominantCount = -1;
         foreach (self::STATUSES as $status => $meta) {
             $count = (int) ($counts[$status] ?? 0);
             $segments[] = [
+                'status' => $status,
                 'label' => $meta['label'],
                 'color' => $meta['color'],
                 'count' => $count,
                 'pct' => $total > 0 ? round($count / $total * 100, 2) : 0,
             ];
+
+            // Dominant = highest count; tiebreak keeps the earlier status in
+            // declaration order (available > rented > maintenance > archived).
+            if ($count > $dominantCount) {
+                $dominantCount = $count;
+                $dominantStatus = $status;
+            }
         }
 
-        return ['segments' => $segments, 'total' => $total];
+        return [
+            'segments' => $segments,
+            'total' => $total,
+            'dominantStatus' => $dominantStatus,
+        ];
     }
 }

@@ -1907,3 +1907,21 @@ body:has(.fi-layout) .tippy-box[data-theme~="light"][data-placement^="right"] > 
 }
 @keyframes kk-vt-out { to { opacity: 0; transform: translateY(-1.5%); } }
 @keyframes kk-vt-in { from { opacity: 0; transform: translateY(2.5%); } }
+
+/* ===========================================================================
+   .kk-rise — opt-in per-card entrance (subscription-overview, messages-stats).
+   The kk-rise @keyframes are defined only inside the .kk-auth scope, so on the
+   dashboard the class was inert (flagged by the design review). Reuse the page's
+   own kk-page-in keyframe + timing token so these "moment" cards rise cohesively
+   with the page instead of out of sync. Reduced-motion guarded.
+   NB: a full per-widget staggered cascade across the bento is deferred — it needs
+   the live Filament v4 schema-grid DOM to target the correct nth-child selector.
+   ============================================================================ */
+@media (prefers-reduced-motion: no-preference) {
+    .fi-layout .kk-rise {
+        animation: kk-page-in 460ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    .fi-layout .kk-rise { animation: none; }
+}

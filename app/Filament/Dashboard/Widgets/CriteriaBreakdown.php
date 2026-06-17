@@ -20,7 +20,7 @@ class CriteriaBreakdown extends Widget
 
     protected static ?int $sort = 5;
 
-    protected int|string|array $columnSpan = 'full';
+    protected int|string|array $columnSpan = ['default' => 1, 'lg' => 7];
 
     // Scores only change on a review submit and the nightly recompute.
     protected ?string $pollingInterval = null;

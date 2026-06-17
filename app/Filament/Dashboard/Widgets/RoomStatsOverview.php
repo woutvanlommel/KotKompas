@@ -3,25 +3,24 @@
 namespace App\Filament\Dashboard\Widgets;
 
 use App\Models\Room;
-use Filament\Widgets\StatsOverviewWidget;
-use Filament\Widgets\StatsOverviewWidget\Stat;
+use Filament\Widgets\Widget;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Number;
 
-class RoomStatsOverview extends StatsOverviewWidget
+class RoomStatsOverview extends Widget
 {
+    protected string $view = 'filament.dashboard.widgets.room-stats-overview';
+
     protected static ?int $sort = 6;
 
     protected int|string|array $columnSpan = ['default' => 1, 'lg' => 5];
-
-    protected ?string $heading = 'Koten overzicht';
 
     public static function canView(): bool
     {
         return auth()->user()?->hasRole('verhuurder') ?? false;
     }
 
-    protected function getStats(): array
+    protected function getViewData(): array
     {
         $rooms = $this->roomsQuery();
 
@@ -31,11 +30,10 @@ class RoomStatsOverview extends StatsOverviewWidget
         $averagePrice = (clone $rooms)->whereNot('status', 'archived')->avg('price_per_month');
 
         return [
-            Stat::make('Koten verhuurd', "{$rented} van {$total}")
-                ->description("{$available} nog beschikbaar")
-                ->color('info'),
-            Stat::make('Gem. basishuur', $averagePrice !== null ? Number::currency((float) $averagePrice, 'EUR', 'nl_BE') : '—')
-                ->description('Per maand, excl. vaste kosten'),
+            'total' => $total,
+            'available' => $available,
+            'rented' => $rented,
+            'averagePrice' => $averagePrice !== null ? Number::currency((float) $averagePrice, 'EUR', 'nl_BE') : null,
         ];
     }
 
