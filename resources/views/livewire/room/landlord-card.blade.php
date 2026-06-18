@@ -3,7 +3,6 @@
         <p class="mb-4 inline-flex items-center gap-3 text-[0.625rem] font-medium uppercase tracking-[0.18em] text-ink/55">
             <span class="inline-block h-px w-9 bg-accent-500"></span> Verhuurder
         </p>
-        <h2 class="mb-6 text-xl font-medium tracking-[-0.02em]">Contact</h2>
 
         @if ($isOwn)
             {{-- Eigen kot --}}
