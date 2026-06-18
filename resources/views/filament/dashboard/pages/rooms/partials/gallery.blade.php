@@ -11,14 +11,14 @@
 
 <div x-data="{ selectMode: false, selected: [], coverLoading: null }"
      @gallery-deleted.window="selectMode = false; selected = []"
-     class="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
+     class="bg-white rounded-[1.25rem] border border-[#0f17201f] p-6">
 
     {{-- Header --}}
     <div class="flex items-center justify-between mb-5">
-        <h2 class="text-base font-semibold text-gray-900">
+        <h2 class="text-base font-medium tracking-[-0.01em] text-[#0f1720]">
             Foto's
             @if ($totalAll > 0)
-                <span class="ml-1.5 text-sm font-normal text-gray-400">({{ $totalAll }})</span>
+                <span class="ml-1.5 text-sm font-normal text-[#9aa6b4]">({{ $totalAll }})</span>
             @endif
         </h2>
 
@@ -36,7 +36,7 @@
                         Verwijder (<span x-text="selected.length"></span>)
                     </button>
                     <button @click="selectMode = false; selected = []"
-                            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-gray-500 hover:bg-gray-100 transition">
+                            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[4px] text-xs font-medium text-[#586573] hover:text-[#0f1720] hover:bg-[#e1e6ed] transition-colors">
                         Annuleren
                     </button>
                 </div>
@@ -46,7 +46,7 @@
             <template x-if="!selectMode">
                 <div class="flex items-center gap-2">
                     <button wire:click="mountAction('uploadGallery')"
-                            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-gray-500 hover:bg-gray-100 transition">
+                            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[4px] text-xs font-medium text-[#586573] hover:text-[#0f1720] hover:bg-[#e1e6ed] transition-colors">
                         <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/>
                         </svg>
@@ -54,7 +54,7 @@
                     </button>
                     @if ($total > 0)
                         <button @click="selectMode = true"
-                                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-gray-500 hover:bg-gray-100 transition">
+                                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[4px] text-xs font-medium text-[#586573] hover:text-[#0f1720] hover:bg-[#e1e6ed] transition-colors">
                             <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                             </svg>
@@ -66,10 +66,10 @@
 
             {{-- Paginering --}}
             @if ($totalPages > 1)
-                <div class="flex items-center gap-1 text-sm text-gray-500 border-l border-gray-200 pl-2 ml-1">
+                <div class="flex items-center gap-1 text-sm text-[#586573] border-l border-[#0f17201f] pl-2 ml-1">
                     <button wire:click="previousGalleryPage"
                             @disabled($page <= 1)
-                            class="p-1.5 rounded-lg hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition">
+                            class="p-1.5 rounded-[4px] hover:bg-[#e1e6ed] disabled:opacity-30 disabled:cursor-not-allowed transition">
                         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/>
                         </svg>
@@ -77,7 +77,7 @@
                     <span class="text-xs w-10 text-center">{{ $page }} / {{ $totalPages }}</span>
                     <button wire:click="nextGalleryPage({{ $totalPages }})"
                             @disabled($page >= $totalPages)
-                            class="p-1.5 rounded-lg hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition">
+                            class="p-1.5 rounded-[4px] hover:bg-[#e1e6ed] disabled:opacity-30 disabled:cursor-not-allowed transition">
                         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/>
                         </svg>
@@ -90,7 +90,7 @@
 
     {{-- Leeg --}}
     @if (! $coverMedia && $total === 0)
-        <div class="flex flex-col items-center justify-center py-12 text-center text-gray-400">
+        <div class="flex flex-col items-center justify-center py-12 text-center text-[#9aa6b4]">
             <svg class="w-10 h-10 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"/>
             </svg>
@@ -104,7 +104,7 @@
         <div class="relative">
             <div wire:loading wire:target="previousGalleryPage,nextGalleryPage"
                  class="absolute inset-0 z-10 bg-white/60 rounded-xl flex items-center justify-center">
-                <svg class="w-6 h-6 text-gray-400 animate-spin" fill="none" viewBox="0 0 24 24">
+                <svg class="w-6 h-6 text-[#9aa6b4] animate-spin" fill="none" viewBox="0 0 24 24">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"/>
                 </svg>
@@ -113,7 +113,7 @@
 
                 {{-- Cover --}}
                 @if ($coverMedia)
-                    <div class="relative aspect-[4/3] rounded-xl overflow-hidden bg-gray-100 group">
+                    <div class="relative aspect-[4/3] rounded-xl overflow-hidden bg-[#edf0f4] group">
                         <img src="{{ $coverMedia->getUrl('webp') ?: $coverMedia->getUrl() }}"
                              alt="{{ $coverMedia->name }}"
                              class="w-full h-full object-cover">
@@ -137,7 +137,7 @@
 
                 {{-- Gallery items --}}
                 @foreach ($slice as $media)
-                    <div class="relative aspect-[4/3] rounded-xl overflow-hidden bg-gray-100 group"
+                    <div class="relative aspect-[4/3] rounded-xl overflow-hidden bg-[#edf0f4] group"
                          :class="{ 'cursor-pointer': selectMode }"
                          @click="if (selectMode) { selected.includes({{ $media->id }}) ? selected = selected.filter(id => id !== {{ $media->id }}) : selected.push({{ $media->id }}) }">
 
