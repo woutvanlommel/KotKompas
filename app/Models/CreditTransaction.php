@@ -17,4 +17,17 @@ class CreditTransaction extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    /** Leesbare omschrijving van de mutatie (afgeleid uit reason). */
+    public function label(): string
+    {
+        if (str_starts_with($this->reason, 'unlock_landlord:')) {
+            return 'Verhuurder ontgrendeld';
+        }
+
+        return match ($this->reason) {
+            'pack_purchase' => 'Credits gekocht',
+            default => ucfirst(str_replace('_', ' ', $this->reason)),
+        };
+    }
 }

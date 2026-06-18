@@ -44,6 +44,12 @@ class CreditPackForm
                     ->label('Actief')
                     ->columnSpanFull()
                     ->default(true),
+
+                Toggle::make('is_featured')
+                    ->label('Aanbevolen')
+                    ->helperText('Geeft deze bundel het "Aanbevolen"-accent op de kooppagina.')
+                    ->columnSpanFull()
+                    ->default(false),
             ]);
     }
 }

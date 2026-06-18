@@ -3,7 +3,6 @@
 namespace App\Filament\Dashboard\Pages;
 
 use App\Models\CreditPack;
-use App\Models\CreditTransaction;
 use App\Services\CreditService;
 use App\Services\FilamentNotificationService;
 use BackedEnum;
@@ -75,23 +74,20 @@ class Credits extends Page
         return auth()->user()
             ->creditTransactions()
             ->latest()
-            ->limit(5)
+            ->limit(4)
             ->get();
     }
 
-    /** Leesbare omschrijving voor een ledgerrij. */
-    public function transactionLabel(CreditTransaction $transaction): string
+    /** Of er meer transacties zijn dan de preview toont. */
+    public function hasMoreTransactions(): bool
     {
-        $reason = $transaction->reason;
+        return auth()->user()->creditTransactions()->count() > 4;
+    }
 
-        if (str_starts_with($reason, 'unlock_landlord:')) {
-            return 'Verhuurder ontgrendeld';
-        }
-
-        return match ($reason) {
-            'pack_purchase' => 'Credits gekocht',
-            default => ucfirst(str_replace('_', ' ', $reason)),
-        };
+    /** URL van de volledige (gepagineerde) geschiedenis. */
+    public function historyUrl(): string
+    {
+        return CreditHistory::getUrl();
     }
 
     // -------------------------------------------------------------------------

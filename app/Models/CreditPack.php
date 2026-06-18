@@ -6,13 +6,14 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 
-#[Fillable(['name', 'credits', 'price', 'is_active', 'sort_order'])]
+#[Fillable(['name', 'credits', 'price', 'is_active', 'is_featured', 'sort_order'])]
 class CreditPack extends Model
 {
     protected $casts = [
         'credits' => 'integer',
         'price' => 'integer', // in cents
         'is_active' => 'boolean',
+        'is_featured' => 'boolean',
     ];
 
     /** Prijs in euro's (afgeleid van cents). */

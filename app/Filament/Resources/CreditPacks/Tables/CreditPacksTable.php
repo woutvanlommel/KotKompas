@@ -30,6 +30,9 @@ class CreditPacksTable
                 IconColumn::make('is_active')
                     ->label('Actief')
                     ->boolean(),
+                IconColumn::make('is_featured')
+                    ->label('Aanbevolen')
+                    ->boolean(),
                 TextColumn::make('sort_order')
                     ->label('Volgorde')
                     ->numeric()

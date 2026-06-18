@@ -47,8 +47,8 @@ class CreditPackResource extends Resource
     {
         return [
             'index' => ListCreditPacks::route('/'),
-            'create' => CreateCreditPack::route('/create'),
-            'edit' => EditCreditPack::route('/{record}/edit'),
+            // 'create' => CreateCreditPack::route('/create'),
+            // 'edit' => EditCreditPack::route('/{record}/edit'),
         ];
     }
 }
