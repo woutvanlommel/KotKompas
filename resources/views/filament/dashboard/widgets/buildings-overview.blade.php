@@ -79,7 +79,7 @@
                             <p class="text-[0.625rem] font-semibold uppercase tracking-[0.12em] text-[#586573]">Kotscore</p>
                             @if ($hasReviews)
                                 <span class="inline-flex items-baseline gap-1 text-xs tabular-nums">
-                                    <span class="text-[#3a6ea5]" aria-hidden="true">&starf;</span>
+                                    <span class="text-[#caa12a]" aria-hidden="true">&starf;</span>
                                     <span class="font-medium {{ $building->score < 3.5 ? 'border-b border-[#c2510a]/30 text-[#c2510a]' : 'text-[#0f1720]' }}">{{ \App\Support\Score::format($building->score) }}</span>
                                     <span class="text-[0.6875rem] text-[#586573]">({{ $building->reviews_count }})</span>
                                 </span>

@@ -9,23 +9,23 @@ use Filament\Widgets\Widget;
 use Illuminate\Database\Eloquent\Collection;
 
 /**
- * Dashboard card to feature ("uitlichten") rooms in one click, without digging
- * into a building. Lists the landlord's available rooms with a star toggle and
- * shows how many featured slots are in use.
+ * Dashboard card combining the landlord's subscription summary (plan, status,
+ * renewal, manage link) with featured-slot usage and one-click "uitlichten"
+ * toggles per room — one home for everything about featuring koten.
  */
 class FeaturedRoomsManager extends Widget
 {
     protected static ?int $sort = 1;
 
-    protected int|string|array $columnSpan = ['default' => 1, 'lg' => 7];
+    protected int|string|array $columnSpan = 'full';
 
     protected string $view = 'filament.dashboard.widgets.featured-rooms-manager';
 
     public static function canView(): bool
     {
-        $user = auth()->user();
-
-        return ($user?->hasRole('verhuurder') ?? false) && $user->hasRooms();
+        // Visible to every landlord — the subscription summary shows even before
+        // they have rooms; the room list simply stays empty until then.
+        return auth()->user()?->hasRole('verhuurder') ?? false;
     }
 
     /** Toggle a room's featured state (scoped to the landlord's own rooms). */
@@ -58,6 +58,10 @@ class FeaturedRoomsManager extends Widget
             'groups' => $this->getRooms()->groupBy(fn (Room $room) => $room->building->name),
             'slotsUsed' => $user->featuredSlotsUsed(),
             'slotsTotal' => $plan ? (int) config("subscriptions.featured_slots.{$plan->value}", 0) : 0,
+            'remainingSlots' => $plan ? $user->remainingFeaturedSlots() : 0,
+            'isSubscribed' => $plan !== null,
+            'planLabel' => $plan?->label(),
+            'renewsAt' => $plan ? $user->subscriptionRenewsAt() : null,
             'manageUrl' => Subscription::getUrl(),
         ];
     }
