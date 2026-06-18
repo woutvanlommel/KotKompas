@@ -200,6 +200,7 @@ class Documents extends Page
                             ->toMediaCollection('document');
 
                         ProcessDocumentOcr::dispatch($document);
+                        $document->update(['ocr_status' => Document::OCR_PENDING]);
                     }
 
                     Notification::make()
