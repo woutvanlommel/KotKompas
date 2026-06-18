@@ -1,16 +1,13 @@
-// @ts-ignore — Livewire's ESM-build heeft geen meegeleverde types
-import { Livewire, Alpine } from "../../vendor/livewire/livewire/dist/livewire.esm";
+import Alpine from "alpinejs";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SplitText } from "gsap/SplitText";
 import Lenis from "lenis";
 import { initSearchSuggest } from "./search-suggest";
 
-// Eén Alpine-instantie: die van Livewire. Livewire.start() start Alpine zelf,
-// dus we roepen Alpine.start() NIET apart aan (anders twee instanties).
-// Dashboard/Filament heeft zijn eigen, losstaande setup.
+// Alpine op de publieke pagina's (dashboard/Filament heeft eigen instantie)
 (window as unknown as Record<string, unknown>).Alpine = Alpine;
-Livewire.start();
+Alpine.start();
 
 gsap.registerPlugin(ScrollTrigger, SplitText);
 

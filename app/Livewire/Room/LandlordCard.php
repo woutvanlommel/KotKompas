@@ -19,21 +19,28 @@ class LandlordCard extends Component
     #[Locked]
     public int $roomId;
 
-    public bool $showForm = false;
-
     #[Validate('required|string|max:5000')]
     public string $body = '';
 
-    // Vluchtige melding (verdwijnt vanzelf in de UI).
-    public ?string $flashType = null;
+    // Inline statussen (geen notificatie-banner — past niet bij de stijl).
+    public bool $sent = false;
 
-    public ?string $flashMessage = null;
-
-    public int $flashTick = 0;
+    public ?string $unlockError = null;
 
     public function mount(int $roomId): void
     {
         $this->roomId = $roomId;
+    }
+
+    /**
+     * Gast: bewaar dit kot als terugkeer-URL (Filament's LoginResponse gebruikt
+     * redirect()->intended()) en stuur door naar de login.
+     */
+    public function loginToUnlock()
+    {
+        session()->put('url.intended', route('rooms.show', $this->roomId));
+
+        return $this->redirect(route('filament.dashboard.auth.login'), navigate: false);
     }
 
     /** Ontgrendel de verhuurder met credits — zonder page refresh. */
@@ -60,9 +67,9 @@ class LandlordCard extends Component
 
         try {
             app(LandlordUnlockService::class)->unlock($user, $landlord);
-            $this->setFlash('success', 'De gegevens van de verhuurder zijn ontgrendeld.');
+            $this->unlockError = null;
         } catch (InsufficientCreditsException) {
-            $this->setFlash('error', 'Je hebt niet genoeg credits om deze verhuurder te ontgrendelen.');
+            $this->unlockError = 'Je hebt niet genoeg credits om deze verhuurder te ontgrendelen.';
         }
     }
 
@@ -98,27 +105,7 @@ class LandlordCard extends Component
         MessageSent::dispatch($message->load('sender'));
 
         $this->reset('body');
-        $this->showForm = false;
-        $this->setFlash('success', 'Je bericht is verstuurd naar de verhuurder. Je vindt het terug bij Berichten in je dashboard.');
-    }
-
-    /**
-     * Gast: bewaar dit kot als terugkeer-URL (Filament's LoginResponse gebruikt
-     * redirect()->intended()) en stuur door naar de login. Na inloggen kom je
-     * dus terug op deze kotpagina.
-     */
-    public function loginToUnlock()
-    {
-        session()->put('url.intended', route('rooms.show', $this->roomId));
-
-        return $this->redirect(route('filament.dashboard.auth.login'), navigate: false);
-    }
-
-    protected function setFlash(string $type, string $message): void
-    {
-        $this->flashType = $type;
-        $this->flashMessage = $message;
-        $this->flashTick++;
+        $this->sent = true;
     }
 
     public function render(): View
