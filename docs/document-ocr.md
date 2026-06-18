@@ -15,6 +15,24 @@ For this to work end-to-end on a developer machine, you need three things: **API
 
 ---
 
+## Where the code lives
+
+| File | Responsibility |
+|------|----------------|
+| `app/Jobs/ProcessDocumentOcr.php` | The core job: calls OCR.Space, keeps partial text on the 3-page free-tier limit, calls Gemini for the description, and sets `ocr_status`. |
+| `app/Filament/Dashboard/Pages/Documents.php` | Upload action — attaches media, sets `ocr_status = pending`, dispatches the job; also queries the documents shown on the page. |
+| `resources/views/filament/dashboard/pages/documents.blade.php` | UI — renders the foldable description, the "Wordt geanalyseerd…" / "Analyse mislukt" status badges, the `wire:poll` auto-refresh, and the PDF page-1 thumbnail. |
+| `app/Models/Document.php` | `ocr_status`/`ocr_text`/`description` fillable, the `OCR_*` status constants, and the `thumbnail` media conversion. |
+| `config/services.php` | `gemini.key` + `gemini.model`, and `ocr_space.key`. |
+| `database/migrations/2026_06_18_154221_add_ocr_status_to_documents_table.php` | Adds the `ocr_status` column. (`ocr_text` and `description` come from the `create_documents` and `add_description_to_documents` migrations.) |
+| `tests/Feature/ProcessDocumentOcrTest.php` | Job tests: happy path, page-limit partial, hard failure, no-media guard. |
+| `tests/Feature/DocumentUploadTest.php` | Upload dispatches the job and sets `ocr_status = pending`. |
+
+> The OCR.Space client config (`config('ocr-space.*')` — `api_url`, `api_key`, `timeout`) is
+> provided by the `cdsmths/laravel-ocr-space` package and isn't published into `config/`.
+
+---
+
 ## 1. API keys
 
 Add these to your `.env` (placeholders are in `.env.example`):
