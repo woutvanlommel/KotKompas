@@ -13,6 +13,21 @@ use App\Models\Room;
 
 class RoomObserver
 {
+    /**
+     * A room that leaves "available" (rented, maintenance, archived) is no
+     * longer publicly listed, so it must release its featured ("uitgelicht")
+     * slot — otherwise a hidden room keeps consuming a subscription slot. Done
+     * in `saving` so it persists in the same write, regardless of which action
+     * changed the status (tenant link, table action, wizard, …).
+     */
+    public function saving(Room $room): void
+    {
+        if ($room->isDirty('status') && $room->status !== 'available' && $room->is_featured) {
+            $room->is_featured = false;
+            $room->featured_until = null;
+        }
+    }
+
     public function updated(Room $room): void
     {
         if (! $room->wasChanged('tenant_id')) {
