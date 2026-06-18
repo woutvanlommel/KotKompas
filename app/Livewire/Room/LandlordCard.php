@@ -42,7 +42,7 @@ class LandlordCard extends Component
         $user = auth()->user();
 
         if (! $user) {
-            $this->redirect(url('/dashboard/login'), navigate: true);
+            $this->loginToUnlock();
 
             return;
         }
@@ -100,6 +100,18 @@ class LandlordCard extends Component
         $this->reset('body');
         $this->showForm = false;
         $this->setFlash('success', 'Je bericht is verstuurd naar de verhuurder. Je vindt het terug bij Berichten in je dashboard.');
+    }
+
+    /**
+     * Gast: bewaar dit kot als terugkeer-URL (Filament's LoginResponse gebruikt
+     * redirect()->intended()) en stuur door naar de login. Na inloggen kom je
+     * dus terug op deze kotpagina.
+     */
+    public function loginToUnlock()
+    {
+        session()->put('url.intended', route('rooms.show', $this->roomId));
+
+        return $this->redirect(route('filament.dashboard.auth.login'), navigate: false);
     }
 
     protected function setFlash(string $type, string $message): void

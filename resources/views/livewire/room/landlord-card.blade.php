@@ -3,7 +3,6 @@
         <p class="mb-4 inline-flex items-center gap-3 text-[0.625rem] font-medium uppercase tracking-[0.18em] text-ink/55">
             <span class="inline-block h-px w-9 bg-accent-500"></span> Verhuurder
         </p>
-        <h2 class="mb-6 text-xl font-medium tracking-[-0.02em]">Contact</h2>
 
         {{-- Vluchtige melding (verdwijnt vanzelf, geen page refresh) --}}
         @if ($flashMessage)
@@ -127,10 +126,10 @@
                     </p>
 
                     @guest
-                        <a href="{{ url('/dashboard/login') }}"
-                           class="mt-1 inline-flex h-11 items-center justify-center rounded-[4px] bg-primary-900 px-5 text-xs font-medium uppercase tracking-[0.04em] text-white transition-colors duration-300 hover:bg-ink">
+                        <button type="button" wire:click="loginToUnlock"
+                                class="mt-1 inline-flex h-11 items-center justify-center rounded-[4px] bg-primary-900 px-5 text-xs font-medium uppercase tracking-[0.04em] text-white transition-colors duration-300 hover:bg-ink">
                             Log in om te ontgrendelen
-                        </a>
+                        </button>
                     @else
                         @if ($isHuurder)
                             @if ($balance >= $cost)
