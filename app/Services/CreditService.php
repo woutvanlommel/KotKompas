@@ -18,8 +18,10 @@ class CreditService
     /**
      * Credits bijschrijven. Idempotent op stripe_session_id.
      * Geeft null terug als de sessie al verwerkt was.
+     *
+     * @param  int|null  $amountPaid  Werkelijk betaald bedrag in cents (snapshot, voor weergave).
      */
-    public function add(User $user, int $amount, string $reason, ?string $stripeSessionId = null): ?CreditTransaction
+    public function add(User $user, int $amount, string $reason, ?string $stripeSessionId = null, ?int $amountPaid = null): ?CreditTransaction
     {
         if ($amount <= 0) {
             throw new \InvalidArgumentException('Bedrag moet positief zijn.');
@@ -36,6 +38,7 @@ class CreditService
             /** @var CreditTransaction $transaction */
             $transaction = $user->creditTransactions()->create([
                 'amount' => $amount,
+                'amount_paid' => $amountPaid,
                 'reason' => $reason,
                 'stripe_session_id' => $stripeSessionId,
             ]);

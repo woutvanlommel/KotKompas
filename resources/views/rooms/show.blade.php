@@ -41,6 +41,7 @@
                     <x-room.score :room="$room" :breakdown="$scoreBreakdown" />
                     <x-room.map :room="$room" />
                     <x-room.pricing :room="$room" />
+                    <x-room.landlord :room="$room" :can-view="$canViewLandlord" :unlock-cost="$unlockCost" />
                 </div>
 
             </div>

@@ -44,12 +44,14 @@ class AddPurchasedCredits
         $user = User::find($metadata['user_id'] ?? null);
         $credits = (int) ($metadata['credits'] ?? 0);
         $sessionId = $session['id'] ?? null;
+        // Werkelijk betaald bedrag in cents — snapshot voor weergave in de geschiedenis.
+        $amountPaid = isset($session['amount_total']) ? (int) $session['amount_total'] : null;
 
         if (! $user || $credits <= 0 || ! $sessionId) {
             return;
         }
 
         // Idempotent: dubbele webhook met dezelfde session-ID schrijft niet dubbel bij.
-        $this->credits->add($user, $credits, 'pack_purchase', $sessionId);
+        $this->credits->add($user, $credits, 'pack_purchase', $sessionId, $amountPaid);
     }
 }

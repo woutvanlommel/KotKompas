@@ -46,6 +46,12 @@ class CreditHistory extends Page implements HasTable
                     ->label('Omschrijving')
                     ->formatStateUsing(fn ($state, CreditTransaction $record): string => $record->label()),
 
+                TextColumn::make('amount_paid')
+                    ->label('Betaald')
+                    ->alignEnd()
+                    ->placeholder('—')
+                    ->formatStateUsing(fn (?int $state): string => $state !== null ? '€ '.number_format($state / 100, 2, ',', '.') : '—'),
+
                 TextColumn::make('amount')
                     ->label('Aantal')
                     ->badge()

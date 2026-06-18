@@ -35,6 +35,9 @@ Route::get('/koten/{room}', [RoomController::class, 'show'])->name('rooms.show')
 Route::post('/koten/{room}/bericht', [RoomController::class, 'contact'])
     ->middleware(['auth', 'throttle:10,1'])
     ->name('rooms.contact');
+Route::post('/koten/{room}/ontgrendel', [RoomController::class, 'unlockLandlord'])
+    ->middleware(['auth', 'throttle:10,1'])
+    ->name('rooms.unlock-landlord');
 
 Route::get('/contact', [ContactController::class, 'show'])->name('contact');
 Route::post('/contact', [ContactController::class, 'store'])

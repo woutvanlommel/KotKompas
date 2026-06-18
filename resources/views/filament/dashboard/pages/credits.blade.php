@@ -122,7 +122,9 @@
                             </span>
                             <div class="min-w-0">
                                 <p class="truncate text-sm font-medium tracking-[-0.01em] text-[#0f1720]">{{ $transaction->label() }}</p>
-                                <p class="text-xs tracking-[-0.01em] text-[#586573]">{{ $transaction->created_at?->locale('nl')->isoFormat('D MMMM YYYY') }}</p>
+                                <p class="text-xs tracking-[-0.01em] text-[#586573]">
+                                    {{ $transaction->created_at?->locale('nl')->isoFormat('D MMMM YYYY') }}@if ($transaction->amount_paid !== null) · &euro;&nbsp;{{ number_format($transaction->amount_paid / 100, 2, ',', '.') }} betaald @endif
+                                </p>
                             </div>
                         </div>
                         <span @class([
