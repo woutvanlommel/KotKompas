@@ -28,3 +28,6 @@ Thumbs.db
 docs/*
 !docs/document-ocr.md
 
+# Spatie Media Library scratch space (temp copies created during conversions/regenerate)
+/storage/media-library/temp/
+
