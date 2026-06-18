@@ -92,8 +92,10 @@ class ProcessDocumentOcr implements ShouldQueue
         $prompt = "Beschrijf in 2 a 3 zinnen in het Nederlands wat voor document dit is, op basis van de onderstaande OCR-tekst. Geef enkel de beschrijving terug, zonder inleiding.\n\n"
             .Str::limit($text, 3000, '');
 
+        $model = config('services.gemini.model');
+
         $response = Http::post(
-            'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key='.config('services.gemini.key'),
+            'https://generativelanguage.googleapis.com/v1beta/models/'.$model.':generateContent?key='.config('services.gemini.key'),
             [
                 'contents' => [
                     ['parts' => [['text' => $prompt]]],
