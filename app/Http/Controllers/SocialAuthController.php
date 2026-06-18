@@ -113,10 +113,13 @@ class SocialAuthController extends Controller
         request()->session()->regenerate(); // prevent session fixation
 
         // No role yet → force the one-time role choice before entering the panel.
+        // De intended-URL blijft in de sessie staan en wordt na de rolkeuze gebruikt.
         if (! $user->hasAnyRole(['huurder', 'verhuurder'])) {
             return redirect()->route('onboarding.role');
         }
 
-        return redirect()->to(filament()->getPanel('dashboard')->getUrl());
+        // Honor de bewaarde terugkeer-URL (bv. de kotpagina vanwaar werd ingelogd),
+        // net als de gewone login (Filament's LoginResponse doet ook intended()).
+        return redirect()->intended(filament()->getPanel('dashboard')->getUrl());
     }
 }

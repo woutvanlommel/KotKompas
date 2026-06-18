@@ -12,7 +12,7 @@ class OnboardingController extends Controller
     {
         // Already has a role → nothing to choose.
         if (auth()->user()->hasAnyRole(['huurder', 'verhuurder'])) {
-            return redirect()->to(filament()->getPanel('dashboard')->getUrl());
+            return redirect()->intended(filament()->getPanel('dashboard')->getUrl());
         }
 
         return view('onboarding.role');
@@ -31,6 +31,6 @@ class OnboardingController extends Controller
             $user->assignRole($data['role']);
         }
 
-        return redirect()->to(filament()->getPanel('dashboard')->getUrl());
+        return redirect()->intended(filament()->getPanel('dashboard')->getUrl());
     }
 }
