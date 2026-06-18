@@ -2013,6 +2013,18 @@ body:has(.fi-layout) .tippy-box[data-theme~="light"][data-placement^="right"] > 
     from { opacity: 0; transform: translateY(14px); }
     to { opacity: 1; transform: none; }
 }
+/* The kk-page-in animation puts a transform on .fi-page. A transformed ancestor
+   becomes the containing block for any position:fixed descendant — and Filament
+   modals render nested inside .fi-page (not teleported to <body>). With the
+   transform present, an open slide-over anchors to .fi-page instead of the
+   viewport, so the page scrolls instead of the modal and a tall form's confirm
+   button ends up off-screen. While a modal is open, drop the transform so the
+   modal anchors to the viewport again (the entrance animation has already run by
+   then, so there's no visual regression). */
+.fi-layout .fi-page:has(.fi-modal-open) {
+    animation: none !important;
+    transform: none !important;
+}
 
 /* Cross-document view transition — the public site's "push-up" carried into the
    dashboard, so full-document navigations (and the public ↔ dashboard crossing)
