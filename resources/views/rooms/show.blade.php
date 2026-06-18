@@ -35,16 +35,32 @@
 
                 <x-room.gallery :room="$room" />
 
-                <div class="mt-10 space-y-12 md:mt-16 md:space-y-16">
+                <div class="mt-10 md:mt-16">
                     <x-room.description :room="$room" />
+                </div>
+
+            </div>
+
+        </div>
+
+        {{-- Verhuurder-kaart bewust BUITEN de Alpine x-data wrapper: Livewire's
+             wire:-directives initialiseren niet binnen een (aparte) Alpine-subtree. --}}
+        <div class="mt-12 md:mt-16">
+            <livewire:room.landlord-card :room-id="$room->id" />
+        </div>
+
+        <div x-data="{ ready: false }" x-init="$nextTick(() => ready = true)" class="mt-12 md:mt-16">
+            <div style="display:none" x-show="ready"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0"
+                 x-transition:enter-end="opacity-100">
+                <div class="space-y-12 md:space-y-16">
                     <x-room.facilities :room="$room" />
                     <x-room.score :room="$room" :breakdown="$scoreBreakdown" />
                     <x-room.map :room="$room" />
                     <x-room.pricing :room="$room" />
                 </div>
-
             </div>
-
         </div>
 
     </section>

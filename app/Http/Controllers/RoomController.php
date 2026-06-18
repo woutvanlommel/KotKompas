@@ -127,6 +127,8 @@ class RoomController extends Controller
 
         $scoreBreakdown = $room->reviews_count > 0 ? $kotScoreService->criteriaBreakdown($room) : null;
 
+        // De verhuurder-/ontgrendelkaart is een Livewire-component (<livewire:room.landlord-card>)
+        // die toegang, saldo en kost zelf bepaalt.
         return view('rooms.show', compact('room', 'scoreBreakdown'));
     }
 
