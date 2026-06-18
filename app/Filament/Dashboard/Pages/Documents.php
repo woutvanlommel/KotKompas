@@ -199,8 +199,8 @@ class Documents extends Page
                             ->addMediaFromDisk($data['file'], 'public')
                             ->toMediaCollection('document');
 
-                        ProcessDocumentOcr::dispatch($document);
                         $document->update(['ocr_status' => Document::OCR_PENDING]);
+                        ProcessDocumentOcr::dispatch($document);
                     }
 
                     Notification::make()
