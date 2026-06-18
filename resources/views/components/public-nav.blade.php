@@ -43,23 +43,49 @@
             @endforeach
         </nav>
 
-        {{-- ── CTA cluster: ghost Inloggen · primary Verhuur je kot ────────── --}}
+        {{-- ── CTA cluster: guests see Inloggen · Verhuur je kot — auth'd users
+             see a profile chip · Dashboard ──────────────────────────────── --}}
         <div class="flex items-center gap-2.5">
-            <a href="{{ url('/dashboard/login') }}"
-               class="hidden h-11 items-center rounded-[4px] border border-hairline px-5 text-[0.85rem] font-medium text-ink transition-colors hover:border-ink/30 hover:bg-ink/[0.04] sm:inline-flex">
-                Inloggen
-            </a>
+            @guest
+                <a href="{{ url('/dashboard/login') }}"
+                   class="hidden h-11 items-center rounded-[4px] border border-hairline px-5 text-[0.85rem] font-medium text-ink transition-colors hover:border-ink/30 hover:bg-ink/[0.04] sm:inline-flex">
+                    Inloggen
+                </a>
 
-            {{-- Primary: reuse the auth-signature pill + sliding arrow chip --}}
-            <a href="{{ url('/dashboard/register') }}"
-               class="kk-cta kk-cta--ink hidden sm:inline-flex"
-               data-magnetic="0.18">
-                Verhuur je kot
-                <span class="kk-cta-chip">
-                    <svg class="kk-cta-arrow kk-cta-arrow--out" viewBox="0 0 16 16" fill="none"><path d="M3 13L13 3M13 3H5M13 3V11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                    <svg class="kk-cta-arrow kk-cta-arrow--in" viewBox="0 0 16 16" fill="none"><path d="M3 13L13 3M13 3H5M13 3V11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                </span>
-            </a>
+                {{-- Primary: reuse the auth-signature pill + sliding arrow chip --}}
+                <a href="{{ url('/dashboard/register') }}"
+                   class="kk-cta kk-cta--ink hidden sm:inline-flex"
+                   data-magnetic="0.18">
+                    Verhuur je kot
+                    <span class="kk-cta-chip">
+                        <svg class="kk-cta-arrow kk-cta-arrow--out" viewBox="0 0 16 16" fill="none"><path d="M3 13L13 3M13 3H5M13 3V11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        <svg class="kk-cta-arrow kk-cta-arrow--in" viewBox="0 0 16 16" fill="none"><path d="M3 13L13 3M13 3H5M13 3V11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </span>
+                </a>
+            @endguest
+
+            @auth
+                {{-- Profile chip → avatar + first name, links to the profile page --}}
+                <a href="{{ route('filament.dashboard.pages.profile') }}"
+                   class="group hidden h-11 items-center gap-2.5 rounded-[4px] border border-hairline px-2.5 pr-4 text-[0.85rem] font-medium text-ink transition-colors hover:border-ink/30 hover:bg-ink/[0.04] sm:inline-flex"
+                   aria-label="Naar je profiel">
+                    <img src="{{ \Filament\Facades\Filament::getUserAvatarUrl(auth()->user()) }}"
+                         alt="{{ auth()->user()->full_name }}"
+                         class="h-8 w-8 rounded-full object-cover ring-1 ring-hairline" />
+                    <span>{{ auth()->user()->name }}</span>
+                </a>
+
+                {{-- Primary: Dashboard — reuse the auth-signature pill + arrow chip --}}
+                <a href="{{ route('filament.dashboard.pages.dashboard') }}"
+                   class="kk-cta kk-cta--ink hidden sm:inline-flex"
+                   data-magnetic="0.18">
+                    Dashboard
+                    <span class="kk-cta-chip">
+                        <svg class="kk-cta-arrow kk-cta-arrow--out" viewBox="0 0 16 16" fill="none"><path d="M3 13L13 3M13 3H5M13 3V11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        <svg class="kk-cta-arrow kk-cta-arrow--in" viewBox="0 0 16 16" fill="none"><path d="M3 13L13 3M13 3H5M13 3V11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </span>
+                </a>
+            @endauth
 
             {{-- Mobile menu toggle (opens fullscreen overlay) --}}
             <button type="button"
@@ -103,7 +129,9 @@
                 ['label' => 'Koten',     'href' => route('rooms.index')],
                 ['label' => 'FAQ',       'href' => route('faq')],
                 ['label' => 'Contact',   'href' => route('contact')],
-                ['label' => 'Inloggen',  'href' => url('/dashboard/login')],
+                auth()->check()
+                    ? ['label' => 'Dashboard', 'href' => route('filament.dashboard.pages.dashboard')]
+                    : ['label' => 'Inloggen',  'href' => url('/dashboard/login')],
             ];
         @endphp
         @foreach ($overlayLinks as $i => $link)
