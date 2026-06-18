@@ -66,8 +66,13 @@
                         <span class="kk-num text-[0.72rem] text-accent-500">02</span> Account
                     </p>
                     <ul class="mt-5 space-y-3 text-sm text-ink">
-                        <li><a href="{{ url('/dashboard/login') }}" class="inline-block transition-colors hover:text-secondary-600">Inloggen</a></li>
-                        <li><a href="{{ url('/dashboard/register') }}" class="inline-block transition-colors hover:text-secondary-600">Registreren</a></li>
+                        @guest
+                            <li><a href="{{ url('/dashboard/login') }}" class="inline-block transition-colors hover:text-secondary-600">Inloggen</a></li>
+                            <li><a href="{{ url('/dashboard/register') }}" class="inline-block transition-colors hover:text-secondary-600">Registreren</a></li>
+                        @else
+                            <li><a href="{{ route('filament.dashboard.pages.dashboard') }}" class="inline-block transition-colors hover:text-secondary-600">Dashboard</a></li>
+                            <li><a href="{{ route('filament.dashboard.pages.profile') }}" class="inline-block transition-colors hover:text-secondary-600">Profiel</a></li>
+                        @endguest
                         <li><a href="{{ url('/dashboard/register') }}" class="inline-block transition-colors hover:text-secondary-600">Verhuur je kot</a></li>
                     </ul>
                 </div>
