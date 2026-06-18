@@ -9,10 +9,18 @@ use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
-#[Fillable(['user_id', 'name', 'rental_period_id', 'type', 'is_public', 'blocks', 'status', 'ocr_text', 'description'])]
+#[Fillable(['user_id', 'name', 'rental_period_id', 'type', 'is_public', 'blocks', 'status', 'ocr_text', 'description', 'ocr_status'])]
 class Document extends Model implements HasMedia
 {
     use InteractsWithMedia;
+
+    public const OCR_PENDING = 'pending';
+
+    public const OCR_PROCESSING = 'processing';
+
+    public const OCR_DONE = 'done';
+
+    public const OCR_FAILED = 'failed';
 
     /** @return BelongsTo<User, $this> */
     public function user(): BelongsTo
