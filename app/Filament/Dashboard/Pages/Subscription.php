@@ -142,7 +142,10 @@ class Subscription extends Page
         return redirect()->away($checkout->url);
     }
 
-    /** Wisselen van plan -> gaat in bij volgende verlenging (Stripe subscription schedule). */
+    /**
+     * Wisselen van plan. Upgrade gaat direct in met prorata; downgrade wordt
+     * uitgesteld tot het einde van de huidige periode (Stripe subscription schedule).
+     */
     public function swapAction(): Action
     {
         return Action::make('swap')
@@ -151,7 +154,15 @@ class Subscription extends Page
             ->modalIconColor('primary')
             ->modalHeading('Abonnement wijzigen')
             ->modalDescription(function (array $arguments): string {
-                $plan = Plan::where('slug', $arguments['slug'] ?? '')->first();
+                $slug = $arguments['slug'] ?? '';
+                $plan = Plan::where('slug', $slug)->first();
+
+                if ($this->isUpgrade($slug)) {
+                    return "Je gaat over naar {$plan?->name}. Dit gaat meteen in. "
+                        .'Je betaalt alleen het prijsverschil voor de resterende dagen van deze periode, '
+                        .'dat wordt verrekend op je volgende factuur.';
+                }
+
                 $when = $this->renewalLabel() ?? 'je volgende verlenging';
 
                 return "Je wijzigt naar {$plan?->name}. Dit gaat in op {$when}. "
@@ -253,7 +264,22 @@ class Subscription extends Page
         return $date->isoFormat('D MMMM YYYY').' ('.$date->diffForHumans().')';
     }
 
-    /** Maakt een Stripe subscription schedule die bij periode-einde naar het nieuwe plan overgaat. */
+    /** Is de gekozen wijziging een upgrade (hoger plan) t.o.v. het huidige plan? */
+    public function isUpgrade(string $slug): bool
+    {
+        $newPlan = PlanEnum::tryFrom($slug);
+
+        if ($newPlan === null) {
+            return false;
+        }
+
+        $currentPlan = PlanEnum::fromPriceId($this->currentSubscription()?->stripe_price);
+
+        // Geen huidig plan herkend? Behandel als upgrade (direct ingaan).
+        return $currentPlan === null || $newPlan->rank() > $currentPlan->rank();
+    }
+
+    /** Routeert naar de juiste flow: upgrade = direct (prorata), downgrade = uitgesteld. */
     protected function performSwap(string $slug): void
     {
         $plan = PlanEnum::tryFrom($slug);
@@ -263,11 +289,78 @@ class Subscription extends Page
             return;
         }
 
-        $newPriceId = $plan->priceId();
-
-        if ($subscription->stripe_price === $newPriceId) {
+        if ($subscription->stripe_price === $plan->priceId()) {
             return; // al op dit plan
         }
+
+        if ($this->isUpgrade($slug)) {
+            $this->performUpgrade($plan);
+        } else {
+            $this->performDowngrade($plan);
+        }
+    }
+
+    /**
+     * Upgrade: gaat meteen in. Cashier's swap() prorateert standaard — het
+     * prijsverschil voor de resterende dagen komt op de volgende factuur.
+     */
+    protected function performUpgrade(PlanEnum $plan): void
+    {
+        $subscription = $this->currentSubscription();
+
+        if ($subscription === null) {
+            return;
+        }
+
+        try {
+            // Een eventueel geplande (downgrade-)wijziging eerst losmaken, anders
+            // weigert Stripe een directe swap op een abonnement met schedule.
+            $this->releaseSchedule($subscription);
+
+            $subscription->swap($plan->priceId());
+
+            // Geen openstaande geplande wijziging meer.
+            $subscription->pending_stripe_price = null;
+            $subscription->save();
+
+            FilamentNotificationService::success(
+                'Abonnement gewijzigd',
+                'Je nieuwe plan is meteen actief. Het prijsverschil verrekenen we op je volgende factuur.',
+            );
+        } catch (\Throwable $e) {
+            report($e);
+
+            FilamentNotificationService::danger(
+                'Wijzigen mislukt',
+                'Er ging iets mis bij het wijzigen van je abonnement. Probeer het later opnieuw.',
+            );
+        }
+    }
+
+    /** Release een actieve Stripe subscription schedule (indien aanwezig). */
+    protected function releaseSchedule(CashierSubscription $subscription): void
+    {
+        try {
+            $stripeSub = $subscription->asStripeSubscription();
+
+            if ($stripeSub->schedule) {
+                Cashier::stripe()->subscriptionSchedules->release($stripeSub->schedule);
+            }
+        } catch (\Throwable $e) {
+            report($e);
+        }
+    }
+
+    /** Downgrade: maakt een Stripe subscription schedule die bij periode-einde naar het nieuwe plan overgaat. */
+    protected function performDowngrade(PlanEnum $plan): void
+    {
+        $subscription = $this->currentSubscription();
+
+        if ($subscription === null) {
+            return;
+        }
+
+        $newPriceId = $plan->priceId();
 
         try {
             $stripe = Cashier::stripe();
