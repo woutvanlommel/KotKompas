@@ -2,6 +2,7 @@
 
 namespace App\Filament\Dashboard\Resources\Rooms\Concerns;
 
+use App\Filament\Dashboard\Support\LinkRoomTenant;
 use App\Models\RentalPeriod;
 use App\Models\ReviewInvitation;
 use App\Models\User;
@@ -60,37 +61,12 @@ trait HasTenantActions
                             ->mapWithKeys(fn (User $u) => [$u->id => "{$u->full_name} ({$u->email})"])
                             ->all()
                     )
-                    ->getOptionLabelUsing(fn ($value): ?string => User::find($value)?->full_name)
+                    ->getOptionLabelUsing(fn ($value): ?string => User::role('huurder')->find($value)?->full_name)
                     ->default(fn () => $this->record->tenant_id)
                     ->required(),
             ])
             ->action(function (array $data): void {
-                $room = $this->record;
-                $newTenant = User::findOrFail($data['tenant_id']);
-
-                DB::transaction(function () use ($room, $newTenant) {
-                    // Sluit lopende periode(s) af
-                    $room->rentalPeriods()
-                        ->where(fn ($q) => $q->whereNull('end_date')->orWhere('end_date', '>=', now()))
-                        ->each(fn (RentalPeriod $rp) => $rp->update([
-                            'end_date' => now()->subDay()->toDateString(),
-                        ]));
-
-                    // Nieuwe periode aanmaken — datums worden ingevuld via het contract
-                    $period = RentalPeriod::create([
-                        'room_id' => $room->id,
-                        'start_date' => now()->toDateString(),
-                        'end_date' => null,
-                    ]);
-
-                    $period->tenants()->attach($newTenant->id, ['is_primary' => true]);
-
-                    // tenant_id op room bewaren voor RoomObserver (review invitations)
-                    $room->update([
-                        'tenant_id' => $newTenant->id,
-                        'status' => 'rented',
-                    ]);
-                });
+                LinkRoomTenant::handle($this->record, (int) $data['tenant_id']);
 
                 $this->record->refresh();
             });

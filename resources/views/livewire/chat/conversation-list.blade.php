@@ -1,5 +1,6 @@
 <div class="flex flex-col h-full">
 
+    @if ($isLandlord)
     {{-- Pinned broadcast entry --}}
     <div class="border-b border-gray-200 dark:border-gray-700 shrink-0">
         <button
@@ -42,6 +43,7 @@
             </select>
         @endif
     </div>
+    @endif
 
     {{-- Conversation list --}}
     <div class="flex-1 overflow-y-auto divide-y divide-gray-100 dark:divide-gray-700">
@@ -52,12 +54,12 @@
             >
                 <div class="flex items-start gap-3">
                     <div class="flex items-center justify-center w-10 h-10 rounded-full bg-primary-100 dark:bg-primary-900/40 text-primary-700 dark:text-primary-300 text-sm font-semibold shrink-0">
-                        {{ strtoupper(mb_substr($convo['tenant_name'], 0, 1)) }}
+                        {{ strtoupper(mb_substr($convo['name'], 0, 1)) }}
                     </div>
                     <div class="flex-1 min-w-0">
                         <div class="flex items-center justify-between gap-2">
                             <p class="font-medium text-sm text-gray-900 dark:text-white truncate">
-                                {{ $convo['tenant_name'] }}
+                                {{ $convo['name'] }}
                             </p>
                             <span class="text-xs text-gray-400 shrink-0">{{ $convo['last_message_at'] }}</span>
                         </div>

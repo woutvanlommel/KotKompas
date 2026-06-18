@@ -13,8 +13,7 @@ use Illuminate\Database\Eloquent\Builder;
 /**
  * Recente activiteit — the dashboard's pulse: the latest reviews and new
  * rentals across the landlord's portfolio, merged into one reverse-chrono
- * feed. Mirrors Flux's "Team Activity" pattern, in the brand's voice. Pairs
- * with RoomStatusChart (7 + 5 columns) to fill the row.
+ * feed. Mirrors Flux's "Team Activity" pattern, in the brand's voice.
  */
 class RecentActivity extends Widget
 {

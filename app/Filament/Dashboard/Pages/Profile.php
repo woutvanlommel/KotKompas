@@ -9,8 +9,6 @@ use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
-use Filament\Schemas\Components\Section;
-use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Password;
 
 class Profile extends Page implements HasForms
@@ -21,13 +19,15 @@ class Profile extends Page implements HasForms
 
     protected static bool $shouldRegisterNavigation = false;
 
+    protected static ?string $title = 'Profiel';
+
     public ?array $data = [];
 
     protected function getHeaderActions(): array
     {
         return [
             Action::make('edit')
-                ->label('Edit profile')
+                ->label('Profiel bewerken')
                 ->slideOver()
                 ->fillForm(fn () => [
                     'email' => auth()->user()->email,
@@ -36,14 +36,14 @@ class Profile extends Page implements HasForms
                 ])
                 ->form([
                     ImageUpload::make('avatar', false)
-                        ->label('Profile photo'),
+                        ->label('Profielfoto'),
                     TextInput::make('email')
-                        ->label('Email')
+                        ->label('E-mailadres')
                         ->email()
                         ->required()
                         ->rules(['unique:users,email,'.auth()->id()]),
                     TextInput::make('phone')
-                        ->label('Phone number')
+                        ->label('Telefoonnummer')
                         ->tel(),
                 ])
                 ->action(function (array $data): void {
@@ -57,62 +57,26 @@ class Profile extends Page implements HasForms
                     ]);
 
                     Notification::make()
-                        ->title('Profile updated')
+                        ->title('Profiel bijgewerkt')
                         ->success()
                         ->send();
                 }),
             Action::make('changePassword')
-                ->label('Change password')
+                ->label('Wachtwoord wijzigen')
                 ->color('gray')
                 ->requiresConfirmation()
-                ->modalHeading('Change password')
-                ->modalDescription('We\'ll send a password reset link to your email address.')
-                ->modalSubmitActionLabel('Send reset link')
+                ->modalHeading('Wachtwoord wijzigen')
+                ->modalDescription('We sturen een resetlink naar je e-mailadres.')
+                ->modalSubmitActionLabel('Verstuur resetlink')
                 ->action(function (): void {
                     Password::sendResetLink(['email' => auth()->user()->email]);
 
                     Notification::make()
-                        ->title('Reset link sent')
-                        ->body('Check your inbox for the password reset link.')
+                        ->title('Resetlink verstuurd')
+                        ->body('Check je inbox voor de link om je wachtwoord te wijzigen.')
                         ->success()
                         ->send();
                 }),
         ];
-    }
-
-    public function mount(): void
-    {
-        $user = auth()->user();
-
-        $this->form->fill([
-            'name' => $user->name,
-            'lastname' => $user->lastname,
-            'email' => $user->email,
-            'phone' => $user->phone,
-        ]);
-    }
-
-    public function form(Schema $form): Schema
-    {
-        return $form
-            ->schema([
-                Section::make()->schema([
-                    TextInput::make('name')
-                        ->label('First name')
-                        ->disabled(),
-                    TextInput::make('lastname')
-                        ->label('Last name')
-                        ->disabled(),
-                    TextInput::make('email')
-                        ->label('Email')
-                        ->email()
-                        ->disabled(),
-                    TextInput::make('phone')
-                        ->label('Phone number')
-                        ->tel()
-                        ->disabled(),
-                ]),
-            ])
-            ->statePath('data');
     }
 }

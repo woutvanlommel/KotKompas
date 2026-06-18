@@ -8,6 +8,7 @@ use App\Models\Room;
 use App\Models\User;
 use Database\Seeders\RoleSeeder;
 use Filament\Facades\Filament;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Livewire\Livewire;
@@ -58,14 +59,55 @@ class FeaturedRoomsManagerWidgetTest extends TestCase
         Filament::setCurrentPanel('dashboard');
 
         Livewire::test(FeaturedRoomsManager::class)
-            ->assertSee('Uitgelicht')
-            ->assertSee('Slots in gebruik')
+            ->assertSee('Uitgelicht-slots')
+            ->assertSee('Jouw koten')
             // Both buildings appear as group headers, each with its room + toggle.
             ->assertSee('Residentie Park')
             ->assertSee('Zolderstudio')
             ->assertSee('Centrum')
             ->assertSee('Studio Zuid')
             ->assertSee('Uitlichten');
+    }
+
+    public function test_widget_shows_the_subscription_summary(): void
+    {
+        $landlord = $this->landlord();
+        $this->subscribe($landlord, 'premium');
+
+        $this->actingAs($landlord->refresh());
+        Filament::setCurrentPanel('dashboard');
+
+        // The merged card carries the subscription summary that used to live in
+        // the separate SubscriptionOverview widget.
+        Livewire::test(FeaturedRoomsManager::class)
+            ->assertSee('Premium')
+            ->assertSee('Actief')
+            ->assertSee('verlengt')
+            ->assertSee('Beheer abonnement')
+            ->assertSee('Uitgelicht-slots');
+    }
+
+    public function test_widget_prompts_to_subscribe_without_a_plan(): void
+    {
+        $landlord = $this->landlord();
+
+        $this->actingAs($landlord);
+        Filament::setCurrentPanel('dashboard');
+
+        Livewire::test(FeaturedRoomsManager::class)
+            ->assertSee('Nog geen abonnement')
+            ->assertSee('Kies een plan');
+    }
+
+    public function test_widget_is_visible_to_a_landlord_without_rooms(): void
+    {
+        $landlord = $this->landlord();
+
+        $this->actingAs($landlord);
+
+        // Visibility no longer requires rooms — the subscription summary shows
+        // regardless, so the landlord always sees their plan.
+        $this->assertTrue(FeaturedRoomsManager::canView());
     }
 
     public function test_widget_only_lists_available_rooms(): void
@@ -131,13 +173,12 @@ class FeaturedRoomsManagerWidgetTest extends TestCase
         Filament::setCurrentPanel('dashboard');
 
         // The toggle resolves the room through the landlord's own rooms()
-        // relation with findOrFail; a foreign room is out of scope, so the
-        // request is rejected (403) and the room is left untouched.
-        Livewire::test(FeaturedRoomsManager::class)
-            ->call('toggle', $foreignRoom->id)
-            ->assertStatus(403);
+        // relation with findOrFail; a foreign room is out of scope, so it
+        // throws and the room is left untouched.
+        $this->expectException(ModelNotFoundException::class);
 
-        $this->assertFalse($foreignRoom->fresh()->isFeatured());
+        Livewire::test(FeaturedRoomsManager::class)
+            ->call('toggle', $foreignRoom->id);
     }
 
     public function test_widget_is_hidden_for_non_landlords(): void

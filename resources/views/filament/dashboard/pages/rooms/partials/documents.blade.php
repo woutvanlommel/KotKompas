@@ -4,9 +4,9 @@
     $tenant      = $room->activeTenant() ?? $room->tenant;
 @endphp
 
-<div class="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
+<div class="bg-white rounded-[1.25rem] border border-[#0f17201f] p-6">
     <div class="flex items-center justify-between mb-5">
-        <h2 class="text-base font-semibold text-gray-900">Documenten</h2>
+        <h2 class="text-base font-medium tracking-[-0.01em] text-[#0f1720]">Documenten</h2>
 
         @if ($tenant)
             <button
@@ -22,7 +22,7 @@
     {{-- Contracten --}}
     @if ($roomContracts->isNotEmpty())
         <div class="mb-5">
-            <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Contracten</p>
+            <p class="text-xs font-medium text-[#586573] uppercase tracking-wide mb-2">Contracten</p>
             <div class="space-y-2">
                 @foreach ($roomContracts as $contract)
                     @php
@@ -44,20 +44,20 @@
                         };
                     @endphp
 
-                    <div class="flex items-start gap-3 px-3 py-3 rounded-xl border border-gray-100 bg-gray-50 hover:bg-white hover:border-gray-200 transition-colors">
+                    <div class="flex items-start gap-3 px-3 py-3 rounded-xl border border-[#0f17201f] bg-[#edf0f4] hover:bg-white hover:border-[#0f17201f] transition-colors">
                         <div class="flex-shrink-0 w-8 h-10 bg-green-50 rounded-lg flex items-center justify-center border border-green-100 mt-0.5">
                             <x-heroicon-o-document-check class="w-4 h-4 text-green-600" />
                         </div>
 
                         <div class="flex-1 min-w-0">
-                            <p class="text-sm font-semibold text-gray-900 truncate">
+                            <p class="text-sm font-semibold text-[#0f1720] truncate">
                                 {{ $contract->name ?? 'Huurcontract' }}
                             </p>
 
                             {{-- Periode --}}
                             @if ($startDate)
-                                <p class="text-xs text-gray-500 mt-0.5 font-medium">
-                                    <x-heroicon-o-calendar-days class="w-3 h-3 inline mr-0.5 text-gray-400" />
+                                <p class="text-xs text-[#586573] mt-0.5 font-medium">
+                                    <x-heroicon-o-calendar-days class="w-3 h-3 inline mr-0.5 text-[#9aa6b4]" />
                                     {{ $startDate }}{{ $endDate ? ' → ' . $endDate : ' → heden' }}
                                 </p>
                             @endif
@@ -69,7 +69,7 @@
                                 </span>
 
                                 @if ($period?->tenants?->isNotEmpty())
-                                    <span class="text-xs text-gray-400 truncate">
+                                    <span class="text-xs text-[#9aa6b4] truncate">
                                         {{ $period->tenants->pluck('full_name')->join(', ') }}
                                     </span>
                                 @endif
@@ -92,14 +92,14 @@
                             @endif
 
                             <a href="{{ $pdfUrl }}" target="_blank"
-                                class="p-1.5 rounded-lg border border-gray-200 text-gray-400 hover:text-primary-600 hover:border-primary-200 hover:bg-primary-50 transition-colors"
+                                class="p-1.5 rounded-[4px] border border-[#0f17201f] text-[#9aa6b4] hover:text-primary-600 hover:border-primary-200 hover:bg-primary-50 transition-colors"
                                 title="PDF bekijken">
                                 <x-heroicon-o-arrow-top-right-on-square class="w-3.5 h-3.5" />
                             </a>
 
                             <button
                                 wire:click="mountAction('deleteContract', { documentId: {{ $contract->id }} })"
-                                class="p-1.5 rounded-lg border border-gray-200 text-gray-400 hover:text-red-500 hover:border-red-200 hover:bg-red-50 transition-colors"
+                                class="p-1.5 rounded-[4px] border border-[#0f17201f] text-[#9aa6b4] hover:text-red-500 hover:border-red-200 hover:bg-red-50 transition-colors"
                                 title="Verwijderen">
                                 <x-heroicon-o-trash class="w-3.5 h-3.5" />
                             </button>
@@ -113,12 +113,12 @@
     {{-- Publieke docs van huurder --}}
     @if ($tenant)
         <div>
-            <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">
+            <p class="text-xs font-medium text-[#586573] uppercase tracking-wide mb-2">
                 Documenten van {{ $tenant->first_name ?? $tenant->name }}
             </p>
 
             @if ($tenantDocs->isEmpty())
-                <div class="flex items-center gap-3 py-4 text-center justify-center text-gray-400">
+                <div class="flex items-center gap-3 py-4 text-center justify-center text-[#9aa6b4]">
                     <x-heroicon-o-document-text class="w-5 h-5" />
                     <p class="text-sm">Geen publieke documenten gedeeld</p>
                 </div>
@@ -134,29 +134,29 @@
                             $isPdf = $media?->mime_type === 'application/pdf';
                         @endphp
 
-                        <div class="flex items-center gap-3 px-3 py-2.5 rounded-xl border border-gray-100 bg-gray-50">
+                        <div class="flex items-center gap-3 px-3 py-2.5 rounded-xl border border-[#0f17201f] bg-[#edf0f4]">
                             <a href="{{ $url }}" target="_blank"
-                                class="flex-shrink-0 w-8 h-11 bg-gray-200 rounded-lg overflow-hidden border border-gray-200">
+                                class="flex-shrink-0 w-8 h-11 bg-[#e1e6ed] rounded-lg overflow-hidden border border-[#0f17201f]">
                                 @if ($thumb)
                                     <img src="{{ $thumb }}" alt="" class="w-full h-full object-cover" />
                                 @elseif ($isPdf)
-                                    <div class="w-full h-full flex items-center justify-center text-gray-400">
+                                    <div class="w-full h-full flex items-center justify-center text-[#9aa6b4]">
                                         <x-heroicon-o-document-text class="w-4 h-4" />
                                     </div>
                                 @else
-                                    <div class="w-full h-full flex items-center justify-center text-gray-400">
+                                    <div class="w-full h-full flex items-center justify-center text-[#9aa6b4]">
                                         <x-heroicon-o-photo class="w-4 h-4" />
                                     </div>
                                 @endif
                             </a>
 
                             <div class="flex-1 min-w-0">
-                                <p class="text-sm font-medium text-gray-900 truncate">{{ $doc->name }}</p>
-                                <p class="text-xs text-gray-400">{{ $doc->created_at->format('d/m/Y') }}</p>
+                                <p class="text-sm font-medium text-[#0f1720] truncate">{{ $doc->name }}</p>
+                                <p class="text-xs text-[#9aa6b4]">{{ $doc->created_at->format('d/m/Y') }}</p>
                             </div>
 
                             <a href="{{ $url }}" target="_blank"
-                                class="flex-shrink-0 p-1.5 rounded-lg border border-gray-200 text-gray-400 hover:text-primary-600 hover:border-primary-200 hover:bg-primary-50 transition-colors">
+                                class="flex-shrink-0 p-1.5 rounded-[4px] border border-[#0f17201f] text-[#9aa6b4] hover:text-primary-600 hover:border-primary-200 hover:bg-primary-50 transition-colors">
                                 <x-heroicon-o-arrow-top-right-on-square class="w-4 h-4" />
                             </a>
                         </div>
@@ -165,7 +165,7 @@
             @endif
         </div>
     @else
-        <div class="flex items-center gap-3 py-4 justify-center text-gray-400">
+        <div class="flex items-center gap-3 py-4 justify-center text-[#9aa6b4]">
             <x-heroicon-o-no-symbol class="w-5 h-5" />
             <p class="text-sm">Geen actieve huurder gekoppeld</p>
         </div>

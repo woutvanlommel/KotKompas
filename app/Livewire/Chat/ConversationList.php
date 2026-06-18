@@ -103,25 +103,35 @@ class ConversationList extends Component
 
     public function render()
     {
-        $conversations = Conversation::where('landlord_id', auth()->id())
-            ->with(['tenant', 'building', 'messages' => fn ($q) => $q->latest()->limit(1)])
+        $isLandlord = auth()->user()?->hasRole('verhuurder') ?? false;
+
+        $conversations = Conversation::where($isLandlord ? 'landlord_id' : 'tenant_id', auth()->id())
+            ->with(['tenant', 'landlord', 'building', 'messages' => fn ($q) => $q->latest()->limit(1)])
             ->withCount(['messages as unread_count' => fn ($q) => $q
                 ->whereNull('read_at')
                 ->where('sender_id', '!=', auth()->id()),
             ])
             ->orderByDesc('last_message_at')
             ->get()
-            ->map(fn (Conversation $c) => [
-                'id' => $c->id,
-                'tenant_name' => trim($c->tenant->name.' '.$c->tenant->lastname),
-                'building_name' => $c->building->name,
-                'last_message' => $c->messages->first()?->body,
-                'last_message_at' => $c->last_message_at?->diffForHumans(),
-                'unread' => (int) $c->getAttribute('unread_count'),
-            ]);
+            ->map(function (Conversation $c) use ($isLandlord) {
+                // The list always names the *other* party in the conversation.
+                $counterpart = $isLandlord ? $c->tenant : $c->landlord;
 
-        $buildings = Building::where('landlord_id', auth()->id())->get();
+                return [
+                    'id' => $c->id,
+                    'name' => trim($counterpart->name.' '.$counterpart->lastname),
+                    'building_name' => $c->building->name,
+                    'last_message' => $c->messages->first()?->body,
+                    'last_message_at' => $c->last_message_at?->diffForHumans(),
+                    'unread' => (int) $c->getAttribute('unread_count'),
+                ];
+            });
 
-        return view('livewire.chat.conversation-list', compact('conversations', 'buildings'));
+        // The broadcast tool + tenant finder are landlord-only.
+        $buildings = $isLandlord
+            ? Building::where('landlord_id', auth()->id())->get()
+            : collect();
+
+        return view('livewire.chat.conversation-list', compact('conversations', 'buildings', 'isLandlord'));
     }
 }

@@ -8,9 +8,9 @@
                 @if ($landlordScore === '—')
                     <p class="mt-4 text-sm tracking-[-0.01em] text-[#586573]">Nog geen beoordelingen ontvangen.</p>
                 @else
-                    <p class="mt-4 flex items-baseline leading-none text-[clamp(3.25rem,5vw,4.5rem)]">
-                        <span class="font-medium tracking-[-0.03em] tabular-nums text-[#0f1720]">{{ \Illuminate\Support\Str::before($landlordScore, ' /') }}</span>
-                        <span class="text-[0.34em] font-medium tracking-[-0.01em] tabular-nums text-[#586573]"> / 5</span>
+                    <p class="mt-4 flex items-baseline leading-none text-[2rem]">
+                        <span class="font-medium tracking-[-0.02em] tabular-nums text-[#0f1720]">{{ \Illuminate\Support\Str::before($landlordScore, ' /') }}</span>
+                        <span class="text-[0.6em] font-medium tracking-[-0.01em] tabular-nums text-[#586573]"> / 5</span>
                     </p>
                     <p class="mt-3 max-w-[42ch] text-sm tracking-[-0.01em] text-[#586573]">{{ $landlordDescription }}</p>
                 @endif
@@ -35,7 +35,7 @@
                         </div>
                     @endif
                     <div class="mt-3 h-1.5 w-full max-w-md overflow-hidden rounded-[2px] bg-[#e1e6ed]">
-                        <div class="h-full rounded-[2px] bg-[#3a6ea5] transition-[width] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none" style="width: {{ $maskedPct }}%"></div>
+                        <div class="h-full rounded-[2px] bg-[#0f1720] transition-[width] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none" style="width: {{ $maskedPct }}%"></div>
                     </div>
                     @if ($reviewsCount > 0)
                         <p class="mt-3 text-sm tracking-[-0.01em] text-[#586573]">Nog <span class="tabular-nums">{{ max(0, $minReviews - $reviewsCount) }}</span> te gaan.</p>
@@ -48,7 +48,7 @@
                                 $score = $criterion['score'];
                                 $pct = min(100, max(0, $score / 5 * 100));
                                 $isWeak = $score < 3.5;
-                                $fill = $isWeak ? '#c2510a' : '#3a6ea5';
+                                $fill = $isWeak ? '#c2510a' : '#0f1720';
                                 $numeralColor = $isWeak ? '#c2510a' : '#0f1720';
                             @endphp
                             <div>
