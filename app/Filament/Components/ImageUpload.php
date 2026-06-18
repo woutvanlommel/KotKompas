@@ -32,9 +32,9 @@ class ImageUpload
     /** MIME types that are commonly tried but cannot be converted server-side. */
     private const UNSUPPORTED_TYPES = ['image/heic', 'image/heif', 'image/heic-sequence', 'image/heif-sequence'];
 
-    private const HEIC_MESSAGE = 'HEIC/HEIF images (used by iPhones by default) are not supported. '
-        .'On your iPhone, go to Settings → Camera → Formats and choose "Most Compatible" to shoot in JPEG instead. '
-        .'Alternatively, convert the image to JPEG or PNG before uploading.';
+    private const HEIC_MESSAGE = 'HEIC/HEIF-afbeeldingen (standaard gebruikt door iPhones) worden niet ondersteund. '
+        .'Ga op je iPhone naar Instellingen → Camera → Formaten en kies "Meest compatibel" om in JPEG te fotograferen. '
+        .'Of converteer de afbeelding naar JPEG of PNG voordat je deze uploadt.';
 
     public static function make(string $collection = 'images', bool $multiple = true): FileUpload
     {
@@ -50,7 +50,7 @@ class ImageUpload
             ->acceptedFileTypes(self::ACCEPTED_TYPES)
             ->maxFiles($multiple ? 20 : 1)
             ->panelLayout('grid')
-            ->hint('HEIC/HEIF not supported — use JPEG, PNG, or WebP.')
+            ->hint('HEIC/HEIF wordt niet ondersteund — gebruik JPEG, PNG of WebP.')
             ->hintColor('warning')
             ->hintIcon('heroicon-o-exclamation-triangle')
             ->rules([static::heicValidationRule()])

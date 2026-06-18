@@ -73,7 +73,7 @@ class Profile extends Page implements HasForms
 
                     Notification::make()
                         ->title('Reset Link verzonden')
-                        ->body('De reset link is verzonden naar je email adres.')
+                        ->body('De reset link is verzonden naar je e-mailadres.')
                         ->success()
                         ->send();
                 }),
