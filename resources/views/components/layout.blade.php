@@ -26,9 +26,13 @@
     <link rel="stylesheet" href="https://use.typekit.net/ztn2kjh.css">
 
     @vite(['resources/css/app.css', 'resources/js/app.ts'])
+    @livewireStyles
     {{ $head ?? '' }}
 </head>
 <body {{ $attributes->class(['min-h-screen font-sans antialiased', $bodyClass]) }}>
     {{ $slot }}
+
+    {{-- Livewire bundelen we zelf in app.ts (inject_assets=false); deze tag levert enkel de config. --}}
+    @livewireScriptConfig
 </body>
 </html>
