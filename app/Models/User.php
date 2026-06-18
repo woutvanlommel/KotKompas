@@ -203,6 +203,48 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasMedia
         return $this->hasMany(CreditTransaction::class);
     }
 
+    /**
+     * Verhuurders die deze huurder ge-unlocked heeft (betaald, op verhuurder-niveau).
+     *
+     * @return HasMany<LandlordUnlock, $this>
+     */
+    public function landlordUnlocks(): HasMany
+    {
+        return $this->hasMany(LandlordUnlock::class, 'tenant_id');
+    }
+
+    /**
+     * Of deze huurder een huurrelatie heeft met de gegeven verhuurder
+     * (huurder van een kamer in één van diens gebouwen). Afgeleid uit de
+     * bestaande huurperiodes — wordt niet apart opgeslagen.
+     */
+    public function hasRentalRelationWith(User $landlord): bool
+    {
+        return RentalPeriod::query()
+            ->whereHas('room.building', fn ($query) => $query->where('landlord_id', $landlord->id))
+            ->whereHas('tenants', fn ($query) => $query->whereKey($this->id))
+            ->exists();
+    }
+
+    /**
+     * Centrale toegangscheck: mag deze huurder de kaart van de verhuurder zien?
+     * True als (a) hij die verhuurder betaald-unlocked heeft, OF (b) hij al een
+     * huurrelatie met die verhuurder heeft. Eén unlock geldt voor ALLE gebouwen
+     * van die verhuurder, want de check zit op verhuurder-niveau.
+     */
+    public function canViewLandlord(User $landlord): bool
+    {
+        if ($this->is($landlord)) {
+            return true;
+        }
+
+        if ($this->landlordUnlocks()->where('landlord_id', $landlord->id)->exists()) {
+            return true;
+        }
+
+        return $this->hasRentalRelationWith($landlord);
+    }
+
     /** @return BelongsToMany<Room, $this> */
     public function favouriteRooms(): BelongsToMany
     {
