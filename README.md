@@ -26,6 +26,10 @@ Wij bouwen deze applicatie met de volgende technologieën:
 | **Styling**      | ![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=flat-square&logo=tailwind-css&logoColor=white) | Plain CSS / Tailwind                |
 | **Versiebeheer** | ![Git](https://img.shields.io/badge/GIT-E44C30?style=flat-square&logo=git&logoColor=white)                           | Source Control                      |
 
+> **Documenten-OCR & AI-beschrijvingen** vereisen extra setup (API-keys, queue worker, en
+> Imagick + Ghostscript voor PDF-thumbnails). Zie **[docs/document-ocr.md](docs/document-ocr.md)**
+> voor de volledige installatie-instructies (Windows én macOS).
+
 ---
 
 ## 📏 Naming Conventions & Regels

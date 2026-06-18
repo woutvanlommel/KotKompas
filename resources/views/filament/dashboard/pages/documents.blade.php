@@ -1,8 +1,9 @@
 <x-filament-panels::page>
 
     @php
-        $documents = $this->getDocuments(); 
+        $documents = $this->getDocuments();
         $contracts = $this->getContracts();
+        $ocrPending = $documents->getCollection()->contains(fn ($d) => in_array($d->ocr_status, [\App\Models\Document::OCR_PENDING, \App\Models\Document::OCR_PROCESSING], true));
     @endphp
 
     {{-- ===== CONTRACTEN ===== --}}
@@ -109,7 +110,7 @@
     @endif
 
     {{-- ===== MIJN DOCUMENTEN ===== --}}
-    <section>
+    <section @if ($ocrPending) wire:poll.10s @endif>
         <div class="flex items-center justify-between mb-3">
             <h2 class="text-base font-semibold text-[#0f1720] flex items-center gap-2">
                 <x-heroicon-o-folder-open class="w-5 h-5 text-[#9aa6b4]" />
@@ -162,6 +163,7 @@
                         $isPdf     = $media?->mime_type === 'application/pdf';
                         $typeLabel = $this::getTypeLabel($document->type);
                         $typeColor = $this::getTypeColor($document->type);
+                        $ocrStatus = $document->ocr_status;
                     @endphp
 
                     <div class="group relative flex flex-col bg-white rounded-xl border border-[#0f17201f] overflow-hidden hover:shadow-md transition-shadow">
@@ -197,6 +199,31 @@
                             <p class="text-xs font-medium text-[#0f1720] truncate" title="{{ $document->name }}">
                                 {{ $document->name }}
                             </p>
+                            @if ($ocrStatus === \App\Models\Document::OCR_PENDING || $ocrStatus === \App\Models\Document::OCR_PROCESSING)
+                                <span class="inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 w-fit">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse inline-block"></span>
+                                    Wordt geanalyseerd…
+                                </span>
+                            @elseif ($ocrStatus === \App\Models\Document::OCR_FAILED)
+                                <span class="inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 w-fit">
+                                    Analyse mislukt
+                                </span>
+                            @endif
+                            @if ($document->description)
+                                <div
+                                    x-data="{ open: false, overflowing: false }"
+                                    x-init="$nextTick(() => overflowing = $refs.desc.scrollHeight > $refs.desc.clientHeight + 2)"
+                                >
+                                    <p x-ref="desc" :class="{ 'line-clamp-3': ! open }"
+                                        class="text-xs italic text-gray-400 dark:text-gray-500">
+                                        {{ $document->description }}
+                                    </p>
+                                    <button type="button" x-show="overflowing" x-on:click="open = ! open"
+                                        class="mt-0.5 text-[11px] font-medium text-primary-600 dark:text-primary-400 hover:underline">
+                                        <span x-text="open ? 'Minder tonen' : 'Meer tonen'"></span>
+                                    </button>
+                                </div>
+                            @endif
                             @if ($document->rentalPeriod)
                                 <p class="text-xs text-[#9aa6b4] truncate">
                                     Kamer {{ $document->rentalPeriod->room->room_number }}
@@ -248,6 +275,7 @@
                         $isPdf     = $media?->mime_type === 'application/pdf';
                         $typeLabel = $this::getTypeLabel($document->type);
                         $typeColor = $this::getTypeColor($document->type);
+                        $ocrStatus = $document->ocr_status;
                     @endphp
 
                     <div class="flex items-center gap-4 px-4 py-3 hover:bg-[#edf0f4] transition-colors">
@@ -285,6 +313,31 @@
                                     {{ $document->created_at->format('d/m/Y') }}
                                 </span>
                             </div>
+                            @if ($ocrStatus === \App\Models\Document::OCR_PENDING || $ocrStatus === \App\Models\Document::OCR_PROCESSING)
+                                <span class="inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 mt-1 w-fit">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse inline-block"></span>
+                                    Wordt geanalyseerd…
+                                </span>
+                            @elseif ($ocrStatus === \App\Models\Document::OCR_FAILED)
+                                <span class="inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 mt-1 w-fit">
+                                    Analyse mislukt
+                                </span>
+                            @endif
+                            @if ($document->description)
+                                <div class="mt-1"
+                                    x-data="{ open: false, overflowing: false }"
+                                    x-init="$nextTick(() => overflowing = $refs.desc.scrollHeight > $refs.desc.clientHeight + 2)"
+                                >
+                                    <p x-ref="desc" :class="{ 'line-clamp-3': ! open }"
+                                        class="text-xs italic text-gray-400 dark:text-gray-500">
+                                        {{ $document->description }}
+                                    </p>
+                                    <button type="button" x-show="overflowing" x-on:click="open = ! open"
+                                        class="mt-0.5 text-[11px] font-medium text-primary-600 dark:text-primary-400 hover:underline">
+                                        <span x-text="open ? 'Minder tonen' : 'Meer tonen'"></span>
+                                    </button>
+                                </div>
+                            @endif
                         </div>
 
                         <div class="flex items-center gap-2 flex-shrink-0">

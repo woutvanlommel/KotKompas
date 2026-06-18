@@ -363,6 +363,86 @@
             "time": "2024-02-09T16:56:22+00:00"
         },
         {
+            "name": "cdsmths/laravel-ocr-space",
+            "version": "1.0.6",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/cdsmths/laravel-ocr-space.git",
+                "reference": "a5dbbada6a6b455b6116e5a5caf2618068b77336"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/cdsmths/laravel-ocr-space/zipball/a5dbbada6a6b455b6116e5a5caf2618068b77336",
+                "reference": "a5dbbada6a6b455b6116e5a5caf2618068b77336",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^8.2"
+            },
+            "require-dev": {
+                "laravel/laravel": "^11.5",
+                "laravel/pint": "^1.18.3",
+                "mockery/mockery": "^1.6",
+                "nunomaduro/collision": "^8.5.0||^7.10.0",
+                "orchestra/testbench": "^9.9.0||^8.22.0",
+                "pestphp/pest": "^3.7.1",
+                "pestphp/pest-plugin-arch": "^3.0",
+                "pestphp/pest-plugin-laravel": "^3.0",
+                "pestphp/pest-plugin-type-coverage": "^3.2.3",
+                "phpstan/phpstan": "^1.12.13",
+                "rector/rector": "^1.2.10",
+                "spatie/laravel-ray": "^1.39"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "aliases": {
+                        "OcrSpace": "Codesmiths\\LaravelOcrSpace\\Facades\\LaravelOcrSpace"
+                    },
+                    "providers": [
+                        "Codesmiths\\LaravelOcrSpace\\LaravelOcrSpaceServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Codesmiths\\LaravelOcrSpace\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Thomas van der Westen",
+                    "email": "info@cdsmths.nl",
+                    "role": "Developer"
+                }
+            ],
+            "description": "OCR PDF's and images with the OCR.Space API from Laravel",
+            "homepage": "https://github.com/cdsmths/laravel-ocr-space",
+            "keywords": [
+                "Codesmiths",
+                "OCR",
+                "Thomas van der Westen",
+                "laravel",
+                "laravel-ocr-space",
+                "ocr.space"
+            ],
+            "support": {
+                "issues": "https://github.com/cdsmths/laravel-ocr-space/issues",
+                "source": "https://github.com/cdsmths/laravel-ocr-space/tree/v1.0.6"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/cdsmths",
+                    "type": "github"
+                }
+            ],
+            "time": "2025-02-02T15:44:59+00:00"
+        },
+        {
             "name": "chillerlan/php-qrcode",
             "version": "5.0.5",
             "source": {
@@ -7653,6 +7733,76 @@
                 }
             ],
             "time": "2026-05-30T19:30:22+00:00"
+        },
+        {
+            "name": "spatie/pdf-to-image",
+            "version": "3.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/spatie/pdf-to-image.git",
+                "reference": "eb46281e228a2b9723d12c13c365d90b28b99253"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/spatie/pdf-to-image/zipball/eb46281e228a2b9723d12c13c365d90b28b99253",
+                "reference": "eb46281e228a2b9723d12c13c365d90b28b99253",
+                "shasum": ""
+            },
+            "require": {
+                "ext-imagick": "*",
+                "php": "^8.2"
+            },
+            "require-dev": {
+                "pestphp/pest": "^2.34|^3.0|^4.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Spatie\\PdfToImage\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Freek Van der Herten",
+                    "email": "freek@spatie.be",
+                    "homepage": "https://spatie.be",
+                    "role": "Developer"
+                },
+                {
+                    "name": "Patrick Organ",
+                    "email": "patrick@permafrost.dev",
+                    "homepage": "https://permafrost.dev",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Convert a pdf to an image",
+            "homepage": "https://github.com/spatie/pdf-to-image",
+            "keywords": [
+                "convert",
+                "image",
+                "pdf",
+                "pdf-to-image",
+                "spatie"
+            ],
+            "support": {
+                "issues": "https://github.com/spatie/pdf-to-image/issues",
+                "source": "https://github.com/spatie/pdf-to-image/tree/3.2.0"
+            },
+            "funding": [
+                {
+                    "url": "https://spatie.be/open-source/support-us",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/spatie",
+                    "type": "github"
+                }
+            ],
+            "time": "2026-02-09T14:43:55+00:00"
         },
         {
             "name": "spatie/shiki-php",

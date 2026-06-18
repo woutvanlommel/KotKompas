@@ -9,6 +9,8 @@ use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Password;
 
 class Profile extends Page implements HasForms
@@ -78,5 +80,41 @@ class Profile extends Page implements HasForms
                         ->send();
                 }),
         ];
+    }
+
+    public function mount(): void
+    {
+        $user = auth()->user();
+
+        $this->form->fill([
+            'name' => $user->name,
+            'lastname' => $user->lastname,
+            'email' => $user->email,
+            'phone' => $user->phone,
+        ]);
+    }
+
+    public function form(Schema $form): Schema
+    {
+        return $form
+            ->schema([
+                Section::make()->schema([
+                    TextInput::make('name')
+                        ->label('Voornaam')
+                        ->disabled(),
+                    TextInput::make('lastname')
+                        ->label('Naam')
+                        ->disabled(),
+                    TextInput::make('email')
+                        ->label('E-mailadres')
+                        ->email()
+                        ->disabled(),
+                    TextInput::make('phone')
+                        ->label('Telefoonnummer')
+                        ->tel()
+                        ->disabled(),
+                ]),
+            ])
+            ->statePath('data');
     }
 }
