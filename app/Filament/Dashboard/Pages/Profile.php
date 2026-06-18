@@ -9,8 +9,6 @@ use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
-use Filament\Schemas\Components\Section;
-use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Password;
 
 class Profile extends Page implements HasForms
@@ -20,6 +18,8 @@ class Profile extends Page implements HasForms
     protected string $view = 'filament.dashboard.pages.profile';
 
     protected static bool $shouldRegisterNavigation = false;
+
+    protected static ?string $title = 'Profiel';
 
     public ?array $data = [];
 
@@ -66,14 +66,14 @@ class Profile extends Page implements HasForms
                 ->color('gray')
                 ->requiresConfirmation()
                 ->modalHeading('Wachtwoord wijzigen')
-                ->modalDescription('We sturen een wachtwoord-resetlink naar je e-mailadres.')
-                ->modalSubmitActionLabel('Verstuur reset link')
+                ->modalDescription('We sturen een resetlink naar je e-mailadres.')
+                ->modalSubmitActionLabel('Verstuur resetlink')
                 ->action(function (): void {
                     Password::sendResetLink(['email' => auth()->user()->email]);
 
                     Notification::make()
-                        ->title('Reset Link verzonden')
-                        ->body('De reset link is verzonden naar je e-mailadres.')
+                        ->title('Resetlink verstuurd')
+                        ->body('Check je inbox voor de link om je wachtwoord te wijzigen.')
                         ->success()
                         ->send();
                 }),

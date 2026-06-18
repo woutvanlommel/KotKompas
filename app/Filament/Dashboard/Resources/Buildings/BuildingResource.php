@@ -13,6 +13,8 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 
 class BuildingResource extends Resource
 {
@@ -30,11 +32,41 @@ class BuildingResource extends Resource
 
     protected static ?int $navigationSort = 1;
 
+    protected static ?string $recordTitleAttribute = 'name';
+
     public static function canAccess(): bool
     {
         $user = auth()->user();
 
         return $user?->hasRole('verhuurder') ?? false;
+    }
+
+    /**
+     * Owner scope at resource level: applies to the list, record binding
+     * and — critically — global search, so a landlord can never enumerate
+     * another landlord's building name/city via the topbar search.
+     */
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->where('landlord_id', auth()->id());
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['name', 'city'];
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public static function getGlobalSearchResultDetails(Model $record): array
+    {
+        return [
+            'Stad' => $record->city,
+        ];
     }
 
     public static function getNavigationBadge(): ?string

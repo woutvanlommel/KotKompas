@@ -11,12 +11,11 @@ use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use Filament\Pages\Dashboard;
+use Filament\Navigation\NavigationItem;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
 use Filament\View\PanelsRenderHook;
-use Filament\Widgets\AccountWidget;
 use Illuminate\Contracts\View\View;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
@@ -36,8 +35,10 @@ class DashboardPanelProvider extends PanelProvider
             ->path('dashboard')
             ->viteTheme('resources/css/filament/dashboard/theme.css')
             ->brandName('KotKompas')
+            ->brandLogo(fn () => view('filament.dashboard.brand-logo'))
             ->favicon(asset('img/favicon-256.png'))
             ->darkMode(false)
+            ->databaseNotifications()
             ->login(Login::class)
             ->registration(Register::class)
             ->passwordReset(RequestPasswordReset::class, ResetPassword::class)
@@ -100,16 +101,20 @@ class DashboardPanelProvider extends PanelProvider
                 'info' => Color::hex('#3a6ea5'),
                 'warning' => Color::hex('#ff6700'),
                 'gray' => Color::hex('#c0c0c0'),
+                'featured' => Color::hex('#caa12a'),
+            ])
+            ->navigationItems([
+                NavigationItem::make('Naar de website')
+                    ->url(fn (): string => route('home'))
+                    ->icon('heroicon-o-globe-alt')
+                    ->openUrlInNewTab()
+                    ->sort(-100),
             ])
             ->discoverResources(in: app_path('Filament/Dashboard/Resources'), for: 'App\Filament\Dashboard\Resources')
             ->discoverPages(in: app_path('Filament/Dashboard/Pages'), for: 'App\Filament\Dashboard\Pages')
-            ->pages([
-                Dashboard::class,
-            ])
+            ->pages([])
             ->discoverWidgets(in: app_path('Filament/Dashboard/Widgets'), for: 'App\Filament\Dashboard\Widgets')
-            ->widgets([
-                AccountWidget::class,
-            ])
+            ->widgets([])
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,

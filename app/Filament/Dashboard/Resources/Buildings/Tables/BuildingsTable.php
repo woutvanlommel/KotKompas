@@ -3,12 +3,16 @@
 namespace App\Filament\Dashboard\Resources\Buildings\Tables;
 
 use App\Filament\Dashboard\Resources\Buildings\BuildingResource;
+use App\Models\Building;
 use App\Services\FilamentNotificationService;
+use App\Support\Score;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Support\Enums\FontWeight;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class BuildingsTable
 {
@@ -16,29 +20,46 @@ class BuildingsTable
     {
         return $table
             ->recordUrl(fn ($record) => BuildingResource::getUrl('view', ['record' => $record]))
+            ->modifyQueryUsing(fn (Builder $query): Builder => $query->withCount([
+                'rooms',
+                'rooms as available_rooms_count' => fn (Builder $q) => $q->where('status', 'available'),
+                'rooms as rented_rooms_count' => fn (Builder $q) => $q->where('status', 'rented'),
+            ]))
             ->columns([
                 TextColumn::make('name')
-                    ->label('Naam')
-                    ->searchable(),
-                TextColumn::make('street')
-                    ->label('Straat')
-                    ->searchable(),
-                TextColumn::make('house_number')
-                    ->label('Huisnummer')
-                    ->numeric()
+                    ->label('Gebouw')
+                    ->description(fn (Building $record): string => $record->full_address)
+                    ->searchable(['name', 'street', 'city', 'postal_code'])
+                    ->sortable()
+                    ->weight(FontWeight::Medium),
+                TextColumn::make('rooms_count')
+                    ->label('Kamers')
+                    ->badge()
+                    ->color('gray')
                     ->sortable(),
-                TextColumn::make('postal_code')
-                    ->label('Postcode')
+                TextColumn::make('bezetting')
+                    ->label('Bezetting')
+                    ->badge()
+                    ->state(fn (Building $record): string => $record->rooms_count === 0
+                        ? 'Geen kamers'
+                        : $record->rented_rooms_count.'/'.$record->rooms_count.' verhuurd')
+                    ->color(fn (Building $record): string => match (true) {
+                        $record->rooms_count === 0 => 'gray',
+                        $record->available_rooms_count > 0 => 'success',
+                        default => 'info',
+                    }),
+                TextColumn::make('score')
+                    ->label('Kotscore')
+                    ->badge()
+                    ->state(fn (Building $record): string => $record->reviews_count > 0 && $record->score !== null
+                        ? Score::format($record->score).' ★'
+                        : 'Nog geen score')
+                    ->color(fn (Building $record): string => match (true) {
+                        $record->reviews_count === 0 || $record->score === null => 'gray',
+                        $record->score < 3.5 => 'warning',
+                        default => 'success',
+                    })
                     ->sortable(),
-                TextColumn::make('box')
-                    ->label('Bus/Appartement')
-                    ->searchable(),
-                TextColumn::make('city')
-                    ->label('Plaats')
-                    ->searchable(),
-                TextColumn::make('country')
-                    ->label('Land')
-                    ->searchable(),
                 TextColumn::make('created_at')
                     ->label('Aangemaakt op')
                     ->dateTime()
@@ -55,6 +76,7 @@ class BuildingsTable
             ])
             ->recordActions([
                 EditAction::make()
+                    ->color('gray')
                     ->successNotification(null)
                     ->after(function ($record) {
                         FilamentNotificationService::success(

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Dashboard\Widgets;
 
+use App\Filament\Dashboard\Pages\Documents;
 use App\Models\Room;
 use Filament\Widgets\Widget;
 use Illuminate\Support\Collection;
@@ -23,6 +24,8 @@ class TenantRoomInfo extends Widget
     {
         return [
             'rooms' => $this->rooms(),
+            'documentsUrl' => Documents::getUrl(),
+            'browseUrl' => route('rooms.index'),
         ];
     }
 

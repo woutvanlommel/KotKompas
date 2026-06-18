@@ -27,19 +27,22 @@ class ScoreOverviewWidgetTest extends TestCase
         return $landlord;
     }
 
-    public function test_widget_shows_landlord_and_building_scores(): void
+    public function test_widget_shows_landlord_score_and_criteria_breakdown(): void
     {
         $landlord = $this->landlord();
-        $topBuilding = Building::factory()->create(['landlord_id' => $landlord->id, 'name' => 'Residentie Park']);
-        $otherBuilding = Building::factory()->create(['landlord_id' => $landlord->id, 'name' => 'Residentie Centrum']);
-        $topRoom = Room::factory()->for($topBuilding)->create(['title' => 'Zolderstudio']);
-        $otherRoom = Room::factory()->for($otherBuilding)->create();
+        $building = Building::factory()->create(['landlord_id' => $landlord->id]);
+        $rooms = Room::factory()->count(3)->for($building)->create(['title' => 'Zolderstudio']);
 
-        RoomReview::factory()->forRoom($topRoom)->create([
-            'score_hygiene' => 5, 'score_size' => 5, 'score_value' => 5, 'score_communication' => 5,
+        // Three reviews clears the anonymity threshold so the breakdown shows.
+        // Equal recency weights → plain averages: hygiene/value 4,0; size/comm 3,0.
+        RoomReview::factory()->forRoom($rooms[0])->create([
+            'score_hygiene' => 5, 'score_size' => 3, 'score_value' => 4, 'score_communication' => 2,
         ]);
-        RoomReview::factory()->forRoom($otherRoom)->create([
-            'score_hygiene' => 4, 'score_size' => 4, 'score_value' => 4, 'score_communication' => 2,
+        RoomReview::factory()->forRoom($rooms[1])->create([
+            'score_hygiene' => 3, 'score_size' => 3, 'score_value' => 4, 'score_communication' => 4,
+        ]);
+        RoomReview::factory()->forRoom($rooms[2])->create([
+            'score_hygiene' => 4, 'score_size' => 3, 'score_value' => 4, 'score_communication' => 3,
         ]);
 
         // The observer wrote the cache to the DB via its own instance;
@@ -49,56 +52,54 @@ class ScoreOverviewWidgetTest extends TestCase
         $this->actingAs($landlord);
         Filament::setCurrentPanel('dashboard');
 
-        // Landlord: quality (5+4)/2 = 4.5 and communication (5+2)/2 = 3.5 → 4.0.
-        // Buildings: average (5.0 + 4.0)/2 = 4.5; best building scores 5.
-        // Room titles must never appear: per-room scores would de-anonymise
-        // reviews, so the widget aggregates at building level only.
+        // The widget pairs the overall verhuurderscore with the per-criterion
+        // breakdown it rolls up from. Per-room titles must never appear — that
+        // would de-anonymise the reviews.
         Livewire::test(ScoreOverview::class)
-            ->assertSee('Jouw verhuurderscore')
-            ->assertSee('4,0 / 5')
-            ->assertSee('4,5 / 5')
-            ->assertSee('5 / 5')
-            ->assertSee('Gemiddelde gebouwscore')
-            ->assertSee('Residentie Park')
-            ->assertDontSee('Zolderstudio')
-            ->assertDontSee('kotscore');
+            ->assertSee('Verhuurderscore')
+            ->assertSee('Per criterium')
+            ->assertSee('Hygiëne')
+            ->assertSee('Grootte')
+            ->assertSee('Prijs-kwaliteit')
+            ->assertSee('Communicatie')
+            ->assertSee('4,0')
+            ->assertSee('3,0')
+            ->assertDontSee('Zolderstudio');
     }
 
-    public function test_best_building_tiebreak_prefers_the_most_reviewed_building(): void
+    public function test_widget_hides_breakdown_below_anonymity_threshold(): void
     {
         $landlord = $this->landlord();
-        $onceReviewed = Building::factory()->create(['landlord_id' => $landlord->id, 'name' => 'Eén beoordeling']);
-        $twiceReviewed = Building::factory()->create(['landlord_id' => $landlord->id, 'name' => 'Twee beoordelingen']);
-        $onceRoom = Room::factory()->for($onceReviewed)->create();
-        $twiceRoom = Room::factory()->for($twiceReviewed)->create();
+        $building = Building::factory()->create(['landlord_id' => $landlord->id]);
+        $rooms = Room::factory()->count(2)->for($building)->create();
 
-        // All 4/4/4 → both buildings score exactly 4.0.
-        $scores = ['score_hygiene' => 4, 'score_size' => 4, 'score_value' => 4, 'score_communication' => 4];
-        RoomReview::factory()->forRoom($onceRoom)->create($scores);
-        RoomReview::factory()->forRoom($twiceRoom)->create($scores);
-        RoomReview::factory()->forRoom($twiceRoom)->create($scores);
+        // Two reviews is below MIN_REVIEWS_FOR_BREAKDOWN, so the criteria stay
+        // masked behind a "still needed" progress message.
+        RoomReview::factory()->forRoom($rooms[0])->create();
+        RoomReview::factory()->forRoom($rooms[1])->create();
 
         $landlord->refresh();
         $this->actingAs($landlord);
         Filament::setCurrentPanel('dashboard');
 
         Livewire::test(ScoreOverview::class)
-            ->assertSee('Twee beoordelingen')
-            ->assertDontSee('Eén beoordeling');
+            ->assertSee('Verhuurderscore')
+            ->assertSee('te gaan')
+            ->assertDontSee('Hygiëne');
     }
 
     public function test_widget_shows_empty_state_without_reviews(): void
     {
         $landlord = $this->landlord();
-        Building::factory()->create(['landlord_id' => $landlord->id]);
+        $building = Building::factory()->create(['landlord_id' => $landlord->id]);
+        Room::factory()->for($building)->create();
 
         $this->actingAs($landlord);
         Filament::setCurrentPanel('dashboard');
 
         Livewire::test(ScoreOverview::class)
-            ->assertSee('—')
             ->assertSee('Nog geen beoordelingen ontvangen')
-            ->assertSee('Nog geen beoordeelde gebouwen');
+            ->assertSee('beoordelingen nodig');
     }
 
     public function test_widget_is_hidden_for_non_landlords(): void
@@ -130,12 +131,13 @@ class ScoreOverviewWidgetTest extends TestCase
         $this->actingAs($landlord);
         Filament::setCurrentPanel('dashboard');
 
-        // >= 4.0 gets a green badge; below 4.0 the brand orange (warning).
+        // Each building shows its kotscore + review count; a weak score (< 3,5)
+        // warms to the brand orange (#c2510a), a healthy one stays ink.
         Livewire::test(BuildingsOverviewTable::class)
             ->assertSee('Kotscore')
-            ->assertSee('4,0 (1)')
-            ->assertSee('2,0 (1)')
-            ->assertSee('bg-success-100')
-            ->assertSee('bg-warning-100');
+            ->assertSee('4,0')
+            ->assertSee('2,0')
+            ->assertSee('(1)')
+            ->assertSee('text-[#c2510a]');
     }
 }

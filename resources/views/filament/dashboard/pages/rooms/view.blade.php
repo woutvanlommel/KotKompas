@@ -12,10 +12,10 @@
         ];
 
         $statusConfig = [
-            'available'   => ['label' => 'Beschikbaar',  'bg' => 'bg-green-50',  'text' => 'text-green-700',  'dot' => 'bg-green-500'],
-            'rented'      => ['label' => 'Verhuurd',     'bg' => 'bg-blue-50',   'text' => 'text-blue-700',   'dot' => 'bg-blue-500'],
-            'maintenance' => ['label' => 'Onderhoud',    'bg' => 'bg-yellow-50', 'text' => 'text-yellow-700', 'dot' => 'bg-yellow-500'],
-            'archived'    => ['label' => 'Gearchiveerd', 'bg' => 'bg-gray-100',  'text' => 'text-gray-600',   'dot' => 'bg-gray-400'],
+            'available'   => ['label' => 'Beschikbaar',  'bg' => 'bg-[#e7f6ec]', 'text' => 'text-[#15803d]', 'dot' => 'bg-[#15803d]'],
+            'rented'      => ['label' => 'Verhuurd',     'bg' => 'bg-[#eaf1f8]', 'text' => 'text-[#2e5884]', 'dot' => 'bg-[#2e5884]'],
+            'maintenance' => ['label' => 'Onderhoud',    'bg' => 'bg-[#fff3e0]', 'text' => 'text-[#c2510a]', 'dot' => 'bg-[#c2510a]'],
+            'archived'    => ['label' => 'Gearchiveerd', 'bg' => 'bg-[#e1e6ed]', 'text' => 'text-[#586573]', 'dot' => 'bg-[#586573]'],
         ];
 
         $status   = $statusConfig[$room->status] ?? $statusConfig['archived'];

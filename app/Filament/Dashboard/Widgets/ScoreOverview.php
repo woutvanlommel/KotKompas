@@ -2,74 +2,85 @@
 
 namespace App\Filament\Dashboard\Widgets;
 
-use App\Models\Building;
+use App\Services\KotScoreService;
 use App\Support\Score;
-use Filament\Widgets\StatsOverviewWidget;
-use Filament\Widgets\StatsOverviewWidget\Stat;
-use Illuminate\Database\Eloquent\Builder;
+use Filament\Widgets\Widget;
 
 /**
- * Replaces the "Score overzicht" placeholder: the cached kotscores from
- * KotScoreService, seen through the lens of the logged-in landlord.
+ * The landlord's score in one place: the overall verhuurderscore (the
+ * portfolio total — 50% kotkwaliteit, 50% communicatie) next to the exact
+ * criteria it rolls up from (hygiëne / grootte / prijs-kwaliteit /
+ * communicatie). Total + breakdown read as one story.
  *
- * Deliberately aggregates at BUILDING level only: a per-room score would
- * de-anonymise reviews — with one tenant per room, the landlord would know
- * exactly who wrote what.
+ * The breakdown is pooled at portfolio level and hidden under the anonymity
+ * threshold (MIN_REVIEWS_FOR_BREAKDOWN); below it the right column shows how
+ * many reviews are still needed. Per-building scores live in the buildings
+ * table, so they are intentionally not repeated here.
  */
-class ScoreOverview extends StatsOverviewWidget
+class ScoreOverview extends Widget
 {
+    protected string $view = 'filament.dashboard.widgets.score-overview';
+
     protected static ?int $sort = 4;
 
-    protected ?string $heading = 'Score overzicht';
+    protected int|string|array $columnSpan = 'full';
 
-    // Scores only change on a review submit and the nightly
-    // recompute — the 5s polling default is wasted queries here.
+    // Scores only change on a review submit and the nightly recompute.
     protected ?string $pollingInterval = null;
 
     public static function canView(): bool
     {
-        return auth()->user()?->hasRole('verhuurder') ?? false;
+        $user = auth()->user();
+
+        return ($user?->hasRole('verhuurder') ?? false) && $user->hasRooms();
     }
 
-    protected function getStats(): array
+    protected function getViewData(): array
     {
         $landlord = auth()->user();
 
+        $minReviews = KotScoreService::MIN_REVIEWS_FOR_BREAKDOWN;
+
         if (! $landlord) {
-            return [];
+            return [
+                'landlordScore' => '—',
+                'landlordDescription' => 'Nog geen beoordelingen ontvangen',
+                'hasBreakdown' => false,
+                'criteria' => [],
+                'reviewsCount' => 0,
+                'minReviews' => $minReviews,
+            ];
         }
 
-        $scoredBuildings = $this->buildingsQuery()->whereNotNull('score');
+        $reviewsCount = $landlord->landlordReviews()->count();
+        $breakdown = app(KotScoreService::class)->landlordCriteriaBreakdown($landlord);
 
-        $averageScore = (clone $scoredBuildings)->avg('score');
-        $scoredCount = (clone $scoredBuildings)->count();
-        $bestBuilding = (clone $scoredBuildings)
-            ->orderByDesc('score')
-            ->orderByDesc('reviews_count')
-            ->first();
+        $labels = [
+            'hygiene' => 'Hygiëne',
+            'size' => 'Grootte',
+            'value' => 'Prijs-kwaliteit',
+            'communication' => 'Communicatie',
+        ];
+
+        $criteria = $breakdown === null ? [] : collect($labels)
+            ->map(fn (string $label, string $key): array => [
+                'label' => $label,
+                'score' => (float) $breakdown[$key],
+            ])
+            ->values()
+            ->all();
 
         return [
-            Stat::make('Jouw verhuurderscore', $this->formatScore($landlord->landlord_score))
-                ->description($landlord->landlord_reviews_count > 0
-                    ? "Op basis van {$landlord->landlord_reviews_count} ".($landlord->landlord_reviews_count === 1 ? 'beoordeling' : 'beoordelingen').' — 50% kotkwaliteit, 50% communicatie'
-                    : 'Nog geen beoordelingen ontvangen')
-                ->color('info'),
-            Stat::make('Gemiddelde gebouwscore', $this->formatScore($averageScore !== null ? (float) $averageScore : null))
-                ->description($scoredCount > 0
-                    ? "Over {$scoredCount} ".($scoredCount === 1 ? 'beoordeeld gebouw' : 'beoordeelde gebouwen')
-                    : 'Nog geen beoordeelde gebouwen'),
-            Stat::make('Best scorend gebouw', $this->formatScore($bestBuilding?->score))
-                ->description($bestBuilding->name ?? 'Nog geen beoordeelde gebouwen'),
+            'landlordScore' => $landlord->landlord_score === null
+                ? '—'
+                : Score::format($landlord->landlord_score).' / 5',
+            'landlordDescription' => $landlord->landlord_reviews_count > 0
+                ? 'Op basis van '.$landlord->landlord_reviews_count.' '.($landlord->landlord_reviews_count === 1 ? 'beoordeling' : 'beoordelingen').' — 50% kotkwaliteit, 50% communicatie'
+                : 'Nog geen beoordelingen ontvangen',
+            'hasBreakdown' => $breakdown !== null,
+            'criteria' => $criteria,
+            'reviewsCount' => $reviewsCount,
+            'minReviews' => $minReviews,
         ];
-    }
-
-    protected function buildingsQuery(): Builder
-    {
-        return Building::query()->where('landlord_id', auth()->id());
-    }
-
-    private function formatScore(?float $score): string
-    {
-        return $score === null ? '—' : Score::format($score).' / 5';
     }
 }

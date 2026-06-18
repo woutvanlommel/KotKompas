@@ -2,6 +2,7 @@
 
 namespace App\Filament\Dashboard\Widgets;
 
+use App\Filament\Dashboard\Pages\Chat;
 use App\Models\Room;
 use Filament\Widgets\Widget;
 use Illuminate\Support\Collection;
@@ -9,6 +10,8 @@ use Illuminate\Support\Collection;
 class TenantLandlordInfo extends Widget
 {
     protected static ?int $sort = 2;
+
+    protected int|string|array $columnSpan = 'full';
 
     protected string $view = 'filament.dashboard.widgets.tenant-landlord-info';
 
@@ -24,6 +27,7 @@ class TenantLandlordInfo extends Widget
     {
         return [
             'landlords' => $this->landlords(),
+            'chatUrl' => Chat::getUrl(),
         ];
     }
 

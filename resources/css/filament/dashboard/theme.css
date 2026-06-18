@@ -669,3 +669,1376 @@
 .dark .chat-messages::-webkit-scrollbar-thumb:hover {
     background-color: rgba(255, 255, 255, 0.4);
 }
+
+/* ===========================================================================
+ * KotKompas dashboard rebrand — one brand with the public site.
+ * Navy chrome + cool off-white canvas + area-normal. Scoped to .fi-layout so
+ * the auth pages (.fi-simple-layout / .kk-auth) keep their own treatment.
+ * canvas/ink tokens mirror resources/css/app.css @theme; brand scales via theme().
+ * =========================================================================== */
+
+/* --- Canvas + ink ------------------------------------------------------- */
+.fi-layout {
+    background-color: #edf0f4;        /* --color-canvas: cool off-white, navy-family */
+    color: #0f1720;                   /* --color-ink: near-navy off-black */
+}
+
+/* --- Sidebar: light surface, neutral grey active pill (NO blue) ------------
+   Flux-style light nav: ink-soft links on a white rail, a clean rounded grey
+   pill for the active item — no canvas-bleed tab, no colour accent. The page
+   carries the colour; the nav recedes. */
+.fi-layout .fi-sidebar {
+    background-color: #ffffff;
+    border-right: 1px solid #0f17201f;
+}
+.fi-layout .fi-sidebar .fi-sidebar-item-btn {
+    color: #586573;                                  /* ink-soft */
+    border-radius: 0.6rem;
+    font-weight: 500;
+}
+.fi-layout .fi-sidebar .fi-sidebar-item-btn:hover {
+    background-color: #edf0f4;                        /* canvas tint */
+    color: #0f1720;                                   /* ink */
+}
+.fi-layout .fi-sidebar .fi-sidebar-item-icon {
+    color: #9aa6b4;
+}
+.fi-layout .fi-sidebar .fi-sidebar-item-btn:hover .fi-sidebar-item-icon {
+    color: #0f1720;
+}
+/* active item → the PAGE BACKGROUND flows into the nav: a canvas-coloured tab
+   that meets the content edge with concave (inverted-radius) corners above +
+   below, so the active item reads as one surface with the page. No blue — the
+   tab + corners are the canvas tint #edf0f4, the label is ink. */
+.fi-layout .fi-sidebar .fi-sidebar-item.fi-active .fi-sidebar-item-btn,
+.fi-layout .fi-sidebar .fi-sidebar-item.fi-active .fi-sidebar-item-btn:hover {
+    position: relative;
+    background-color: #edf0f4;                        /* canvas — matches the page */
+    box-shadow: none;
+    margin-right: -31px;                              /* reach the sidebar's right edge */
+    border-radius: 0.9rem 0 0 0.9rem;                 /* rounded left, flush right */
+}
+.fi-layout .fi-sidebar .fi-sidebar-item.fi-active .fi-sidebar-item-label {
+    color: #0f1720;                                   /* ink */
+    font-weight: 600;
+}
+.fi-layout .fi-sidebar .fi-sidebar-item.fi-active .fi-sidebar-item-icon {
+    color: #0f1720;                                   /* ink — no blue */
+}
+/* the two concave corners that blend the canvas tab into the content surface */
+.fi-layout .fi-sidebar .fi-sidebar-item.fi-active .fi-sidebar-item-btn::before,
+.fi-layout .fi-sidebar .fi-sidebar-item.fi-active .fi-sidebar-item-btn::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    width: 1.25rem;
+    height: 1.25rem;
+    pointer-events: none;
+}
+.fi-layout .fi-sidebar .fi-sidebar-item.fi-active .fi-sidebar-item-btn::before {
+    top: -1.25rem;
+    background: radial-gradient(circle at top left, transparent 1.24rem, #edf0f4 1.26rem);
+}
+.fi-layout .fi-sidebar .fi-sidebar-item.fi-active .fi-sidebar-item-btn::after {
+    bottom: -1.25rem;
+    background: radial-gradient(circle at bottom left, transparent 1.24rem, #edf0f4 1.26rem);
+}
+/* group label → ink-soft micro-caps on the light surface */
+.fi-layout .fi-sidebar .fi-sidebar-group-label {
+    color: #9aa6b4;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-size: 0.65rem;
+    font-weight: 600;
+}
+/* brand wordmark → ink on the light surface (the wordmark sets its own hues) */
+.fi-layout .fi-sidebar .fi-logo {
+    color: #0f1720;
+}
+
+/* --- Sections / widget cards → brand chrome ----------------------------- */
+.fi-layout .fi-section,
+.fi-layout .fi-wi.bg-white {
+    border-radius: 1.25rem;                          /* rounded-[1.25rem] */
+    border: 1px solid #0f17201f;                     /* hairline */
+    box-shadow: 0 8px 32px rgba(0, 16, 30, 0.06),
+                0 2px 8px rgba(0, 16, 30, 0.04);     /* navy-tinted, never neutral */
+    --tw-ring-color: transparent;                    /* drop Filament's gray ring */
+}
+.fi-layout .fi-section-header-heading {
+    letter-spacing: -0.01em;
+}
+
+/* --- Buttons: restrained brand (navy primary, 4px brand radius) ---------
+ * No uppercase / orange arrow-chip here — that marketing pill stays reserved
+ * for the few genuine hero CTAs, per the brand guardrail "restrained in a
+ * functional admin tool". Just the navy body + soft-cornered 4px radius. */
+.fi-layout .fi-btn {
+    border-radius: 4px;
+}
+.fi-layout .fi-btn.fi-color-primary {
+    background-color: #002f5b;     /* primary-900 navy, like the public CTA */
+    color: #fff;
+}
+.fi-layout .fi-btn.fi-color-primary:hover {
+    background-color: #001f3d;     /* primary-800 */
+}
+
+/* --- Topbar: hairline seam against the canvas --------------------------- */
+.fi-layout .fi-topbar {
+    border-bottom: 1px solid #0f17201f;
+}
+
+
+/* ============================================================================
+   KOTKOMPAS DASHBOARD REBRAND — consolidated brand layer (APPEND to theme.css)
+   Six component groups, deduped + conflict-resolved. Every selector is scoped
+   under .fi-layout (the dashboard app shell) so the auth pages
+   (.kk-auth / .kk-stage / .fi-simple-layout) stay untouched. darkMode is OFF —
+   no dark: rules. Does NOT redo the ALREADY-DONE work (canvas/ink, sidebar,
+   sections, .fi-btn, topbar seam) — those remain above this block in theme.css.
+   Tokens (literal hex): canvas #edf0f4 · canvas-deep #e1e6ed · card #fff ·
+   ink #0f1720 · ink-soft #586573 · hairline #0f17201f · navy #00101e /
+   navy-hover #001f3d · orange #ff6700 (CTA/highlight only) · cerulean #3a6ea5
+   / light #89a7ca (interactive feedback/hover) · gold #caa12a (featured only).
+   Grounded against the real v5 blades (ColorManager emits `fi-color`+
+   `fi-color-{name}` TOGETHER; .fi-input-wrp ring = box-shadow; tabs use
+   .fi-tabs-item.fi-active; badge color = 2-class `.fi-badge.fi-color`).
+   ============================================================================ */
+
+/* ===========================================================================
+   1 · FORM FIELDS — text input · textarea · select · file upload ·
+       label / required-mark / error · fieldset
+   =========================================================================== */
+
+/* Field label → brand micro-caps (mirrors .kk-stage label + sidebar group label) */
+.fi-layout .fi-fo-field-label-content {
+    color: #586573;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+/* required mark → accent orange (highlight token) */
+.fi-layout .fi-fo-field-label-required-mark,
+.fi-layout .fi-fieldset > legend .fi-fieldset-label-required-mark {
+    color: #ff6700;
+}
+/* hint — kept as a harmless no-op fallback: this Filament build does NOT emit a
+   .fi-fo-field-label-hint class (verified in field-wrapper.blade.php). If a
+   future version adds it, this lands the hint in quiet ink-soft. */
+.fi-layout .fi-fo-field-label-hint,
+.fi-layout .fi-fo-field-label-hint .fi-sc-text {
+    color: #586573;
+    font-size: 0.75rem;
+    letter-spacing: -0.01em;
+    text-transform: none;
+}
+
+/* Underline-only input shell (text input · textarea · native + searchable select).
+   Vendor paints .fi-input-wrp as white box + ring-gray-950/10 (box-shadow). The
+   3-class scope (.fi-layout + .fi-fo-* + .fi-input-wrp) already beats the vendor
+   single-class rule; box-shadow/bg !important kept as a defensive guard against
+   the vendor's @apply ring shadows recomposing — verify states render in-browser. */
+/* NOTE: .fi-fo-text-input / -textarea / -select are MODIFIER classes ON the
+   .fi-input-wrp element (compound), not ancestors — verified in the live DOM. */
+.fi-layout .fi-input-wrp.fi-fo-text-input,
+.fi-layout .fi-input-wrp.fi-fo-textarea,
+.fi-layout .fi-input-wrp.fi-fo-select {
+    border: 0;
+    border-radius: 0;
+    background-color: transparent !important;
+    box-shadow: inset 0 -1px 0 0 #0f17201f !important;   /* hairline underline */
+    transition: box-shadow 180ms cubic-bezier(0.22, 1, 0.36, 1);
+    --tw-ring-color: transparent;
+}
+.fi-layout .fi-input-wrp.fi-fo-text-input:focus-within,
+.fi-layout .fi-input-wrp.fi-fo-textarea:focus-within,
+.fi-layout .fi-input-wrp.fi-fo-select:focus-within {
+    box-shadow: inset 0 -2px 0 0 #0f1720 !important;     /* ink focus */
+}
+.fi-layout .fi-input-wrp.fi-fo-text-input.fi-invalid,
+.fi-layout .fi-input-wrp.fi-fo-textarea.fi-invalid,
+.fi-layout .fi-input-wrp.fi-fo-select.fi-invalid {
+    box-shadow: inset 0 -1.5px 0 0 #dc2626 !important;   /* danger */
+}
+.fi-layout .fi-input-wrp.fi-fo-text-input.fi-invalid:focus-within,
+.fi-layout .fi-input-wrp.fi-fo-textarea.fi-invalid:focus-within,
+.fi-layout .fi-input-wrp.fi-fo-select.fi-invalid:focus-within {
+    box-shadow: inset 0 -2px 0 0 #dc2626 !important;
+}
+.fi-layout .fi-input-wrp.fi-fo-text-input.fi-disabled,
+.fi-layout .fi-input-wrp.fi-fo-textarea.fi-disabled,
+.fi-layout .fi-input-wrp.fi-fo-select.fi-disabled {
+    box-shadow: inset 0 -1px 0 0 rgba(15, 23, 32, 0.08) !important;
+    background-color: #e1e6ed !important;                /* canvas-deep = "not editable" */
+}
+
+/* The input element: ink text, tight tracking, tabular numerics */
+.fi-layout .fi-fo-text-input .fi-input,
+.fi-layout .fi-fo-textarea textarea,
+.fi-layout .fi-fo-select .fi-select-input {
+    background-color: transparent;
+    color: #0f1720;
+    letter-spacing: -0.01em;
+    font-variant-numeric: tabular-nums;
+}
+.fi-layout .fi-fo-text-input .fi-input::placeholder,
+.fi-layout .fi-fo-textarea textarea::placeholder {
+    color: color-mix(in oklab, #586573 60%, transparent);
+}
+.fi-layout .fi-fo-text-input .fi-input:not(.fi-input-has-inline-prefix),
+.fi-layout .fi-fo-select .fi-select-input:not(.fi-select-input-has-inline-prefix) {
+    padding-inline-start: 0;
+}
+
+/* prefix / suffix affixes → drop the box-divider, sit on the underline */
+.fi-layout .fi-fo-text-input .fi-input-wrp-prefix,
+.fi-layout .fi-fo-text-input .fi-input-wrp-suffix,
+.fi-layout .fi-fo-select .fi-input-wrp-suffix {
+    background-color: transparent;
+    border-color: transparent;
+}
+.fi-layout .fi-input-wrp-label {
+    color: #586573;
+    font-variant-numeric: tabular-nums;
+}
+.fi-layout .fi-fo-text-input .fi-input-wrp-suffix .fi-icon-btn {
+    color: #586573;
+}
+.fi-layout .fi-fo-text-input .fi-input-wrp-suffix .fi-icon-btn:hover {
+    color: #3a6ea5;                                       /* cerulean, never orange */
+}
+
+/* native select chevron/text */
+.fi-layout .fi-fo-select-native .fi-select-input {
+    color: #0f1720;
+    cursor: pointer;
+    font-variant-numeric: tabular-nums;
+}
+
+/* searchable / multiple select trigger (renders INSIDE .fi-input-wrp) */
+.fi-layout .fi-fo-select .fi-select-input-btn {
+    background-color: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    color: #0f1720;
+    letter-spacing: -0.01em;
+}
+.fi-layout .fi-fo-select .fi-select-input-btn:focus {
+    outline: 0;
+    box-shadow: none;
+}
+.fi-layout .fi-fo-select .fi-select-input-btn .fi-badge {
+    border-radius: 0.375rem;
+}
+
+/* textarea — roomier underline field */
+.fi-layout .fi-fo-textarea textarea {
+    padding-inline: 0;
+    line-height: 1.55;
+}
+
+/* validation error text → danger */
+.fi-layout .fi-fo-field-wrp-error-message,
+.fi-layout .fi-fo-field-wrp-error-list .fi-fo-field-wrp-error-message {
+    color: #dc2626;
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: -0.005em;
+}
+
+/* fieldset — hairline group, micro-caps legend */
+.fi-layout .fi-fieldset {
+    border: 1px solid #0f17201f;
+    border-radius: 0.75rem;
+    background-color: #ffffff;
+}
+.fi-layout .fi-fieldset > legend {
+    color: #586573;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+/* file upload — dashed hairline dropzone on a recessed fill (FilePond JS classes) */
+.fi-layout .fi-fo-file-upload .filepond--root {
+    border: 1.5px dashed #0f17201f;
+    border-radius: 0.75rem;
+    background-color: #f4f6f9 !important;
+    box-shadow: none !important;
+    --tw-ring-color: transparent;
+    transition: border-color 160ms cubic-bezier(0.22, 1, 0.36, 1),
+                background-color 160ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.fi-layout .fi-fo-file-upload .filepond--root:hover,
+.fi-layout .fi-fo-file-upload .filepond--root[data-drag-state] {
+    border-color: #89a7ca;                               /* cerulean-light cue */
+    background-color: #eef2f7 !important;
+}
+.fi-layout .fi-fo-file-upload .filepond--panel-root {
+    background-color: transparent !important;
+    border: 0;
+}
+.fi-layout .fi-fo-file-upload .filepond--drop-label,
+.fi-layout .fi-fo-file-upload .filepond--drop-label label {
+    color: #586573;
+}
+.fi-layout .fi-fo-file-upload .filepond--label-action {
+    color: #3a6ea5;
+    text-decoration-color: #89a7ca;
+    text-underline-offset: 2px;
+}
+.fi-layout .fi-fo-file-upload .filepond--file-info-main {
+    color: #0f1720;
+}
+.fi-layout .fi-fo-file-upload .filepond--file-info-sub,
+.fi-layout .fi-fo-file-upload .filepond--file-status-main,
+.fi-layout .fi-fo-file-upload .filepond--file-status-sub {
+    color: #586573;
+    font-variant-numeric: tabular-nums;
+}
+.fi-layout .fi-fo-file-upload .fi-fo-file-upload-error-message {
+    color: #dc2626;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+/* ===========================================================================
+   2 · CHECKBOX / RADIO / TOGGLE — auth dash-to-circle morph on the light canvas
+   =========================================================================== */
+
+/* Checkbox + radio share the SAME control language (square box, 3px radius,
+   ink dash → ink circle), exactly as the auth pages treat their role radios.
+   appearance-none + background-image:none !important kill the vendor SVG so the
+   ::after morph paints alone. 3-class selector beats input[type].fi-*-input. */
+.fi-layout input[type='checkbox'].fi-checkbox-input,
+.fi-layout input[type='radio'].fi-radio-input {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 1rem;
+    height: 1rem;
+    border: 1.5px solid color-mix(in oklab, #0f1720 30%, transparent);
+    border-radius: 3px;
+    background-color: transparent;
+    background-image: none !important;
+    box-shadow: none;
+    --tw-ring-color: transparent;
+    --tw-shadow: 0 0 #0000;
+    cursor: pointer;
+    flex-shrink: 0;
+    position: relative;
+    vertical-align: middle;
+    transition: border-color 160ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.fi-layout input[type='checkbox'].fi-checkbox-input:checked,
+.fi-layout input[type='checkbox'].fi-checkbox-input:indeterminate,
+.fi-layout input[type='radio'].fi-radio-input:checked {
+    border-color: #0f1720;
+    background-color: transparent;
+    background-image: none !important;
+}
+/* inner mark: vertical ink dash at rest → ink circle on check */
+.fi-layout input[type='checkbox'].fi-checkbox-input::after,
+.fi-layout input[type='radio'].fi-radio-input::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 2px;
+    height: 58%;
+    transform: translate(-50%, -50%);
+    border-radius: 1px;
+    background-color: #0f1720;
+    transition: width 280ms cubic-bezier(0.22, 1, 0.36, 1),
+                height 280ms cubic-bezier(0.22, 1, 0.36, 1),
+                border-radius 280ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.fi-layout input[type='checkbox'].fi-checkbox-input:checked::after,
+.fi-layout input[type='radio'].fi-radio-input:checked::after {
+    width: 0.55rem;
+    height: 0.55rem;
+    border-radius: 50%;
+}
+/* indeterminate (bulk-toggle "some selected") = a wide dash, no circle */
+.fi-layout input[type='checkbox'].fi-checkbox-input:indeterminate::after {
+    width: 0.55rem;
+    height: 2px;
+    border-radius: 1px;
+}
+/* invalid → danger outline + mark */
+.fi-layout input[type='checkbox'].fi-checkbox-input.fi-invalid,
+.fi-layout input[type='radio'].fi-radio-input.fi-invalid {
+    border-color: #dc2626;
+}
+.fi-layout input[type='checkbox'].fi-checkbox-input.fi-invalid::after,
+.fi-layout input[type='radio'].fi-radio-input.fi-invalid::after {
+    background-color: #dc2626;
+}
+/* disabled → muted */
+.fi-layout input[type='checkbox'].fi-checkbox-input:disabled,
+.fi-layout input[type='radio'].fi-radio-input:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+}
+
+/* radio option label text */
+.fi-layout .fi-fo-radio-label-text p {
+    color: #0f1720;
+    letter-spacing: -0.005em;
+}
+.fi-layout .fi-fo-radio-label-description {
+    color: #586573;
+    font-size: 0.8125rem;
+}
+
+/* Toggle — pill track, navy ON, canvas-deep OFF. Vendor on-state is
+   `.fi-toggle.fi-color { bg-(--bg) }` (2-class) driven by onColor (default
+   'primary', hijacked). .fi-layout .fi-toggle.fi-toggle-on (3-class) + !important
+   forces navy over the inline --bg utility. */
+.fi-layout .fi-toggle {
+    --tw-ring-color: transparent;
+    transition: background-color 200ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.fi-layout .fi-toggle.fi-toggle-off,
+.fi-layout button.fi-toggle:not(.fi-toggle-on) {
+    background-color: #e1e6ed !important;                /* canvas-deep */
+    box-shadow: inset 0 0 0 1px #0f17201f;               /* hairline */
+}
+.fi-layout .fi-toggle.fi-toggle-on {
+    background-color: #002f5b !important;                /* navy — beats inline --bg */
+    box-shadow: none;
+}
+.fi-layout .fi-toggle > :first-child {
+    background-color: #fff;                              /* knob */
+    box-shadow: 0 1px 3px rgba(0, 16, 30, 0.18);         /* navy-tinted */
+}
+.fi-layout .fi-toggle.fi-toggle-off .fi-icon {
+    color: #586573;
+}
+.fi-layout .fi-toggle.fi-toggle-on .fi-icon {
+    color: #00101e;
+}
+.fi-layout .fi-toggle:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px #fff, 0 0 0 4px #3a6ea5;       /* cerulean offset ring */
+}
+.fi-layout .fi-toggle:disabled,
+.fi-layout .fi-toggle[disabled] {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+/* ===========================================================================
+   3 · TABLES — header cells · rows/hover · sorting · selection · search ·
+       filters · indicators · empty state · pagination
+   =========================================================================== */
+
+/* header cells → micro-caps ink-soft eyebrow (beats single-class .fi-ta-header-cell) */
+.fi-layout .fi-ta-table .fi-ta-header-cell,
+.fi-layout .fi-ta-table .fi-ta-header-cell .fi-ta-header-cell-sort-btn {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #586573;
+    font-variant-numeric: tabular-nums;
+}
+.fi-layout .fi-ta-table .fi-ta-header-cell .fi-ta-header-cell-tooltip {
+    color: inherit;
+}
+
+/* sorting → active label firms to ink, chevron = cerulean */
+.fi-layout .fi-ta-table .fi-ta-header-cell.fi-ta-header-cell-sorted,
+.fi-layout .fi-ta-table .fi-ta-header-cell.fi-ta-header-cell-sorted .fi-ta-header-cell-sort-btn {
+    color: #0f1720;
+}
+.fi-layout .fi-ta-table .fi-ta-header-cell-sorted .fi-icon {
+    color: #3a6ea5;
+}
+.fi-layout .fi-ta-table .fi-ta-header-cell-sort-btn:hover .fi-icon,
+.fi-layout .fi-ta-table .fi-ta-header-cell-sort-btn:focus-visible .fi-icon {
+    color: #586573;
+}
+
+/* rows → hairline dividers + restrained canvas-deep hover, tabular cells */
+.fi-layout .fi-ta-table > tbody > tr:not(:last-child) {
+    border-bottom: 1px solid #0f17201f;
+}
+.fi-layout .fi-ta-table .fi-ta-row {
+    transition: background-color 160ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.fi-layout .fi-ta-table .fi-ta-row.fi-clickable:hover {
+    background-color: rgba(225, 230, 237, 0.5);
+}
+.fi-layout .fi-ta-table .fi-ta-row.fi-striped {
+    background-color: rgba(225, 230, 237, 0.4);
+}
+.fi-layout .fi-ta-table .fi-ta-cell {
+    font-variant-numeric: tabular-nums;
+}
+
+/* selected row → cerulean marker + faint cerulean wash */
+.fi-layout .fi-ta-table .fi-ta-row.fi-selected:not(.fi-striped) {
+    background-color: rgba(58, 110, 165, 0.06);
+}
+.fi-layout .fi-ta-table .fi-ta-row.fi-selected > :first-child::before {
+    background-color: #3a6ea5;
+}
+
+/* in-table column-search + toolbar global search → brand underline field.
+   (Deduped: both share one declaration block; the dashboard form-field underline
+   above is a SEPARATE scope (.fi-fo-*) so these table-only fields can't flatten it.) */
+.fi-layout .fi-ta-table .fi-ta-cell .fi-input-wrp,
+.fi-layout .fi-ta-search-field .fi-input-wrp {
+    border: 0;
+    border-radius: 0;
+    background-color: transparent;
+    box-shadow: inset 0 -1px 0 0 #0f17201f;
+    --tw-ring-color: transparent;
+    transition: box-shadow 160ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.fi-layout .fi-ta-table .fi-ta-cell .fi-input-wrp:focus-within,
+.fi-layout .fi-ta-search-field .fi-input-wrp:focus-within {
+    box-shadow: inset 0 -2px 0 0 #0f1720;
+}
+.fi-layout .fi-ta-search-field .fi-input {
+    letter-spacing: -0.01em;
+}
+.fi-layout .fi-ta-search-field .fi-input-wrp-prefix .fi-icon {
+    color: #586573;
+}
+
+/* content header + filters + indicators + selection bar → recessed canvas band */
+.fi-layout .fi-ta-content-header,
+.fi-layout .fi-ta-filter-indicators,
+.fi-layout .fi-ta-selection-indicator {
+    background-color: #e1e6ed;
+    border-bottom: 1px solid #0f17201f;
+}
+.fi-layout .fi-ta-filters .fi-ta-filters-heading {
+    color: #0f1720;
+    letter-spacing: -0.01em;
+}
+.fi-layout .fi-ta-filters.fi-ta-filters-below-content {
+    border-top: 1px solid #0f17201f;
+}
+.fi-layout .fi-ta-filters-above-content-ctn {
+    border-bottom: 1px solid #0f17201f;
+}
+.fi-layout .fi-ta-filter-indicators .fi-ta-filter-indicators-label {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #586573;
+}
+
+/* table empty state (NOTE: tables use .fi-ta-empty-state-*, distinct from the
+   generic .fi-empty-state-* styled in group 6 — no overlap) */
+.fi-layout .fi-ta-empty-state {
+    border-top: 1px solid #0f17201f;
+}
+.fi-layout .fi-ta-empty-state .fi-ta-empty-state-icon-bg {
+    background-color: #e1e6ed;
+}
+.fi-layout .fi-ta-empty-state .fi-ta-empty-state-icon-bg .fi-icon {
+    color: #586573;
+}
+.fi-layout .fi-ta-empty-state .fi-ta-empty-state-heading {
+    color: #0f1720;
+    letter-spacing: -0.01em;
+}
+.fi-layout .fi-ta-empty-state .fi-ta-empty-state-description {
+    color: #586573;
+}
+
+/* pagination → 4px radius, hairline seams, navy active page */
+.fi-layout .fi-pagination .fi-pagination-items {
+    border-radius: 4px;
+    background-color: #ffffff;
+    box-shadow: 0 2px 8px rgba(0, 16, 30, 0.04);
+    --tw-ring-color: #0f17201f;
+    overflow: hidden;
+}
+.fi-layout .fi-pagination .fi-pagination-item {
+    border-color: #0f17201f;
+}
+.fi-layout .fi-pagination .fi-pagination-item-btn {
+    background-color: transparent;
+    transition: background-color 140ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.fi-layout .fi-pagination .fi-pagination-item-btn:enabled:hover {
+    background-color: #e1e6ed;
+}
+.fi-layout .fi-pagination .fi-pagination-item-btn:enabled:focus-visible {
+    --tw-ring-color: #3a6ea5;
+}
+.fi-layout .fi-pagination .fi-pagination-item-label {
+    color: #586573;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+}
+.fi-layout .fi-pagination .fi-pagination-item-btn .fi-icon {
+    color: #586573;
+}
+.fi-layout .fi-pagination .fi-pagination-item-btn:hover .fi-icon {
+    color: #0f1720;
+}
+.fi-layout .fi-pagination .fi-pagination-item.fi-active .fi-pagination-item-btn {
+    background-color: #002f5b;
+}
+.fi-layout .fi-pagination .fi-pagination-item.fi-active .fi-pagination-item-label {
+    color: #ffffff;
+}
+.fi-layout .fi-pagination .fi-pagination-item.fi-active .fi-pagination-item-btn:enabled:hover {
+    background-color: #001f3d;
+}
+.fi-layout .fi-pagination .fi-pagination-overview {
+    color: #586573;
+    font-variant-numeric: tabular-nums;
+}
+
+/* ===========================================================================
+   4 · OVERLAYS — backdrop · modal · slideover · dropdown / popover · tooltip
+   =========================================================================== */
+
+/* backdrop → navy-tinted scrim */
+.fi-layout .fi-modal-close-overlay {
+    background-color: rgba(0, 16, 30, 0.45);
+}
+
+/* modal + slideover window → white card, 1.25rem radius, hairline, heavy shadow */
+.fi-layout .fi-modal-window,
+.fi-layout .fi-modal-slide-over .fi-modal-window {
+    border-radius: 1.25rem;
+    background-color: #ffffff;
+    border: 1px solid #0f17201f;
+    box-shadow: 0 18px 50px rgba(15, 23, 32, 0.14);
+    --tw-ring-color: transparent;
+}
+.fi-layout .fi-modal-has-sticky-header .fi-modal-window > .fi-modal-header {
+    border-bottom-color: #0f17201f;
+    background-color: #ffffff;
+    border-top-left-radius: 1.25rem;
+    border-top-right-radius: 1.25rem;
+}
+.fi-layout .fi-modal-has-sticky-footer .fi-modal-window > .fi-modal-footer {
+    border-top-color: #0f17201f;
+    background-color: #ffffff;
+    border-bottom-left-radius: 1.25rem;
+    border-bottom-right-radius: 1.25rem;
+}
+.fi-layout .fi-modal-slide-over.fi-modal-slide-over-from-end .fi-modal-window {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+.fi-layout .fi-modal-slide-over.fi-modal-slide-over-from-start .fi-modal-window {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+.fi-layout .fi-modal-heading {
+    color: #0f1720;
+    letter-spacing: -0.01em;
+}
+.fi-layout .fi-modal-description {
+    color: #586573;
+}
+/* default (non-colour) icon chip → canvas-deep disc, navy glyph;
+   .fi-color status modals keep Filament's per-status tint */
+.fi-layout .fi-modal-icon-bg:not(.fi-color) {
+    background-color: #e1e6ed;
+}
+.fi-layout .fi-modal-icon-bg:not(.fi-color) > .fi-icon {
+    color: #00101e;
+}
+
+/* dropdown / popover panel → white, 12px radius, hairline, navy shadow.
+   This is the SINGLE source for all dropdown panels (table/action/user-menu/
+   topbar all share .fi-dropdown-panel) — group 6's topbar/user-menu panel rules
+   were folded in here to avoid a duplicate. */
+.fi-layout .fi-dropdown-panel {
+    border-radius: 12px;
+    background-color: #ffffff;
+    border: 1px solid #0f17201f;
+    box-shadow: 0 18px 50px rgba(15, 23, 32, 0.14);
+    --tw-ring-color: transparent;
+}
+.fi-layout .fi-dropdown-panel:not(.fi-dropdown-list) {
+    --tw-divide-y-reverse: 0;
+    border-color: #0f17201f;
+}
+.fi-layout .fi-dropdown-panel > * + * {
+    border-top-color: #0f17201f;
+}
+/* dropdown header → micro-caps eyebrow */
+.fi-layout .fi-dropdown-header,
+.fi-layout .fi-dropdown-header .fi-icon {
+    color: #586573;
+}
+.fi-layout .fi-dropdown-header > span {
+    color: #586573;
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+}
+/* dropdown items → ink label, .375rem radius, canvas-deep hover (default grey
+   only; .fi-color status items keep Filament's palette). Single rule covers
+   table, action, user-menu and topbar dropdowns. */
+.fi-layout .fi-dropdown-list-item {
+    border-radius: 0.375rem;
+    color: #0f1720;
+    transition: background-color 140ms cubic-bezier(0.22, 1, 0.36, 1),
+                color 140ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.fi-layout .fi-dropdown-list-item:not(.fi-color):not(.fi-disabled):not([disabled]):hover,
+.fi-layout .fi-dropdown-list-item:not(.fi-color):not(.fi-disabled):not([disabled]):focus-visible,
+.fi-layout .fi-dropdown-list-item:not(.fi-color).fi-selected {
+    background-color: #e1e6ed;
+}
+.fi-layout .fi-dropdown-list-item:not(.fi-color) .fi-dropdown-list-item-label {
+    color: #0f1720;
+    font-weight: 500;
+}
+.fi-layout .fi-dropdown-list-item:not(.fi-color) > .fi-icon {
+    color: #586573;
+}
+
+/* tooltip — Tippy teleports .tippy-box to <body>, OUTSIDE .fi-layout, so the
+   mandated `.fi-layout ` prefix cannot match. Scoped via body:has(.fi-layout):
+   true only on dashboard pages (auth renders .fi-simple-layout, never
+   .fi-layout) so auth tooltips stay default. !important required: tippy's bundled
+   light-theme CSS is high-specificity. */
+body:has(.fi-layout) .tippy-box[data-theme~="light"] {
+    background-color: #002f5b !important;
+    color: #ffffff !important;
+    border-radius: 0.375rem;
+    box-shadow: 0 18px 50px rgba(15, 23, 32, 0.14);
+    font-family: 'area-normal', ui-sans-serif, system-ui, sans-serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.01em;
+}
+body:has(.fi-layout) .tippy-box[data-theme~="light"] > .tippy-content {
+    color: #ffffff !important;
+}
+body:has(.fi-layout) .tippy-box[data-theme~="light"][data-placement^="top"] > .tippy-arrow::before {
+    border-top-color: #002f5b !important;
+}
+body:has(.fi-layout) .tippy-box[data-theme~="light"][data-placement^="bottom"] > .tippy-arrow::before {
+    border-bottom-color: #002f5b !important;
+}
+body:has(.fi-layout) .tippy-box[data-theme~="light"][data-placement^="left"] > .tippy-arrow::before {
+    border-left-color: #002f5b !important;
+}
+body:has(.fi-layout) .tippy-box[data-theme~="light"][data-placement^="right"] > .tippy-arrow::before {
+    border-right-color: #002f5b !important;
+}
+
+/* ===========================================================================
+   5 · NAVIGATION CHROME — tabs · breadcrumbs · page header · user menu ·
+       topbar contents · global search
+   =========================================================================== */
+
+/* page header / heading */
+.fi-layout .fi-header-heading {
+    font-family: 'area-normal', ui-sans-serif, system-ui, sans-serif;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    color: #0f1720;
+}
+.fi-layout .fi-header-subheading {
+    color: #586573;
+    letter-spacing: -0.005em;
+}
+
+/* breadcrumbs */
+.fi-layout .fi-breadcrumbs-list {
+    font-variant-numeric: tabular-nums;
+}
+.fi-layout .fi-breadcrumbs-item-label {
+    color: #586573;
+    font-weight: 500;
+    letter-spacing: -0.005em;
+    transition: color 160ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.fi-layout .fi-breadcrumbs-item-label:is(a):hover {
+    color: #00101e;
+}
+.fi-layout .fi-breadcrumbs-item-label:not(a) {
+    color: #0f1720;
+    font-weight: 600;
+}
+.fi-layout .fi-breadcrumbs-item-separator {
+    color: #586573;
+    opacity: 0.45;
+}
+
+/* tabs — cerulean underline-active, ink hover, navy active label */
+.fi-layout .fi-tabs {
+    font-family: 'area-normal', ui-sans-serif, system-ui, sans-serif;
+}
+.fi-layout .fi-tabs-item {
+    color: #586573;
+    border-radius: 4px;
+    transition: color 160ms cubic-bezier(0.22, 1, 0.36, 1),
+                box-shadow 200ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.fi-layout .fi-tabs-item:hover {
+    color: #0f1720;
+}
+.fi-layout .fi-tabs-item.fi-active {
+    color: #00101e;
+    box-shadow: inset 0 -2px 0 0 #3a6ea5;                /* cerulean underline */
+}
+.fi-layout .fi-tabs-item-label {
+    font-weight: 500;
+    letter-spacing: 0.06em;
+}
+.fi-layout .fi-tabs.fi-contained .fi-tabs-item.fi-active {
+    box-shadow: none;
+    background-color: color-mix(in oklab, #3a6ea5 12%, transparent);
+    border-radius: 0.375rem;
+}
+
+/* topbar items (top-nav layout) */
+.fi-layout .fi-topbar-item-btn {
+    color: #586573;
+    border-radius: 4px;
+    font-weight: 500;
+    transition: color 160ms cubic-bezier(0.22, 1, 0.36, 1),
+                background-color 160ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.fi-layout .fi-topbar-item-btn:hover {
+    color: #0f1720;
+    background-color: #e1e6ed;
+}
+.fi-layout .fi-topbar-item-icon,
+.fi-layout .fi-topbar-group-toggle-icon {
+    color: #586573;
+}
+.fi-layout .fi-topbar-item.fi-active .fi-topbar-item-btn,
+.fi-layout .fi-topbar-item.fi-active .fi-topbar-item-icon {
+    color: #3a6ea5;
+}
+
+/* global search (topbar) → underline-only field signature */
+.fi-layout .fi-global-search-field .fi-input-wrp {
+    border: 0;
+    border-radius: 0;
+    background-color: transparent;
+    box-shadow: inset 0 -1px 0 0 #0f17201f;
+    --tw-ring-color: transparent;
+    transition: box-shadow 180ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.fi-layout .fi-global-search-field .fi-input-wrp:focus-within {
+    box-shadow: inset 0 -2px 0 0 #0f1720;
+}
+.fi-layout .fi-global-search-field .fi-input {
+    background-color: transparent;
+    color: #0f1720;
+    letter-spacing: -0.01em;
+}
+.fi-layout .fi-global-search-field .fi-input::placeholder {
+    color: #586573;
+}
+
+/* user menu trigger (dropdown panel + items handled by the single group-4 rules) */
+.fi-layout .fi-user-menu-trigger {
+    border-radius: 999px;
+    transition: background-color 160ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.fi-layout .fi-user-menu-trigger:hover {
+    background-color: #e1e6ed;
+}
+.fi-layout .fi-user-menu-trigger-text {
+    color: #0f1720;
+    font-weight: 500;
+    letter-spacing: -0.005em;
+}
+.fi-layout .fi-user-menu-trigger .fi-icon-btn,
+.fi-layout .fi-user-menu-trigger svg {
+    color: #586573;
+}
+
+/* ===========================================================================
+   6 · BADGES · LINKS · LOADING · AVATARS · EMPTY STATE (generic)
+   Panel registers: primary #004e98, info #3a6ea5, warning #ff6700,
+   gray #c0c0c0, featured #caa12a. ColorManager emits `fi-color`+`fi-color-{n}`
+   together; vendor colour rule is 2-class `.fi-badge.fi-color`, so the 3-class
+   `.fi-layout .fi-badge.fi-color-{n}` wins for bg/text and recolours the ring var.
+   =========================================================================== */
+
+/* base pill — rounded-md, tabular */
+.fi-layout .fi-badge {
+    border-radius: 0.375rem;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.005em;
+}
+/* neutral (no .fi-color) + primary → navy-on-canvas-deep brand pill */
+.fi-layout .fi-badge:not(.fi-color),
+.fi-layout .fi-badge.fi-color-primary {
+    background-color: #e1e6ed;
+    color: #00101e;
+    --tw-ring-color: #0f17201f;
+}
+.fi-layout .fi-badge:not(.fi-color) .fi-icon {
+    color: #586573;
+}
+/* info → cerulean */
+.fi-layout .fi-badge.fi-color-info {
+    background-color: #eaf1f8;
+    color: #2e5884;
+    --tw-ring-color: rgba(58, 110, 165, 0.18);
+}
+/* success → green (deepened for AA on tint) */
+.fi-layout .fi-badge.fi-color-success {
+    background-color: #e7f6ec;
+    color: #15803d;
+    --tw-ring-color: rgba(22, 163, 74, 0.2);
+}
+/* danger → red (deepened for AA) */
+.fi-layout .fi-badge.fi-color-danger {
+    background-color: #fdeaea;
+    color: #b91c1c;
+    --tw-ring-color: rgba(220, 38, 38, 0.2);
+}
+/* warning → orange-as-status (deepened text, never a fill flood) */
+.fi-layout .fi-badge.fi-color-warning {
+    background-color: #fff0e6;
+    color: #c2510a;
+    --tw-ring-color: rgba(255, 103, 0, 0.22);
+}
+/* featured / "uitgelicht" → premium gold (reserved tier) */
+.fi-layout .fi-badge.fi-color-featured {
+    background-color: #f9f0d6;
+    color: #7b6118;
+    --tw-ring-color: rgba(202, 161, 42, 0.28);
+}
+.fi-layout .fi-badge.fi-color-featured .fi-icon {
+    color: #caa12a;
+}
+/* deletable-chip delete button */
+.fi-layout .fi-badge .fi-badge-delete-btn > .fi-icon {
+    color: rgba(15, 23, 32, 0.45);
+}
+.fi-layout .fi-badge:not(.fi-disabled):not([disabled]) .fi-badge-delete-btn > .fi-icon:hover {
+    color: #0f1720;
+}
+
+/* links — ink-soft at rest → cerulean on hover (never orange) */
+.fi-layout .fi-link {
+    color: #586573;
+    text-underline-offset: 3px;
+    transition: color 160ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.fi-layout .fi-link:not(.fi-disabled):not([disabled]):hover,
+.fi-layout .fi-link:not(.fi-disabled):not([disabled]):focus-visible {
+    color: #3a6ea5;
+}
+.fi-layout .fi-link.fi-color-primary {
+    color: #3a6ea5;
+}
+.fi-layout .fi-link.fi-color-primary:not(.fi-disabled):not([disabled]):hover,
+.fi-layout .fi-link.fi-color-primary:not(.fi-disabled):not([disabled]):focus-visible {
+    color: #2e5884;
+}
+.fi-layout .fi-link:not(.fi-color) > .fi-icon {
+    color: #89a7ca;
+}
+
+/* loading indicator — ink standalone, white inside a navy primary button */
+.fi-layout .fi-loading-indicator {
+    color: #0f1720;
+}
+.fi-layout .fi-btn.fi-color-primary .fi-loading-indicator {
+    color: #fff;
+}
+
+/* avatars — keep geometry; brand radius on square variant, hairline ring */
+.fi-layout .fi-avatar:not(.fi-circular) {
+    border-radius: 0.375rem;
+}
+.fi-layout .fi-avatar {
+    --tw-ring-color: #0f17201f;
+}
+
+/* generic empty state (component, NOT the table .fi-ta-empty-state) → brand card */
+.fi-layout .fi-empty-state:not(.fi-empty-state-not-contained) {
+    border-radius: 1.25rem;
+    background-color: #ffffff;
+    border: 1px solid #0f17201f;
+    box-shadow: 0 8px 32px rgba(0, 16, 30, 0.06),
+                0 2px 8px rgba(0, 16, 30, 0.04);
+    --tw-ring-color: transparent;
+}
+.fi-layout .fi-empty-state .fi-empty-state-icon-bg:not(.fi-color) {
+    background-color: #e1e6ed;
+}
+.fi-layout .fi-empty-state .fi-empty-state-icon-bg:not(.fi-color) .fi-icon {
+    color: #586573;
+}
+.fi-layout .fi-empty-state .fi-empty-state-heading {
+    color: #0f1720;
+    letter-spacing: -0.01em;
+}
+.fi-layout .fi-empty-state .fi-empty-state-description {
+    color: #586573;
+}
+
+/* ===========================================================================
+   7 · MOTION GUARD — one consolidated reduced-motion block for every transition
+       added above (per brand: guard heavy motion).
+   =========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+    .fi-layout .fi-input-wrp.fi-fo-text-input,
+    .fi-layout .fi-input-wrp.fi-fo-textarea,
+    .fi-layout .fi-input-wrp.fi-fo-select,
+    .fi-layout .fi-fo-file-upload .filepond--root,
+    .fi-layout input[type='checkbox'].fi-checkbox-input,
+    .fi-layout input[type='radio'].fi-radio-input,
+    .fi-layout input[type='checkbox'].fi-checkbox-input::after,
+    .fi-layout input[type='radio'].fi-radio-input::after,
+    .fi-layout .fi-toggle,
+    .fi-layout .fi-ta-table .fi-ta-row,
+    .fi-layout .fi-ta-table .fi-ta-cell .fi-input-wrp,
+    .fi-layout .fi-ta-search-field .fi-input-wrp,
+    .fi-layout .fi-pagination .fi-pagination-item-btn,
+    .fi-layout .fi-dropdown-list-item,
+    .fi-layout .fi-tabs-item,
+    .fi-layout .fi-breadcrumbs-item-label,
+    .fi-layout .fi-topbar-item-btn,
+    .fi-layout .fi-global-search-field .fi-input-wrp,
+    .fi-layout .fi-user-menu-trigger,
+    .fi-layout .fi-link {
+        transition: none;
+    }
+}
+
+/* ===========================================================================
+   DASHBOARD MASTHEAD — the editorial front-page of the landlord's portfolio.
+   One monumental metric owns the first screen; everything else is a hairline
+   footnote. Reuses the brand's area-normal display + .kk-cta pill DNA.
+   =========================================================================== */
+.fi-layout .kk-mh {
+    padding: 0.5rem 0 2.75rem;
+    border-bottom: 1px solid #0f17201f;
+    margin-bottom: 0.75rem;
+}
+.fi-layout .kk-mh-index {
+    font-size: 0.625rem; font-weight: 600; letter-spacing: 0.16em;
+    text-transform: uppercase; color: #586573; font-variant-numeric: tabular-nums;
+}
+.fi-layout .kk-mh-grid {
+    display: grid; grid-template-columns: minmax(0, 1fr); gap: 2rem; margin-top: 2rem;
+}
+@media (min-width: 1024px) {
+    .fi-layout .kk-mh-grid {
+        grid-template-columns: minmax(0, 1fr) minmax(300px, 420px);
+        align-items: stretch; gap: 3.5rem;
+    }
+}
+.fi-layout .kk-mh-eyebrow {
+    font-size: 0.625rem; font-weight: 600; letter-spacing: 0.14em;
+    text-transform: uppercase; color: #586573;
+}
+.fi-layout .kk-mh-num {
+    margin-top: 0.5rem; font-size: clamp(4.5rem, 13vw, 12rem);
+    font-weight: 500; line-height: 0.82; letter-spacing: -0.045em;
+    color: #0f1720; font-variant-numeric: tabular-nums;
+    display: flex; align-items: flex-start;
+}
+.fi-layout .kk-mh-unit {
+    font-size: 0.3em; line-height: 1; color: #9aa6b4;
+    margin-top: 0.45em; margin-left: 0.08em; font-weight: 500;
+}
+.fi-layout .kk-mh-rule {
+    display: block; height: 2px; width: 4.5rem; margin-top: 1.25rem; background: #0f1720;
+}
+.fi-layout .kk-mh-context {
+    margin-top: 1.1rem; font-size: 1.0625rem; color: #586573; letter-spacing: -0.01em;
+}
+.fi-layout .kk-mh-dot { margin: 0 0.55rem; color: #b8c2cf; }
+.fi-layout .kk-mh-rail {
+    display: flex; flex-wrap: wrap; gap: 2.75rem; margin-top: 2.5rem;
+    padding-top: 1.25rem; border-top: 1px solid #0f17201f;
+}
+.fi-layout .kk-mh-stat {
+    margin-top: 0.4rem; font-size: 1.5rem; font-weight: 500; color: #0f1720;
+    letter-spacing: -0.015em; font-variant-numeric: tabular-nums;
+}
+.fi-layout .kk-mh-cta {
+    display: inline-flex; align-items: center; gap: 0.75rem; margin-top: 2.5rem;
+    height: 2.75rem; padding: 0 0.35rem 0 1.25rem; background: #002f5b; color: #fff;
+    border-radius: 4px; font-size: 0.8125rem; font-weight: 500; letter-spacing: 0.04em;
+    text-transform: uppercase; text-decoration: none;
+    transition: background-color 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.fi-layout .kk-mh-cta:hover { background: #001f3d; }
+.fi-layout .kk-mh-cta-chip {
+    display: inline-flex; align-items: center; justify-content: center;
+    height: 2rem; width: 2rem; border-radius: 3px; background: #ff6700; color: #fff; overflow: hidden;
+}
+.fi-layout .kk-mh-cta-chip svg {
+    height: 1rem; width: 1rem; transition: transform 500ms cubic-bezier(0.65, 0, 0.35, 1);
+}
+.fi-layout .kk-mh-cta:hover .kk-mh-cta-chip svg { transform: translateX(3px); }
+
+/* Warm greeting line — sits above the section index, carries the masthead's
+   "front page of your business" voice without competing with the big metric. */
+.fi-layout .kk-mh-greeting {
+    margin-bottom: 0.4rem; font-size: 1.0625rem; font-weight: 500;
+    letter-spacing: -0.015em; color: #0f1720;
+}
+
+/* Delta chip — real month-over-month context, ink-green pill (never invented). */
+.fi-layout .kk-mh-delta {
+    display: inline-flex; align-items: center; gap: 0.4rem; margin-top: 1.1rem;
+    padding: 0.3rem 0.7rem; border-radius: 999px; font-size: 0.75rem; font-weight: 600;
+    letter-spacing: -0.005em; width: fit-content;
+}
+.fi-layout .kk-mh-delta svg { height: 0.85rem; width: 0.85rem; }
+.fi-layout .kk-mh-delta--up { background: #e7f6ec; color: #15803d; }
+
+/* Kerncijfers as tiles — Flux's "context per number" pattern in brand chrome:
+   a hairline-gapped 2×2 grid, each tile an icon + micro-caps label + figure. */
+.fi-layout .kk-mh-kpis {
+    display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1px; align-self: center;
+    background: #d4dbe5;                              /* hairline grid colour */
+    border-radius: 1.25rem; overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0, 16, 30, 0.06), 0 2px 8px rgba(0, 16, 30, 0.04);
+}
+.fi-layout .kk-mh-kpi {
+    display: flex; flex-direction: column; gap: 0.55rem;
+    background: #eef1f5; padding: 1.4rem 1.45rem; min-width: 0;
+}
+.fi-layout .kk-mh-kpi-head { display: flex; align-items: center; gap: 0.5rem; }
+.fi-layout .kk-mh-kpi-icon {
+    display: inline-flex; align-items: center; justify-content: center;
+    height: 1.6rem; width: 1.6rem; flex: none; border-radius: 0.5rem;
+    background: #e1e7f0; color: #3a6ea5;
+}
+.fi-layout .kk-mh-kpi-icon svg { height: 0.95rem; width: 0.95rem; }
+.fi-layout .kk-mh-kpi-label {
+    font-size: 0.625rem; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.12em; color: #586573;
+}
+.fi-layout .kk-mh-kpi-value {
+    font-size: clamp(1.5rem, 1.9vw, 2rem); font-weight: 500; line-height: 1;
+    letter-spacing: -0.02em; color: #0f1720; font-variant-numeric: tabular-nums;
+}
+.fi-layout .kk-mh-kpi-delta {
+    font-size: 0.6875rem; font-weight: 600; letter-spacing: -0.005em; color: #15803d;
+}
+
+/* Card-header action link — the "View all ↗" affordance on widget cards, in the
+   brand's micro-caps editorial voice (cerulean → ink on hover, arrow nudges). */
+.fi-layout .kk-card-link {
+    display: inline-flex; align-items: center; gap: 0.4rem; flex: none;
+    font-size: 0.6875rem; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.1em; color: #3a6ea5; text-decoration: none;
+    transition: color 200ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.fi-layout .kk-card-link:hover { color: #0f1720; }
+.fi-layout .kk-card-link svg {
+    height: 0.8rem; width: 0.8rem;
+    transition: transform 400ms cubic-bezier(0.65, 0, 0.35, 1);
+}
+.fi-layout .kk-card-link:hover svg { transform: translate(2px, -2px); }
+@media (prefers-reduced-motion: reduce) {
+    .fi-layout .kk-card-link, .fi-layout .kk-card-link svg { transition: none; }
+}
+
+/* Recente activiteit — reverse-chrono feed (reviews + nieuwe verhuur). Icon
+   chip + title + room subtitle + relative time, hairline-ruled between rows. */
+.fi-layout .kk-act-row {
+    display: flex; align-items: center; gap: 0.85rem;
+    padding: 0.85rem 0; border-top: 1px solid #0f17201f;
+}
+/* In the single-column (mobile) feed, drop the rule above the first row; on the
+   2-column grid every cell keeps its rule so both columns read uniformly. */
+@media (max-width: 1023px) {
+    .fi-layout .kk-act-row:first-child { border-top: 0; }
+}
+.fi-layout .kk-act-icon {
+    display: inline-flex; align-items: center; justify-content: center;
+    height: 2.1rem; width: 2.1rem; flex: none; border-radius: 999px;
+}
+.fi-layout .kk-act-icon svg { height: 1.05rem; width: 1.05rem; }
+.fi-layout .kk-act-icon--review { background: #f4ecd6; color: #7b6118; }
+.fi-layout .kk-act-icon--rental { background: #e7f6ec; color: #15803d; }
+.fi-layout .kk-act-meta {
+    margin-left: 0.4rem; font-size: 0.75rem; font-weight: 500;
+    color: #586573; font-variant-numeric: tabular-nums;
+}
+.fi-layout .kk-act-link {
+    color: inherit; text-decoration: none;
+    transition: color 200ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.fi-layout .kk-act-link:hover { color: #3a6ea5; }
+.fi-layout .kk-act-time {
+    flex: none; font-size: 0.6875rem; font-weight: 500; color: #9aa6b4;
+    font-variant-numeric: tabular-nums; white-space: nowrap;
+}
+@media (prefers-reduced-motion: reduce) {
+    .fi-layout .kk-act-link { transition: none; }
+}
+
+/* Entrance — restrained staggered rise (orientation, not decoration) */
+.fi-layout .kk-mh-index,
+.fi-layout .kk-mh-hero > * {
+    animation: kk-mh-rise 560ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.fi-layout .kk-mh-hero > *:nth-child(2) { animation-delay: 60ms; }
+.fi-layout .kk-mh-hero > *:nth-child(3) { animation-delay: 100ms; }
+.fi-layout .kk-mh-hero > *:nth-child(4) { animation-delay: 140ms; }
+.fi-layout .kk-mh-hero > *:nth-child(5) { animation-delay: 180ms; }
+.fi-layout .kk-mh-hero > *:nth-child(6) { animation-delay: 220ms; }
+@keyframes kk-mh-rise {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .fi-layout .kk-mh-index,
+    .fi-layout .kk-mh-hero > * { animation: none; }
+    .fi-layout .kk-mh-cta-chip svg { transition: none; }
+}
+
+/* On the dashboard the masthead IS the page title — drop the default heading,
+   scoped via :has() so every other page keeps its heading. */
+.fi-layout .fi-page:has(.kk-mh) .fi-header { display: none; }
+
+/* ---------------------------------------------------------------------------
+   TENANT MASTHEAD — the huurder's front page. Same editorial DNA as the
+   landlord masthead, but the kot leads: title as display type, the cover photo
+   as the rich aside. Reuses .kk-mh-index / -eyebrow / -rule / -rail / -stat /
+   -cta verbatim so the two dashboards read as one design language.
+   =========================================================================== */
+.fi-layout .kk-mh--tenant .kk-mh-grid { align-items: stretch; }
+@media (min-width: 1024px) {
+    .fi-layout .kk-mh--tenant .kk-mh-grid {
+        grid-template-columns: minmax(0, 1fr) minmax(300px, 420px);
+        gap: 3.5rem;
+    }
+}
+.fi-layout .kk-mh--tenant .kk-mh-grid--stacked {
+    margin-top: 2.5rem; padding-top: 2.5rem; border-top: 1px solid #0f17201f;
+}
+
+.fi-layout .kk-mh-status { margin-bottom: 0.25rem; }
+.fi-layout .kk-mh-badge {
+    display: inline-flex; align-items: center; gap: 0.45rem;
+    font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.09em;
+    text-transform: uppercase; padding: 0.4rem 0.75rem; border-radius: 999px;
+    background: #eef1f5; color: #586573;
+}
+.fi-layout .kk-mh-badge--active { background: #e7eef6; color: #3a6ea5; }
+.fi-layout .kk-mh-badge--active::before {
+    content: ""; height: 0.45rem; width: 0.45rem; border-radius: 999px; background: #3a6ea5;
+}
+
+.fi-layout .kk-mh-title {
+    margin-top: 0.85rem; font-size: clamp(2.1rem, 5vw, 4.25rem);
+    font-weight: 500; line-height: 0.92; letter-spacing: -0.035em; color: #0f1720;
+}
+.fi-layout .kk-mh-title--muted { color: #9aa6b4; }
+
+.fi-layout .kk-mh-figure {
+    position: relative; overflow: hidden; border-radius: 1.25rem;
+    background: #e1e6ed; box-shadow: inset 0 0 0 1px #0f17201a;
+    aspect-ratio: 16 / 10;
+}
+@media (min-width: 1024px) {
+    .fi-layout .kk-mh-figure { aspect-ratio: auto; min-height: 100%; }
+}
+.fi-layout .kk-mh-figure img {
+    position: absolute; inset: 0; height: 100%; width: 100%; object-fit: cover;
+}
+.fi-layout .kk-mh-figure--empty {
+    display: flex; align-items: center; justify-content: center; color: #b3bdca;
+}
+.fi-layout .kk-mh-figure--empty svg { height: 2.75rem; width: 2.75rem; }
+
+.fi-layout .kk-mh-hero--empty { max-width: 44ch; }
+
+/* Figure shares the restrained rise (orientation, not decoration) */
+.fi-layout .kk-mh-figure {
+    animation: kk-mh-rise 560ms cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation-delay: 120ms;
+}
+@media (prefers-reduced-motion: reduce) {
+    .fi-layout .kk-mh-figure { animation: none; }
+}
+
+/* Brand wordmark — two-tone "Kot" (ink) + "Kompas" (accent) + accent dot, the
+   public site's kinetic mark in the brand slot. Renders in the white topbar,
+   so "Kot" is ink. (Auth hides .fi-logo via .kk-stage, so no auth bleed.) */
+.fi-topbar .kk-wordmark {
+    display: inline-flex; align-items: baseline;
+    font-size: 1.0625rem; font-weight: 500; letter-spacing: -0.02em; line-height: 1;
+}
+.fi-topbar .kk-wordmark-kot { color: #0f1720; }
+.fi-topbar .kk-wordmark-kompas { color: #ff6700; }
+.fi-topbar .kk-wordmark-dot {
+    width: 4px; height: 4px; border-radius: 9999px; background: #ff6700;
+    align-self: flex-end; margin: 0 0 3px 3px;
+}
+
+/* Stats-overview widgets → editorial: micro-caps label, monumental value.
+   Turns the score numbers (kotscore, per-criterium) into display figures. */
+.fi-layout .fi-wi-stats-overview-stat-label {
+    font-size: 0.625rem; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.12em; color: #586573;
+}
+.fi-layout .fi-wi-stats-overview-stat-value {
+    margin-top: 0.4rem; font-size: clamp(2.25rem, 3.5vw, 3.25rem); font-weight: 500;
+    line-height: 0.95; letter-spacing: -0.03em; color: #0f1720; font-variant-numeric: tabular-nums;
+}
+.fi-layout .fi-wi-stats-overview-stat-description { margin-top: 0.5rem; color: #586573; }
+
+/* ===========================================================================
+   MOTION — page entrance. Every dashboard page content rises in; because
+   wire:navigate swaps the content, this re-fires on each SPA navigation,
+   giving the shell a consistent motion signature. Reduced-motion guarded.
+   =========================================================================== */
+@media (prefers-reduced-motion: no-preference) {
+    .fi-layout .fi-page {
+        animation: kk-page-in 460ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+}
+@keyframes kk-page-in {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: none; }
+}
+
+/* Cross-document view transition — the public site's "push-up" carried into the
+   dashboard, so full-document navigations (and the public ↔ dashboard crossing)
+   read as one continuous surface. SPA wire:navigate uses the page rise above. */
+@view-transition { navigation: auto; }
+@media (prefers-reduced-motion: no-preference) {
+    ::view-transition-old(root) { animation: kk-vt-out 0.42s cubic-bezier(0.76, 0, 0.24, 1) both; }
+    ::view-transition-new(root) { animation: kk-vt-in 0.42s cubic-bezier(0.76, 0, 0.24, 1) both; }
+}
+@keyframes kk-vt-out { to { opacity: 0; transform: translateY(-1.5%); } }
+@keyframes kk-vt-in { from { opacity: 0; transform: translateY(2.5%); } }
+
+/* ===========================================================================
+   .kk-rise — opt-in per-card entrance (subscription-overview, messages-stats).
+   The kk-rise @keyframes are defined only inside the .kk-auth scope, so on the
+   dashboard the class was inert (flagged by the design review). Reuse the page's
+   own kk-page-in keyframe + timing token so these "moment" cards rise cohesively
+   with the page instead of out of sync. Reduced-motion guarded.
+   NB: a full per-widget staggered cascade across the bento is deferred — it needs
+   the live Filament v4 schema-grid DOM to target the correct nth-child selector.
+   ============================================================================ */
+@media (prefers-reduced-motion: no-preference) {
+    .fi-layout .kk-rise {
+        animation: kk-page-in 460ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    .fi-layout .kk-rise { animation: none; }
+}
