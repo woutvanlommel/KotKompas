@@ -2,11 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\MessageSent;
 use App\Models\Building;
+use App\Models\Conversation;
+use App\Models\Message;
 use App\Models\Room;
 use App\Services\KotScoreService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\View\View;
@@ -119,11 +123,54 @@ class RoomController extends Controller
 
     public function show(Room $room, KotScoreService $kotScoreService): View
     {
-        $room->load(['building.poiCache', 'media', 'facilities', 'costTypes']);
+        $room->load(['building.poiCache', 'building.landlord', 'media', 'facilities', 'costTypes']);
 
         $scoreBreakdown = $room->reviews_count > 0 ? $kotScoreService->criteriaBreakdown($room) : null;
 
         return view('rooms.show', compact('room', 'scoreBreakdown'));
+    }
+
+    /**
+     * Inbound interest: a logged-in huurder messages the landlord about this
+     * kot. Reuses the existing Conversation/Message channel (tenant ↔ landlord
+     * ↔ building) so the message lands in the landlord's dashboard inbox and
+     * the huurder can follow it up under Berichten.
+     */
+    public function contact(Request $request, Room $room): RedirectResponse
+    {
+        $user = $request->user();
+
+        abort_unless($user?->hasRole('huurder'), 403);
+
+        $room->loadMissing('building');
+        $landlordId = $room->building?->landlord_id;
+
+        // No landlord to reach, or this is the user's own listing.
+        abort_if($landlordId === null || $landlordId === $user->id, 403);
+
+        $data = $request->validate([
+            'body' => ['required', 'string', 'max:5000'],
+        ]);
+
+        $conversation = Conversation::firstOrCreate([
+            'tenant_id' => $user->id,
+            'landlord_id' => $landlordId,
+            'building_id' => $room->building_id,
+        ]);
+
+        $message = Message::create([
+            'conversation_id' => $conversation->id,
+            'sender_id' => $user->id,
+            'body' => strip_tags($data['body']),
+        ]);
+
+        $conversation->update(['last_message_at' => now()]);
+
+        MessageSent::dispatch($message->load('sender'));
+
+        return redirect()
+            ->route('rooms.show', $room)
+            ->with('status', 'Je bericht is verstuurd naar de verhuurder. Je vindt het gesprek terug bij Berichten in je dashboard.');
     }
 
     /**

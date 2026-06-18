@@ -32,6 +32,9 @@ Route::get('/koten/suggesties', [RoomController::class, 'suggestions'])
     ->middleware('throttle:60,1')
     ->name('rooms.suggestions');
 Route::get('/koten/{room}', [RoomController::class, 'show'])->name('rooms.show');
+Route::post('/koten/{room}/bericht', [RoomController::class, 'contact'])
+    ->middleware(['auth', 'throttle:10,1'])
+    ->name('rooms.contact');
 
 Route::get('/contact', [ContactController::class, 'show'])->name('contact');
 Route::post('/contact', [ContactController::class, 'store'])
