@@ -210,9 +210,19 @@
                                 </span>
                             @endif
                             @if ($document->description)
-                                <p class="text-xs italic text-gray-400 dark:text-gray-500 line-clamp-3">
-                                    {{ $document->description }}
-                                </p>
+                                <div
+                                    x-data="{ open: false, overflowing: false }"
+                                    x-init="$nextTick(() => overflowing = $refs.desc.scrollHeight > $refs.desc.clientHeight + 2)"
+                                >
+                                    <p x-ref="desc" :class="{ 'line-clamp-3': ! open }"
+                                        class="text-xs italic text-gray-400 dark:text-gray-500">
+                                        {{ $document->description }}
+                                    </p>
+                                    <button type="button" x-show="overflowing" x-on:click="open = ! open"
+                                        class="mt-0.5 text-[11px] font-medium text-primary-600 dark:text-primary-400 hover:underline">
+                                        <span x-text="open ? 'Minder tonen' : 'Meer tonen'"></span>
+                                    </button>
+                                </div>
                             @endif
                             @if ($document->rentalPeriod)
                                 <p class="text-xs text-gray-400 dark:text-gray-500 truncate">
@@ -314,9 +324,19 @@
                                 </span>
                             @endif
                             @if ($document->description)
-                                <p class="text-xs italic text-gray-400 dark:text-gray-500 line-clamp-3 mt-1">
-                                    {{ $document->description }}
-                                </p>
+                                <div class="mt-1"
+                                    x-data="{ open: false, overflowing: false }"
+                                    x-init="$nextTick(() => overflowing = $refs.desc.scrollHeight > $refs.desc.clientHeight + 2)"
+                                >
+                                    <p x-ref="desc" :class="{ 'line-clamp-3': ! open }"
+                                        class="text-xs italic text-gray-400 dark:text-gray-500">
+                                        {{ $document->description }}
+                                    </p>
+                                    <button type="button" x-show="overflowing" x-on:click="open = ! open"
+                                        class="mt-0.5 text-[11px] font-medium text-primary-600 dark:text-primary-400 hover:underline">
+                                        <span x-text="open ? 'Minder tonen' : 'Meer tonen'"></span>
+                                    </button>
+                                </div>
                             @endif
                         </div>
 
