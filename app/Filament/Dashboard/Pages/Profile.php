@@ -27,7 +27,7 @@ class Profile extends Page implements HasForms
     {
         return [
             Action::make('edit')
-                ->label('Edit profile')
+                ->label('Profiel bewerken')
                 ->slideOver()
                 ->fillForm(fn () => [
                     'email' => auth()->user()->email,
@@ -36,14 +36,14 @@ class Profile extends Page implements HasForms
                 ])
                 ->form([
                     ImageUpload::make('avatar', false)
-                        ->label('Profile photo'),
+                        ->label('Profielfoto'),
                     TextInput::make('email')
-                        ->label('Email')
+                        ->label('E-mailadres')
                         ->email()
                         ->required()
                         ->rules(['unique:users,email,'.auth()->id()]),
                     TextInput::make('phone')
-                        ->label('Phone number')
+                        ->label('Telefoonnummer')
                         ->tel(),
                 ])
                 ->action(function (array $data): void {
@@ -57,23 +57,23 @@ class Profile extends Page implements HasForms
                     ]);
 
                     Notification::make()
-                        ->title('Profile updated')
+                        ->title('Profiel bijgewerkt')
                         ->success()
                         ->send();
                 }),
             Action::make('changePassword')
-                ->label('Change password')
+                ->label('Wachtwoord wijzigen')
                 ->color('gray')
                 ->requiresConfirmation()
-                ->modalHeading('Change password')
-                ->modalDescription('We\'ll send a password reset link to your email address.')
-                ->modalSubmitActionLabel('Send reset link')
+                ->modalHeading('Wachtwoord wijzigen')
+                ->modalDescription('We sturen een wachtwoord-resetlink naar je e-mailadres.')
+                ->modalSubmitActionLabel('Verstuur reset link')
                 ->action(function (): void {
                     Password::sendResetLink(['email' => auth()->user()->email]);
 
                     Notification::make()
-                        ->title('Reset link sent')
-                        ->body('Check your inbox for the password reset link.')
+                        ->title('Reset Link verzonden')
+                        ->body('De reset link is verzonden naar je email adres.')
                         ->success()
                         ->send();
                 }),
@@ -98,17 +98,17 @@ class Profile extends Page implements HasForms
             ->schema([
                 Section::make()->schema([
                     TextInput::make('name')
-                        ->label('First name')
+                        ->label('Voornaam')
                         ->disabled(),
                     TextInput::make('lastname')
-                        ->label('Last name')
+                        ->label('Naam')
                         ->disabled(),
                     TextInput::make('email')
-                        ->label('Email')
+                        ->label('E-mailadres')
                         ->email()
                         ->disabled(),
                     TextInput::make('phone')
-                        ->label('Phone number')
+                        ->label('Telefoonnummer')
                         ->tel()
                         ->disabled(),
                 ]),
