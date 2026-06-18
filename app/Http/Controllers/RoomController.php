@@ -3,13 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Events\MessageSent;
-use App\Exceptions\InsufficientCreditsException;
 use App\Models\Building;
 use App\Models\Conversation;
 use App\Models\Message;
 use App\Models\Room;
 use App\Services\KotScoreService;
-use App\Services\LandlordUnlockService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -123,48 +121,15 @@ class RoomController extends Controller
         ]);
     }
 
-    public function show(Room $room, KotScoreService $kotScoreService, LandlordUnlockService $unlocks): View
+    public function show(Room $room, KotScoreService $kotScoreService): View
     {
         $room->load(['building.poiCache', 'building.landlord', 'media', 'facilities', 'costTypes']);
 
         $scoreBreakdown = $room->reviews_count > 0 ? $kotScoreService->criteriaBreakdown($room) : null;
 
-        // Mag de huidige bezoeker de verhuurdergegevens zien (ontgrendeld of via huurrelatie)?
-        $landlord = $room->building?->landlord;
-        $user = auth()->user();
-        $canViewLandlord = $user && $landlord ? $user->canViewLandlord($landlord) : false;
-        $unlockCost = $unlocks->cost();
-
-        return view('rooms.show', compact('room', 'scoreBreakdown', 'canViewLandlord', 'unlockCost'));
-    }
-
-    /**
-     * Een ingelogde huurder ontgrendelt de gegevens van de verhuurder van dit kot.
-     * Schrijft credits af en geldt meteen voor álle panden van die verhuurder.
-     */
-    public function unlockLandlord(Request $request, Room $room, LandlordUnlockService $unlocks): RedirectResponse
-    {
-        $user = $request->user();
-
-        abort_unless($user?->hasRole('huurder'), 403);
-
-        $room->loadMissing('building.landlord');
-        $landlord = $room->building?->landlord;
-
-        // Geen verhuurder om te ontgrendelen, of het is je eigen listing.
-        abort_if($landlord === null || $landlord->id === $user->id, 403);
-
-        try {
-            $unlocks->unlock($user, $landlord);
-        } catch (InsufficientCreditsException) {
-            return redirect()
-                ->route('rooms.show', $room)
-                ->with('unlock_error', 'Je hebt niet genoeg credits om deze verhuurder te ontgrendelen.');
-        }
-
-        return redirect()
-            ->route('rooms.show', $room)
-            ->with('unlock_status', 'De gegevens van de verhuurder zijn ontgrendeld.');
+        // De verhuurder-/ontgrendelkaart is een Livewire-component (<livewire:room.landlord-card>)
+        // die toegang, saldo en kost zelf bepaalt.
+        return view('rooms.show', compact('room', 'scoreBreakdown'));
     }
 
     /**

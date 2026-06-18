@@ -1,6 +1,6 @@
 @props(['room'])
 
-{{-- Beschrijving. De verhuurder-/contactkaart staat in <x-room.landlord> (net onder dit blok). --}}
+{{-- Beschrijving. De verhuurder-/contactkaart is <livewire:room.landlord-card> (net onder dit blok). --}}
 <div>
     <p class="mb-4 inline-flex items-center gap-3 text-[0.625rem] font-medium uppercase tracking-[0.18em] text-ink/55">
         <span class="inline-block h-px w-9 bg-accent-500"></span> Over dit kot

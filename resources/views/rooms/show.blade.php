@@ -37,7 +37,7 @@
 
                 <div class="mt-10 space-y-12 md:mt-16 md:space-y-16">
                     <x-room.description :room="$room" />
-                    <x-room.landlord :room="$room" :can-view="$canViewLandlord" :unlock-cost="$unlockCost" />
+                    <livewire:room.landlord-card :room-id="$room->id" />
                     <x-room.facilities :room="$room" />
                     <x-room.score :room="$room" :breakdown="$scoreBreakdown" />
                     <x-room.map :room="$room" />
