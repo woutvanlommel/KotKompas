@@ -13,7 +13,7 @@
 
         $statusConfig = [
             'available'   => ['label' => 'Beschikbaar',  'bg' => 'bg-[#e7f6ec]', 'text' => 'text-[#15803d]', 'dot' => 'bg-[#15803d]'],
-            'rented'      => ['label' => 'Verhuurd',     'bg' => 'bg-[#eaf1f8]', 'text' => 'text-[#2e5884]', 'dot' => 'bg-[#2e5884]'],
+            'rented'      => ['label' => 'Verhuurd',     'bg' => 'bg-[#edf0f4]', 'text' => 'text-[#0f1720]', 'dot' => 'bg-[#0f1720]'],
             'maintenance' => ['label' => 'Onderhoud',    'bg' => 'bg-[#fff3e0]', 'text' => 'text-[#c2510a]', 'dot' => 'bg-[#c2510a]'],
             'archived'    => ['label' => 'Gearchiveerd', 'bg' => 'bg-[#e1e6ed]', 'text' => 'text-[#586573]', 'dot' => 'bg-[#586573]'],
         ];
@@ -27,7 +27,7 @@
     <div class="space-y-8">
 
         {{-- Hero --}}
-        <div class="w-full h-72 rounded-2xl overflow-hidden bg-[#e1e6ed] relative shadow-sm">
+        <div class="w-full h-72 rounded-2xl overflow-hidden bg-[#e1e6ed] relative">
             <div class="w-full h-full flex flex-col items-center justify-center gap-3 text-[#9aa6b4]">
                 <svg class="w-16 h-16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
                     <path stroke-linecap="round" stroke-linejoin="round"
@@ -52,16 +52,16 @@
         {{-- Titel & meta --}}
         <div>
             <h1 class="text-4xl font-medium tracking-[-0.02em] text-[#0f1720]">{{ $record->name }}</h1>
-            <p class="mt-1 text-gray-500 text-base">{{ $record->full_address }} &middot; {{ $record->country }}</p>
+            <p class="mt-1 text-[#586573] text-base">{{ $record->full_address }} &middot; {{ $record->country }}</p>
             @if ($record->description)
-                <div class="mt-4 prose prose-sm max-w-none text-gray-600">
+                <div class="mt-4 prose prose-sm max-w-none text-[#586573]">
                     @richtext($record->description)
                 </div>
             @endif
         </div>
 
         {{-- Locatie kaart --}}
-        <div class="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
+        <div class="bg-white rounded-2xl border border-[#0f17201f] p-6">
             <h2 class="text-sm font-semibold tracking-[-0.01em] text-[#0f1720] mb-5 flex items-center gap-2">
                 <svg class="w-4 h-4 text-[#9aa6b4]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -71,30 +71,30 @@
             </h2>
             <dl class="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-5">
                 <div>
-                    <dt class="text-xs font-medium text-gray-400 uppercase tracking-wide">Straat</dt>
-                    <dd class="mt-1 text-sm font-medium text-gray-900">{{ $record->street }}</dd>
+                    <dt class="text-xs font-medium text-[#9aa6b4] uppercase tracking-wide">Straat</dt>
+                    <dd class="mt-1 text-sm font-medium text-[#0f1720]">{{ $record->street }}</dd>
                 </div>
                 <div>
-                    <dt class="text-xs font-medium text-gray-400 uppercase tracking-wide">Huisnummer</dt>
-                    <dd class="mt-1 text-sm font-medium text-gray-900">{{ $record->house_number }}</dd>
+                    <dt class="text-xs font-medium text-[#9aa6b4] uppercase tracking-wide">Huisnummer</dt>
+                    <dd class="mt-1 text-sm font-medium text-[#0f1720]">{{ $record->house_number }}</dd>
                 </div>
                 @if ($record->box)
                     <div>
-                        <dt class="text-xs font-medium text-gray-400 uppercase tracking-wide">Bus/Apt</dt>
-                        <dd class="mt-1 text-sm font-medium text-gray-900">{{ $record->box }}</dd>
+                        <dt class="text-xs font-medium text-[#9aa6b4] uppercase tracking-wide">Bus/Apt</dt>
+                        <dd class="mt-1 text-sm font-medium text-[#0f1720]">{{ $record->box }}</dd>
                     </div>
                 @endif
                 <div>
-                    <dt class="text-xs font-medium text-gray-400 uppercase tracking-wide">Postcode</dt>
-                    <dd class="mt-1 text-sm font-medium text-gray-900">{{ $record->postal_code }}</dd>
+                    <dt class="text-xs font-medium text-[#9aa6b4] uppercase tracking-wide">Postcode</dt>
+                    <dd class="mt-1 text-sm font-medium text-[#0f1720]">{{ $record->postal_code }}</dd>
                 </div>
                 <div>
-                    <dt class="text-xs font-medium text-gray-400 uppercase tracking-wide">Plaats</dt>
-                    <dd class="mt-1 text-sm font-medium text-gray-900">{{ $record->city }}</dd>
+                    <dt class="text-xs font-medium text-[#9aa6b4] uppercase tracking-wide">Plaats</dt>
+                    <dd class="mt-1 text-sm font-medium text-[#0f1720]">{{ $record->city }}</dd>
                 </div>
                 <div>
-                    <dt class="text-xs font-medium text-gray-400 uppercase tracking-wide">Land</dt>
-                    <dd class="mt-1 text-sm font-medium text-gray-900">{{ $record->country }}</dd>
+                    <dt class="text-xs font-medium text-[#9aa6b4] uppercase tracking-wide">Land</dt>
+                    <dd class="mt-1 text-sm font-medium text-[#0f1720]">{{ $record->country }}</dd>
                 </div>
             </dl>
         </div>
@@ -114,13 +114,13 @@
             </div>
 
             @if ($rooms->isEmpty())
-                <div class="flex flex-col items-center justify-center py-16 bg-white rounded-2xl border border-dashed border-gray-200 text-center">
-                    <svg class="w-12 h-12 text-gray-300 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
+                <div class="flex flex-col items-center justify-center py-16 bg-white rounded-2xl border border-dashed border-[#0f17201f] text-center">
+                    <svg class="w-12 h-12 text-[#9aa6b4] mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
                         <path stroke-linecap="round" stroke-linejoin="round"
                               d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75" />
                     </svg>
-                    <p class="text-sm font-medium text-gray-500">Nog geen kamers</p>
-                    <p class="mt-1 text-xs text-gray-400">Klik op "Kamer toevoegen" om te beginnen.</p>
+                    <p class="text-sm font-medium text-[#586573]">Nog geen kamers</p>
+                    <p class="mt-1 text-xs text-[#9aa6b4]">Klik op "Kamer toevoegen" om te beginnen.</p>
                 </div>
             @else
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -133,7 +133,7 @@
                         @endphp
 
                         <a href="{{ $viewUrl }}"
-                           class="group flex flex-col bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden transition hover:shadow-md hover:border-gray-300">
+                           class="group flex flex-col bg-white rounded-2xl border border-[#0f17201f] overflow-hidden transition hover:shadow-md hover:border-[#0f17201f]">
 
                             {{-- Afbeelding --}}
                             <div class="relative h-48 bg-[#e1e6ed] overflow-hidden">
@@ -175,7 +175,7 @@
                                         @class([
                                             'absolute bottom-3 right-3 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold shadow-sm transition',
                                             'bg-featured-100 text-featured-700 hover:bg-featured-200' => $featured,
-                                            'bg-white/90 text-gray-700 hover:bg-white' => ! $featured,
+                                            'bg-white/90 text-[#0f1720] hover:bg-white' => ! $featured,
                                         ])>
                                     <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="{{ $featured ? 'currentColor' : 'none' }}"
                                          stroke="currentColor" stroke-width="1.5" aria-hidden="true">
@@ -190,10 +190,10 @@
 
                                 {{-- Titel & type --}}
                                 <div>
-                                    <h3 class="text-base font-semibold text-gray-900 leading-snug group-hover:text-primary-600 transition truncate">
+                                    <h3 class="text-base font-medium tracking-[-0.01em] text-[#0f1720] leading-snug group-hover:text-[#586573] transition-colors truncate">
                                         {{ $room->title ?: 'Kamer ' . $room->room_number }}
                                     </h3>
-                                    <p class="mt-0.5 text-xs text-gray-500">
+                                    <p class="mt-0.5 text-xs text-[#586573]">
                                         {{ $typeLabels[$room->type] ?? $room->type }}
                                     </p>
                                 </div>
@@ -201,13 +201,13 @@
                                 {{-- Prijs --}}
                                 <div class="flex items-baseline gap-1">
                                     <span class="text-xl font-medium tracking-[-0.02em] tabular-nums text-[#0f1720]">€ {{ number_format($room->price_per_month, 0, ',', '.') }}</span>
-                                    <span class="text-xs text-gray-400">/ maand</span>
+                                    <span class="text-xs text-[#9aa6b4]">/ maand</span>
                                 </div>
 
                                 {{-- Meta chips --}}
-                                <div class="flex flex-wrap gap-2 mt-auto pt-2 border-t border-gray-100">
+                                <div class="flex flex-wrap gap-2 mt-auto pt-2 border-t border-[#0f17201f]">
                                     @if ($room->surface_m2)
-                                        <span class="inline-flex items-center gap-1 text-xs text-gray-500">
+                                        <span class="inline-flex items-center gap-1 text-xs text-[#586573]">
                                             <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
                                             </svg>
@@ -215,7 +215,7 @@
                                         </span>
                                     @endif
                                     @if ($room->is_furnished)
-                                        <span class="inline-flex items-center gap-1 text-xs text-gray-500">
+                                        <span class="inline-flex items-center gap-1 text-xs text-[#586573]">
                                             <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
                                             </svg>
@@ -223,7 +223,7 @@
                                         </span>
                                     @endif
                                     @if ($room->costTypes->where('pivot.frequency', 'monthly')->isEmpty())
-                                        <span class="inline-flex items-center gap-1 text-xs text-gray-500">
+                                        <span class="inline-flex items-center gap-1 text-xs text-[#586573]">
                                             <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                                             </svg>
@@ -231,7 +231,7 @@
                                         </span>
                                     @endif
                                     @if ($room->available_from)
-                                        <span class="inline-flex items-center gap-1 text-xs text-gray-500">
+                                        <span class="inline-flex items-center gap-1 text-xs text-[#586573]">
                                             <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 9v7.5" />
                                             </svg>
