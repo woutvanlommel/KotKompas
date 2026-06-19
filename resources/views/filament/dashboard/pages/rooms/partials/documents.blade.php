@@ -120,7 +120,7 @@
             @if ($tenantDocs->isEmpty())
                 <div class="flex items-center gap-3 py-4 text-center justify-center text-[#9aa6b4]">
                     <x-heroicon-o-document-text class="w-5 h-5" />
-                    <p class="text-sm">Geen publieke documenten gedeeld</p>
+                    <p class="text-sm">Geen gedeelde documenten</p>
                 </div>
             @else
                 <div class="space-y-2">

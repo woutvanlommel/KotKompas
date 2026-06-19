@@ -32,16 +32,11 @@ class LandlordRoomDocumentsTest extends TestCase
             'name' => 'Privé', 'type' => 'other', 'visibility' => DocumentVisibility::Private,
         ]);
 
-        $page = new class($room, $landlord)
+        $page = new class($room)
         {
             use \App\Filament\Dashboard\Resources\Rooms\Concerns\HasDocumentActions;
 
-            public function __construct(public $record, private $actor) {}
-
-            protected function actor()
-            {
-                return $this->actor;
-            }
+            public function __construct(public $record) {}
         };
 
         $this->actingAs($landlord);
