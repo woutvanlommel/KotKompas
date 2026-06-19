@@ -29,7 +29,7 @@ class HighlightTestSeeder extends Seeder
         }
 
         $slots = $landlord->featuredSlots();
-        $this->command->info("Plan: ".($landlord->currentPlan()?->label() ?? 'geen').", featured slots: {$slots}.");
+        $this->command->info('Plan: '.($landlord->currentPlan()?->label() ?? 'geen').", featured slots: {$slots}.");
 
         if ($slots === 0) {
             $this->command->warn(
