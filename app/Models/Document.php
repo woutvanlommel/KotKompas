@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\DocumentVisibility;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -9,7 +10,7 @@ use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
-#[Fillable(['user_id', 'name', 'rental_period_id', 'type', 'is_public', 'blocks', 'status', 'ocr_text', 'description', 'ocr_status'])]
+#[Fillable(['user_id', 'name', 'rental_period_id', 'type', 'is_public', 'blocks', 'status', 'ocr_text', 'description', 'ocr_status', 'visibility', 'building_id', 'shared_with_user_id'])]
 class Document extends Model implements HasMedia
 {
     use InteractsWithMedia;
@@ -32,6 +33,18 @@ class Document extends Model implements HasMedia
     public function rentalPeriod(): BelongsTo
     {
         return $this->belongsTo(RentalPeriod::class);
+    }
+
+    /** @return BelongsTo<Building, $this> */
+    public function building(): BelongsTo
+    {
+        return $this->belongsTo(Building::class);
+    }
+
+    /** @return BelongsTo<User, $this> */
+    public function sharedWithUser(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'shared_with_user_id');
     }
 
     public function registerMediaCollections(): void
@@ -67,6 +80,7 @@ class Document extends Model implements HasMedia
         return [
             'is_public' => 'boolean',
             'blocks' => 'array',
+            'visibility' => DocumentVisibility::class,
         ];
     }
 }
