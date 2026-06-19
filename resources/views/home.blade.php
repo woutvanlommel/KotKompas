@@ -145,7 +145,11 @@
     {{-- ════════════════════════════════════════════════════════════════
          HOOFDSTUK 03 — SAMEN. Twee stemmen: een huurder + een verhuurder.
          ════════════════════════════════════════════════════════════════ --}}
-    <section class="px-5 py-24 sm:px-8 sm:py-32">
+    {{-- overflow-x-clip contains the [data-converge] slide-in (GSAP translates the
+         cards ±70px from the sides); without it they push ~38px past the viewport
+         and create a horizontal scroll. Clip here (not on <body>) so the home
+         card-stack's position:sticky keeps working. --}}
+    <section class="overflow-x-clip px-5 py-24 sm:px-8 sm:py-32">
         <div class="mx-auto w-full max-w-[88rem]">
             <div class="mb-14 max-w-[22ch]">
                 <p class="mb-6 flex items-center gap-3 text-[0.625rem] font-medium uppercase tracking-[0.18em] text-ink-soft" data-reveal>
