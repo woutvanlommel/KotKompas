@@ -17,7 +17,7 @@ use Illuminate\View\View;
 
 class RoomController extends Controller
 {
-    private const TYPES = ['studio', 'one_bedroom', 'two_bedroom', 'three_bedroom', 'four_bedroom', 'five_plus_bedroom'];
+    private const TYPES = ['kamer', 'studio', 'appartement'];
 
     private const SORTS = ['newest', 'price_asc', 'price_desc', 'surface_desc', 'score'];
 

@@ -2,15 +2,17 @@
 
 @php
     $typeLabels = [
-        'studio' => 'Studio',
-        'one_bedroom' => '1 slaapkamer',
-        'two_bedroom' => '2 slaapkamers',
-        'three_bedroom' => '3 slaapkamers',
-        'four_bedroom' => '4 slaapkamers',
-        'five_plus_bedroom' => '5+ slaapkamers',
+        'kamer'       => 'Kamer',
+        'studio'      => 'Studio',
+        'appartement' => 'Appartement',
     ];
     $type = $typeLabels[$room->type] ?? $room->type;
-    $photo = $room->getFirstMediaUrl('rooms') ?: null;
+    $photo = $room->getFirstMediaUrl('cover', 'webp')
+        ?: $room->getFirstMediaUrl('cover')
+        ?: $room->getFirstMediaUrl('gallery', 'webp')
+        ?: $room->getFirstMediaUrl('gallery')
+        ?: $room->getFirstMediaUrl('rooms')
+        ?: null;
     $city = $room->building?->city ?? 'Kot';
     $price = number_format((float) $room->price_per_month, 0, ',', '.');
 

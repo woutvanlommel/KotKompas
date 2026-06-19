@@ -17,9 +17,11 @@ class DatabaseSeeder extends Seeder
         $this->call(RoleSeeder::class);
         $this->call(UserSeeder::class);
         $this->call(BuildingSeeder::class);
+        $this->call(RoomSeeder::class);
         $this->call(FaqSeeder::class);
         $this->call(FacilitySeeder::class);
         $this->call(CostTypeSeeder::class);
         $this->call(PlanSeeder::class);
+        $this->call(SubscriptionSeeder::class);
     }
 }

@@ -68,12 +68,9 @@ class RoomWizard
                     Select::make('type')
                         ->label('Type')
                         ->options([
+                            'kamer' => 'Kamer',
                             'studio' => 'Studio',
-                            'one_bedroom' => '1 slaapkamer',
-                            'two_bedroom' => '2 slaapkamers',
-                            'three_bedroom' => '3 slaapkamers',
-                            'four_bedroom' => '4 slaapkamers',
-                            'five_plus_bedroom' => '5+ slaapkamers',
+                            'appartement' => 'Appartement',
                         ])
                         ->required(),
                     TextInput::make('price_per_month')

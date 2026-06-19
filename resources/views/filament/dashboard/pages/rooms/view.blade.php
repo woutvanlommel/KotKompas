@@ -3,12 +3,9 @@
         $room = $this->record;
 
         $typeLabels = [
-            'studio'            => 'Studio',
-            'one_bedroom'       => '1 slaapkamer',
-            'two_bedroom'       => '2 slaapkamers',
-            'three_bedroom'     => '3 slaapkamers',
-            'four_bedroom'      => '4 slaapkamers',
-            'five_plus_bedroom' => '5+ slaapkamers',
+            'kamer'       => 'Kamer',
+            'studio'      => 'Studio',
+            'appartement' => 'Appartement',
         ];
 
         $statusConfig = [

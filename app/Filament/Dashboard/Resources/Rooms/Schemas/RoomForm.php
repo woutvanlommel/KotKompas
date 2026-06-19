@@ -21,12 +21,9 @@ class RoomForm
                     ->required(),
                 Select::make('type')
                     ->options([
+                        'kamer' => 'Kamer',
                         'studio' => 'Studio',
-                        'one_bedroom' => 'One bedroom',
-                        'two_bedroom' => 'Two bedroom',
-                        'three_bedroom' => 'Three bedroom',
-                        'four_bedroom' => 'Four bedroom',
-                        'five_plus_bedroom' => 'Five plus bedroom',
+                        'appartement' => 'Appartement',
                     ])
                     ->required(),
                 TextInput::make('title'),

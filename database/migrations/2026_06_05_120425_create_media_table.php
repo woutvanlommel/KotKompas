@@ -18,6 +18,10 @@ return new class extends Migration
             $table->string('file_name');
             $table->string('mime_type')->nullable();
             $table->string('disk');
+            // Laat een media-rij naar een externe afbeelding wijzen (bv. een
+            // publieke URL) i.p.v. een lokaal bestand. Is dit gevuld, dan geeft
+            // het custom App\Models\Media-model deze URL terug i.p.v. de disk-URL.
+            $table->string('external_url')->nullable();
             $table->string('conversions_disk')->nullable();
             $table->unsignedBigInteger('size');
             $table->json('manipulations');

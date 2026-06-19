@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('building_id')->constrained('buildings');
             $table->string('room_number', 20);
-            $table->enum('type', ['studio', 'one_bedroom', 'two_bedroom', 'three_bedroom', 'four_bedroom', 'five_plus_bedroom']);
+            $table->enum('type', ['kamer', 'studio', 'appartement']);
             $table->string('title', 150)->nullable();
             $table->text('description')->nullable();
             $table->decimal('price_per_month', 8, 2);
