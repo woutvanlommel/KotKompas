@@ -7,6 +7,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\OnboardingController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\RoomReviewController;
+use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\SocialAuthController;
 use App\Mail\SupportContactMail;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
@@ -17,6 +18,8 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
+
+Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
 
 Route::get('/koten', [RoomController::class, 'index'])->name('rooms.index');
 // Stateless JSON lookup: skipping session/cookies saves remote DB roundtrips
