@@ -268,15 +268,31 @@ class Documents extends Page
         $this->resetPage();
     }
 
-    public function togglePublic(int $documentId): void
+    public function toggleVisibility(int $documentId): void
     {
         $document = auth()->user()->documents()->findOrFail($documentId);
-        $document->update(['is_public' => ! $document->is_public]);
+
+        $document->update([
+            'visibility' => $document->visibility === DocumentVisibility::Landlord
+                ? DocumentVisibility::Private
+                : DocumentVisibility::Landlord,
+        ]);
 
         Notification::make()
-            ->title($document->is_public ? 'Document nu zichtbaar voor verhuurder' : 'Document nu privé')
+            ->title($document->visibility === DocumentVisibility::Landlord
+                ? 'Document nu gedeeld met verhuurder'
+                : 'Document nu privé')
             ->success()
             ->send();
+    }
+
+    /** Documenten die anderen met mij hebben gedeeld (alleen-lezen). */
+    public function getSharedWithMe(): Collection
+    {
+        return Document::sharedWith(auth()->user())
+            ->with(['user', 'media'])
+            ->latest()
+            ->get();
     }
 
     public function deleteContractAction(): Action

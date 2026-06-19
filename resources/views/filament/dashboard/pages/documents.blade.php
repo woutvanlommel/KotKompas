@@ -159,7 +159,7 @@
                         $thumb     = ($media?->hasGeneratedConversion('thumbnail'))
                                         ? $document->getFirstMediaUrl('document', 'thumbnail')
                                         : null;
-                        $url       = $document->getFirstMediaUrl('document');
+                        $url       = route('documents.download', $document);
                         $isPdf     = $media?->mime_type === 'application/pdf';
                         $typeLabel = $this::getTypeLabel($document->type);
                         $typeColor = $this::getTypeColor($document->type);
@@ -169,7 +169,7 @@
                     <div class="group relative flex flex-col bg-white rounded-xl border border-[#0f17201f] overflow-hidden hover:shadow-md transition-shadow">
                         <a href="{{ $url }}" target="_blank" class="block bg-[#edf0f4] overflow-hidden" style="aspect-ratio: 3/4">
                             @if ($thumb)
-                                <img src="{{ $thumb }}" alt="" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                                <img src="{{ route('documents.download', ['document' => $document, 'conversion' => 'thumbnail']) }}" alt="" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                             @elseif ($isPdf)
                                 <div class="w-full h-full flex flex-col items-center justify-center gap-2 text-[#9aa6b4]">
                                     <x-heroicon-o-document-text class="w-10 h-10" />
@@ -189,9 +189,9 @@
                             {{ $typeLabel }}
                         </span>
 
-                        @if ($document->is_public)
+                        @if ($document->visibility === \App\Enums\DocumentVisibility::Landlord)
                             <span class="absolute top-2 right-2 text-xs font-medium px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700">
-                                Publiek
+                                Gedeeld
                             </span>
                         @endif
 
@@ -231,14 +231,14 @@
                             @endif
                             <div class="flex items-center gap-1 mt-1">
                                 <button
-                                    wire:click="togglePublic({{ $document->id }})"
+                                    wire:click="toggleVisibility({{ $document->id }})"
                                     class="flex-1 text-xs py-1 px-2 rounded-[4px] border transition-colors
-                                        {{ $document->is_public
+                                        {{ $document->visibility === \App\Enums\DocumentVisibility::Landlord
                                             ? 'border-emerald-200 text-emerald-700 bg-emerald-50 hover:bg-emerald-100'
                                             : 'border-[#0f17201f] text-[#586573] bg-[#edf0f4] hover:bg-[#e1e6ed]' }}"
                                 >
-                                    @if ($document->is_public)
-                                        <x-heroicon-o-eye class="w-3 h-3 inline" /> Publiek
+                                    @if ($document->visibility === \App\Enums\DocumentVisibility::Landlord)
+                                        <x-heroicon-o-eye class="w-3 h-3 inline" /> Gedeeld
                                     @else
                                         <x-heroicon-o-eye-slash class="w-3 h-3 inline" /> Privé
                                     @endif
@@ -271,7 +271,7 @@
                         $thumb     = ($media?->hasGeneratedConversion('thumbnail'))
                                         ? $document->getFirstMediaUrl('document', 'thumbnail')
                                         : null;
-                        $url       = $document->getFirstMediaUrl('document');
+                        $url       = route('documents.download', $document);
                         $isPdf     = $media?->mime_type === 'application/pdf';
                         $typeLabel = $this::getTypeLabel($document->type);
                         $typeColor = $this::getTypeColor($document->type);
@@ -281,7 +281,7 @@
                     <div class="flex items-center gap-4 px-4 py-3 hover:bg-[#edf0f4] transition-colors">
                         <a href="{{ $url }}" target="_blank" class="flex-shrink-0 w-10 h-14 bg-[#edf0f4] rounded-[4px] overflow-hidden border border-[#0f17201f]">
                             @if ($thumb)
-                                <img src="{{ $thumb }}" alt="" class="w-full h-full object-cover" />
+                                <img src="{{ route('documents.download', ['document' => $document, 'conversion' => 'thumbnail']) }}" alt="" class="w-full h-full object-cover" />
                             @elseif ($isPdf)
                                 <div class="w-full h-full flex items-center justify-center text-[#9aa6b4]">
                                     <x-heroicon-o-document-text class="w-5 h-5" />
@@ -342,14 +342,14 @@
 
                         <div class="flex items-center gap-2 flex-shrink-0">
                             <button
-                                wire:click="togglePublic({{ $document->id }})"
+                                wire:click="toggleVisibility({{ $document->id }})"
                                 class="text-xs py-1 px-2.5 rounded-[4px] border transition-colors
-                                    {{ $document->is_public
+                                    {{ $document->visibility === \App\Enums\DocumentVisibility::Landlord
                                         ? 'border-emerald-200 text-emerald-700 bg-emerald-50 hover:bg-emerald-100'
                                         : 'border-[#0f17201f] text-[#586573] bg-[#edf0f4] hover:bg-[#e1e6ed]' }}"
                             >
-                                @if ($document->is_public)
-                                    <x-heroicon-o-eye class="w-3 h-3 inline" /> Publiek
+                                @if ($document->visibility === \App\Enums\DocumentVisibility::Landlord)
+                                    <x-heroicon-o-eye class="w-3 h-3 inline" /> Gedeeld
                                 @else
                                     <x-heroicon-o-eye-slash class="w-3 h-3 inline" /> Privé
                                 @endif
@@ -376,5 +376,35 @@
             @endif
         @endif
     </section>
+
+    {{-- ===== GEDEELD MET MIJ ===== --}}
+    @php $sharedWithMe = $this->getSharedWithMe(); @endphp
+    @if ($sharedWithMe->isNotEmpty())
+        <section class="mt-8">
+            <h2 class="text-base font-semibold text-[#0f1720] mb-3 flex items-center gap-2">
+                <x-heroicon-o-share class="w-5 h-5 text-[#9aa6b4]" />
+                Gedeeld met mij
+                <span class="text-sm font-normal text-[#9aa6b4]">({{ $sharedWithMe->count() }})</span>
+            </h2>
+            <div class="bg-white rounded-xl border border-[#0f17201f] overflow-hidden divide-y divide-[#0f17201f]">
+                @foreach ($sharedWithMe as $doc)
+                    <div class="flex items-center gap-4 px-4 py-3">
+                        <div class="flex-1 min-w-0">
+                            <p class="text-sm font-medium text-[#0f1720] truncate">{{ $doc->name }}</p>
+                            <p class="text-xs text-[#9aa6b4]">
+                                {{ $this::getTypeLabel($doc->type) }} ·
+                                van {{ $doc->user->full_name }} ·
+                                {{ $doc->created_at->format('d/m/Y') }}
+                            </p>
+                        </div>
+                        <a href="{{ route('documents.download', $doc) }}" target="_blank"
+                            class="p-1.5 rounded-[4px] border border-[#0f17201f] text-[#9aa6b4] hover:text-[#0f1720] hover:bg-[#edf0f4] transition-colors">
+                            <x-heroicon-o-arrow-top-right-on-square class="w-4 h-4" />
+                        </a>
+                    </div>
+                @endforeach
+            </div>
+        </section>
+    @endif
 
 </x-filament-panels::page>
