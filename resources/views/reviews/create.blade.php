@@ -3,12 +3,8 @@
     $room = $invitation->room;
     $state = $invitation->completed_at !== null ? 'completed' : ($invitation->expires_at->isPast() ? 'expired' : 'open');
 
-    $criteria = [
-        'score_hygiene' => ['label' => 'Hygiëne', 'hint' => 'Staat van de kamer, het sanitair en de gedeelde ruimtes.'],
-        'score_size' => ['label' => 'Grootte', 'hint' => 'Was de ruimte wat je ervan verwachtte?'],
-        'score_value' => ['label' => 'Prijs-kwaliteit', 'hint' => 'Kreeg je waar voor je huurprijs?'],
-        'score_communication' => ['label' => 'Communicatie verhuurder', 'hint' => 'Bereikbaarheid, duidelijke afspraken en opvolging.'],
-    ];
+    // Shared with the invitation mail so label + question text live in one place.
+    $criteria = \App\Models\RoomReview::CRITERIA;
 @endphp
 <x-layout title="Beoordeel je kot · KotKompas" body-class="bg-primary-900 text-white overflow-x-hidden">
 <x-slot:head>
@@ -103,7 +99,7 @@
                                     <label class="cursor-pointer">
                                         <input
                                             type="radio" name="{{ $field }}" value="{{ $i }}" required
-                                            class="peer sr-only" @checked((int) old($field) === $i)
+                                            class="peer sr-only" @checked((int) old($field, request()->integer($field)) === $i)
                                         >
                                         <span class="flex h-10 w-10 items-center justify-center rounded-[3px] border border-white/35 text-sm text-white/85 transition-colors duration-150 hover:border-white peer-checked:border-white peer-checked:bg-white peer-checked:font-semibold peer-checked:text-primary-900 peer-focus-visible:ring-2 peer-focus-visible:ring-white/40">
                                             {{ $i }}

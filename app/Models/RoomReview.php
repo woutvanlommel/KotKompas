@@ -34,6 +34,18 @@ class RoomReview extends Model
     /** @use HasFactory<RoomReviewFactory> */
     use HasFactory;
 
+    /**
+     * The kotscore criteria, shared by the survey form and the invitation
+     * mail so label + question text live in one place. Keys are the
+     * score_* columns; communication is the landlord dimension.
+     */
+    public const CRITERIA = [
+        'score_hygiene' => ['label' => 'Hygiëne', 'hint' => 'Staat van de kamer, het sanitair en de gedeelde ruimtes.'],
+        'score_size' => ['label' => 'Grootte', 'hint' => 'Was de ruimte wat je ervan verwachtte?'],
+        'score_value' => ['label' => 'Prijs-kwaliteit', 'hint' => 'Kreeg je waar voor je huurprijs?'],
+        'score_communication' => ['label' => 'Communicatie verhuurder', 'hint' => 'Bereikbaarheid, duidelijke afspraken en opvolging.'],
+    ];
+
     /** @return BelongsTo<Room, $this> */
     public function room(): BelongsTo
     {
