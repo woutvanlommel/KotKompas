@@ -1,4 +1,35 @@
-<x-layout title="KotKompas — Vind je kot, rechtstreeks van de eigenaar" body-class="bg-canvas text-ink">
+<x-layout title="KotKompas — Vind je kot, rechtstreeks van de eigenaar"
+    description="Vind je studentenkot rechtstreeks van de eigenaar — zonder makelaarskosten. Zoek, vergelijk op KotScore en plan bezichtigingen in heel Vlaanderen."
+    body-class="bg-canvas text-ink">
+
+    <x-slot:head>
+        @php
+            $orgSchema = [
+                '@context' => 'https://schema.org',
+                '@type'    => 'Organization',
+                'name'     => 'KotKompas',
+                'url'      => url('/'),
+                'logo'     => asset('img/favicon-256.png'),
+                'description' => 'Vind je studentenkot rechtstreeks van de eigenaar — zonder makelaarskosten. Zoek, vergelijk op KotScore en plan bezichtigingen in heel Vlaanderen.',
+            ];
+            $siteSchema = [
+                '@context' => 'https://schema.org',
+                '@type'    => 'WebSite',
+                'name'     => 'KotKompas',
+                'url'      => url('/'),
+                'potentialAction' => [
+                    '@type'  => 'SearchAction',
+                    'target' => [
+                        '@type'       => 'EntryPoint',
+                        'urlTemplate' => route('rooms.index') . '?q={search_term_string}',
+                    ],
+                    'query-input' => 'required name=search_term_string',
+                ],
+            ];
+        @endphp
+        <script type="application/ld+json">{!! json_encode($orgSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
+        <script type="application/ld+json">{!! json_encode($siteSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
+    </x-slot:head>
 
     <x-public-nav :over-hero="true" />
 
