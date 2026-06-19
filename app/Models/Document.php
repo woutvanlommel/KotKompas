@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\DocumentVisibility;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Spatie\MediaLibrary\HasMedia;
@@ -73,6 +74,52 @@ class Document extends Model implements HasMedia
     public function isContract(): bool
     {
         return $this->type === 'contract';
+    }
+
+    /**
+     * @param  Builder<Document>  $query
+     * @return Builder<Document>
+     */
+    public function scopeVisibleTo(Builder $query, User $viewer): Builder
+    {
+        $buildingIds = $viewer->activeRentalBuildingIds();
+        $ownerIds = $viewer->activeTenantUserIds();
+
+        return $query->where(function (Builder $q) use ($viewer, $buildingIds, $ownerIds) {
+            $q->where('user_id', $viewer->id)
+                ->orWhere(fn (Builder $q) => $q
+                    ->where('visibility', DocumentVisibility::User->value)
+                    ->where('shared_with_user_id', $viewer->id))
+                ->orWhere(fn (Builder $q) => $q
+                    ->where('visibility', DocumentVisibility::Building->value)
+                    ->whereIn('building_id', $buildingIds))
+                ->orWhere(fn (Builder $q) => $q
+                    ->where('visibility', DocumentVisibility::Landlord->value)
+                    ->whereIn('user_id', $ownerIds));
+        });
+    }
+
+    /**
+     * @param  Builder<Document>  $query
+     * @return Builder<Document>
+     */
+    public function scopeSharedWith(Builder $query, User $viewer): Builder
+    {
+        $buildingIds = $viewer->activeRentalBuildingIds();
+        $ownerIds = $viewer->activeTenantUserIds();
+
+        return $query->where('user_id', '!=', $viewer->id)
+            ->where(function (Builder $q) use ($viewer, $buildingIds, $ownerIds) {
+                $q->where(fn (Builder $q) => $q
+                    ->where('visibility', DocumentVisibility::User->value)
+                    ->where('shared_with_user_id', $viewer->id))
+                    ->orWhere(fn (Builder $q) => $q
+                        ->where('visibility', DocumentVisibility::Building->value)
+                        ->whereIn('building_id', $buildingIds))
+                    ->orWhere(fn (Builder $q) => $q
+                        ->where('visibility', DocumentVisibility::Landlord->value)
+                        ->whereIn('user_id', $ownerIds));
+            });
     }
 
     protected function casts(): array
