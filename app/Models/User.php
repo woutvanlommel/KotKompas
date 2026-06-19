@@ -337,4 +337,42 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasMedia
 
         $this->notify(new ResetPasswordNotification($token));
     }
+
+    /**
+     * Building ids where this user is a tenant of a currently-active rental period.
+     *
+     * @return array<int, int>
+     */
+    public function activeRentalBuildingIds(): array
+    {
+        return Room::query()
+            ->whereHas('rentalPeriods', function ($q) {
+                $q->whereHas('tenants', fn ($t) => $t->whereKey($this->id))
+                    ->where(fn ($w) => $w->whereNull('end_date')->orWhere('end_date', '>=', now()));
+            })
+            ->pluck('building_id')
+            ->unique()
+            ->values()
+            ->all();
+    }
+
+    /**
+     * For a landlord: user ids of current tenants across all rooms in their buildings.
+     *
+     * @return array<int, int>
+     */
+    public function activeTenantUserIds(): array
+    {
+        return RentalPeriod::query()
+            ->whereHas('room.building', fn ($q) => $q->where('landlord_id', $this->id))
+            ->where(fn ($q) => $q->whereNull('end_date')->orWhere('end_date', '>=', now()))
+            ->with('tenants:id')
+            ->get()
+            ->pluck('tenants')
+            ->flatten()
+            ->pluck('id')
+            ->unique()
+            ->values()
+            ->all();
+    }
 }
