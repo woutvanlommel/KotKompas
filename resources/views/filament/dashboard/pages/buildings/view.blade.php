@@ -75,10 +75,10 @@
                     <dt class="text-xs font-medium text-[#9aa6b4] uppercase tracking-wide">Huisnummer</dt>
                     <dd class="mt-1 text-sm font-medium text-[#0f1720]">{{ $record->house_number }}</dd>
                 </div>
-                @if ($record->box)
+                @if ($record->bus)
                     <div>
                         <dt class="text-xs font-medium text-[#9aa6b4] uppercase tracking-wide">Bus/Apt</dt>
-                        <dd class="mt-1 text-sm font-medium text-[#0f1720]">{{ $record->box }}</dd>
+                        <dd class="mt-1 text-sm font-medium text-[#0f1720]">{{ $record->bus }}</dd>
                     </div>
                 @endif
                 <div>
