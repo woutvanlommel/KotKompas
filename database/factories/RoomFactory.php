@@ -21,7 +21,7 @@ class RoomFactory extends Factory
         return [
             'building_id' => Building::factory(),
             'room_number' => (string) fake()->numberBetween(1, 50),
-            'type' => fake()->randomElement(['studio', 'one_bedroom', 'two_bedroom']),
+            'type' => fake()->randomElement(['kamer', 'studio', 'appartement']),
             'title' => 'Kot '.fake()->word(),
             'price_per_month' => fake()->numberBetween(350, 950),
             'costs_included' => fake()->boolean(),

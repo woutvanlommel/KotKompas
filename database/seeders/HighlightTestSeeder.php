@@ -9,8 +9,12 @@ use Illuminate\Database\Seeder;
 
 /**
  * Top-up seeder (NOT a fresh seed) to test the "uitgelicht/highlight" feature:
- * adds non-featured available rooms so featured ones visibly rank first with a
- * badge on the public listing. Safe to leave the existing data intact.
+ * features a few of the landlord's rooms (within their plan's featured slots)
+ * and adds non-featured available rooms so the featured ones visibly rank first
+ * with a badge on the public listing. Safe to leave existing data intact.
+ *
+ * Respecteert het plan: er worden nooit meer kamers uitgelicht dan
+ * $landlord->featuredSlots() (premium = 3, pro = 1, starter/geen = 0).
  */
 class HighlightTestSeeder extends Seeder
 {
@@ -24,9 +28,39 @@ class HighlightTestSeeder extends Seeder
             return;
         }
 
-        // Report the state of existing featured rooms (an expired featured_until
-        // is the usual reason a "featured" room does not actually highlight).
-        $this->command->info('Bestaande uitgelichte koten:');
+        $slots = $landlord->featuredSlots();
+        $this->command->info("Plan: ".($landlord->currentPlan()?->label() ?? 'geen').", featured slots: {$slots}.");
+
+        if ($slots === 0) {
+            $this->command->warn(
+                'Geen featured slots beschikbaar — controleer of het abonnement resolved '
+                .'(STRIPE_PRICE_* in .env). Er worden geen kamers uitgelicht.'
+            );
+        }
+
+        // Feature available rooms tot het plan-maximum, indien nog niet actief.
+        $alreadyFeatured = $landlord->featuredSlotsUsed();
+        $toFeature = max(0, $slots - $alreadyFeatured);
+
+        if ($toFeature > 0) {
+            $candidates = Room::whereHas('building', fn ($q) => $q->where('landlord_id', $landlord->id))
+                ->where('status', 'available')
+                ->where('is_featured', false)
+                ->orderByDesc('price_per_month')
+                ->limit($toFeature)
+                ->get();
+
+            foreach ($candidates as $room) {
+                $room->update([
+                    'is_featured' => true,
+                    'featured_until' => now()->addMonth(),
+                ]);
+                $this->command->line("  ★ Uitgelicht: #{$room->id} {$room->title} (€{$room->price_per_month})");
+            }
+        }
+
+        // Report the state of existing featured rooms.
+        $this->command->info('Uitgelichte koten na update:');
         Room::whereHas('building', fn ($q) => $q->where('landlord_id', $landlord->id))
             ->where('is_featured', true)
             ->get()
