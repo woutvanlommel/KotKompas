@@ -36,21 +36,21 @@ class SitemapController extends Controller
             ];
         }
 
-        $xml = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
-        $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
+        $xml = '<?xml version="1.0" encoding="UTF-8"?>'."\n";
+        $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'."\n";
 
         foreach ($urls as $url) {
-            $xml .= '  <url>' . "\n";
-            $xml .= '    <loc>' . e($url['loc']) . '</loc>' . "\n";
+            $xml .= '  <url>'."\n";
+            $xml .= '    <loc>'.e($url['loc']).'</loc>'."\n";
             if (! empty($url['lastmod'])) {
-                $xml .= '    <lastmod>' . e($url['lastmod']) . '</lastmod>' . "\n";
+                $xml .= '    <lastmod>'.e($url['lastmod']).'</lastmod>'."\n";
             }
-            $xml .= '    <changefreq>' . $url['changefreq'] . '</changefreq>' . "\n";
-            $xml .= '    <priority>' . $url['priority'] . '</priority>' . "\n";
-            $xml .= '  </url>' . "\n";
+            $xml .= '    <changefreq>'.$url['changefreq'].'</changefreq>'."\n";
+            $xml .= '    <priority>'.$url['priority'].'</priority>'."\n";
+            $xml .= '  </url>'."\n";
         }
 
-        $xml .= '</urlset>' . "\n";
+        $xml .= '</urlset>'."\n";
 
         return response($xml, 200, ['Content-Type' => 'application/xml']);
     }
