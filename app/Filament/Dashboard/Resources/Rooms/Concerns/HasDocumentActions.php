@@ -194,10 +194,10 @@ trait HasDocumentActions
             return collect();
         }
 
-        return Document::whereIn('user_id', $tenants->pluck('id'))
-            ->where('is_public', true)
+        return Document::query()
+            ->visibleTo(auth()->user())
+            ->whereIn('user_id', $tenants->pluck('id'))
             ->where('type', '!=', 'contract')
-            ->whereHas('rentalPeriod', fn ($q) => $q->where('room_id', $this->record->id))
             ->with('media')
             ->latest()
             ->get();

@@ -128,9 +128,9 @@
                         @php
                             $media = $doc->getFirstMedia('document');
                             $thumb = ($media?->hasGeneratedConversion('thumbnail'))
-                                        ? $doc->getFirstMediaUrl('document', 'thumbnail')
+                                        ? route('documents.download', ['document' => $doc, 'conversion' => 'thumbnail'])
                                         : null;
-                            $url   = $doc->getFirstMediaUrl('document');
+                            $url   = route('documents.download', $doc);
                             $isPdf = $media?->mime_type === 'application/pdf';
                         @endphp
 
