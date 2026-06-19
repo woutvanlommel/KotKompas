@@ -51,6 +51,7 @@ class Document extends Model implements HasMedia
     public function registerMediaCollections(): void
     {
         $this->addMediaCollection('document')
+            ->useDisk('local')
             ->acceptsMimeTypes([
                 'application/pdf',
                 'image/jpeg',

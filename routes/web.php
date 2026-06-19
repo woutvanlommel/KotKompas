@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\ContractPdfController;
+use App\Http\Controllers\DocumentDownloadController;
 use App\Http\Controllers\FaqController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\OnboardingController;
@@ -59,6 +60,10 @@ Route::get('/auth/{provider}/callback', [SocialAuthController::class, 'callback'
 // Contract PDF (authenticated, toegankelijk voor huurder + verhuurder)
 Route::middleware('auth')->get('/contracten/{document}/pdf', ContractPdfController::class)
     ->name('contracts.pdf');
+
+// Authorized document download (visibility-gated, private disk)
+Route::middleware('auth')->get('/documenten/{document}/download', DocumentDownloadController::class)
+    ->name('documents.download');
 
 // One-time role choice after social sign-up
 Route::middleware('auth')->group(function () {
