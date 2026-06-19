@@ -7,6 +7,7 @@ use App\Models\Document;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
@@ -152,6 +153,39 @@ class ProcessDocumentOcrTest extends TestCase
         $this->assertSame(Document::OCR_FAILED, $document->ocr_status);
 
         Http::assertNotSent(fn ($request) => str_contains($request->url(), 'generativelanguage.googleapis.com'));
+    }
+
+    public function test_gemini_failure_logs_warning_but_keeps_ocr_text_and_done_status(): void
+    {
+        $document = $this->createDocumentWithMedia();
+
+        Http::fake([
+            config('ocr-space.api_url') => Http::response([
+                'IsErroredOnProcessing' => false,
+                'ParsedResults' => [
+                    ['ParsedText' => 'Some extracted text'],
+                ],
+            ]),
+            'generativelanguage.googleapis.com/*' => Http::response([
+                'error' => ['message' => 'PERMISSION_DENIED'],
+            ], 403),
+        ]);
+
+        Log::spy();
+
+        (new ProcessDocumentOcr($document))->handle();
+
+        $document->refresh();
+
+        $this->assertStringContainsString('Some extracted text', $document->ocr_text);
+        $this->assertNull($document->description);
+        $this->assertSame(Document::OCR_DONE, $document->ocr_status);
+
+        Log::shouldHaveReceived('warning')
+            ->once()
+            ->withArgs(fn (string $message, array $context) => $message === 'ProcessDocumentOcr: Gemini description generation failed'
+                && $context['document_id'] === $document->id
+            );
     }
 
     public function test_no_media_returns_early_and_leaves_status_unchanged(): void

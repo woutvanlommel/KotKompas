@@ -63,6 +63,10 @@ class ProcessDocumentOcr implements ShouldQueue
 
             if ($description !== null && $description !== '') {
                 $this->document->update(['description' => $description]);
+            } else {
+                Log::warning('ProcessDocumentOcr: Gemini description generation failed', [
+                    'document_id' => $this->document->id,
+                ]);
             }
 
             $this->document->update(['ocr_status' => Document::OCR_DONE]);
@@ -102,6 +106,10 @@ class ProcessDocumentOcr implements ShouldQueue
                 ],
             ]
         );
+
+        if ($response->failed()) {
+            return null;
+        }
 
         $description = $response->json('candidates.0.content.parts.0.text');
 
