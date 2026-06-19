@@ -1,4 +1,6 @@
-<x-layout title="Privacybeleid · KotKompas" body-class="bg-canvas text-ink">
+<x-layout title="Privacybeleid · KotKompas"
+    description="Lees hoe KotKompas omgaat met je persoonsgegevens, welke data we verwerken en wat je privacyrechten zijn."
+    body-class="bg-canvas text-ink">
 <x-public-nav />
 
 <section class="mx-auto w-full max-w-3xl px-5 pb-24 pt-32 sm:px-8 sm:pt-36">

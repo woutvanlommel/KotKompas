@@ -1,4 +1,32 @@
-<x-layout title="Veelgestelde vragen · KotKompas" body-class="bg-canvas text-ink">
+<x-layout title="Veelgestelde vragen · KotKompas"
+    description="Antwoorden op veelgestelde vragen over koten zoeken, bezichtigingen, de KotScore en verhuren via KotKompas."
+    body-class="bg-canvas text-ink">
+
+    <x-slot:head>
+        @php
+            $faqItems = $categories
+                ->flatMap(fn ($category) => $category->faqs)
+                ->map(fn ($faq) => [
+                    '@type' => 'Question',
+                    'name'  => $faq->vraag,
+                    'acceptedAnswer' => [
+                        '@type' => 'Answer',
+                        'text'  => $faq->antwoord,
+                    ],
+                ])
+                ->values()
+                ->all();
+            $faqSchema = [
+                '@context' => 'https://schema.org',
+                '@type'    => 'FAQPage',
+                'mainEntity' => $faqItems,
+            ];
+        @endphp
+        @if (! empty($faqItems))
+            <script type="application/ld+json">{!! json_encode($faqSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
+        @endif
+    </x-slot:head>
+
 <x-public-nav />
 
 <section class="mx-auto w-full max-w-[88rem] px-5 pt-32 pb-24 sm:px-8 sm:pt-36">

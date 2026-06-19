@@ -1,12 +1,107 @@
 {{-- Detail page for an individual room.
      Components live in resources/views/components/room/.
-     Alpine skeleton: <x-room.skeleton> visible until Alpine boots → fade to content. --}}
+     Content is rendered server-side (visible to crawlers); Alpine only adds a
+     subtle fade-in on top of already-present markup. --}}
 
-<x-layout :title="($room->title ?? 'Kot') . ' — KotKompas'" body-class="bg-canvas text-ink">
+@php
+    $typeLabels = [
+        'studio'            => 'Studio',
+        'one_bedroom'       => '1 slaapkamer',
+        'two_bedroom'       => '2 slaapkamers',
+        'three_bedroom'     => '3 slaapkamers',
+        'four_bedroom'      => '4 slaapkamers',
+        'five_plus_bedroom' => '5+ slaapkamers',
+    ];
+    $typeLabel = $typeLabels[$room->type ?? ''] ?? null;
+    $city      = $room->building?->city;
+    $price     = (float) ($room->total_monthly_price ?? $room->price_per_month ?? 0);
+
+    // Schone, unieke meta-description per kot (max ~155 tekens).
+    $metaParts = array_filter([
+        $typeLabel,
+        $city ? "in {$city}" : null,
+        $price > 0 ? '€' . number_format($price, 0, ',', '.') . '/maand' : null,
+        ($room->surface_m2 ?? null) ? $room->surface_m2 . ' m²' : null,
+    ]);
+    $metaDescription = trim(implode(' · ', $metaParts));
+    $metaDescription = $metaDescription !== ''
+        ? $metaDescription . ' — bekijk foto’s, KotScore en plan een bezichtiging op KotKompas.'
+        : 'Bekijk dit studentenkot, de KotScore en plan rechtstreeks een bezichtiging op KotKompas.';
+
+    // og:image → eerste echte kotfoto, absoluut gemaakt voor social scrapers.
+    $ogImage = $room->getFirstMediaUrl('cover', 'webp')
+        ?: $room->getFirstMediaUrl('gallery', 'webp')
+        ?: $room->getFirstMediaUrl('cover')
+        ?: $room->getFirstMediaUrl('gallery')
+        ?: null;
+    if ($ogImage && str_starts_with($ogImage, '/')) {
+        $ogImage = url($ogImage);
+    }
+
+    // JSON-LD: Apartment + Offer
+    $apartmentSchema = array_filter([
+        '@context' => 'https://schema.org',
+        '@type'    => 'Apartment',
+        'name'     => $room->title ?? 'Studentenkot',
+        'description' => $metaDescription,
+        'url'      => url()->current(),
+        'image'    => $ogImage ? [$ogImage] : null,
+        'numberOfRooms' => $room->type === 'studio' ? 1 : null,
+        'floorSize' => ($room->surface_m2 ?? null) ? [
+            '@type' => 'QuantitativeValue',
+            'value' => (float) $room->surface_m2,
+            'unitCode' => 'MTK',
+        ] : null,
+        'address' => $room->building ? array_filter([
+            '@type' => 'PostalAddress',
+            'streetAddress' => trim(($room->building->street ?? '') . ' ' . ($room->building->house_number ?? '')) ?: null,
+            'postalCode' => $room->building->postal_code ?? null,
+            'addressLocality' => $room->building->city ?? null,
+            'addressCountry' => $room->building->country ?? 'BE',
+        ]) : null,
+        'geo' => ($room->building?->latitude && $room->building?->longitude) ? [
+            '@type' => 'GeoCoordinates',
+            'latitude' => (float) $room->building->latitude,
+            'longitude' => (float) $room->building->longitude,
+        ] : null,
+        'offers' => $price > 0 ? [
+            '@type' => 'Offer',
+            'price' => number_format($price, 2, '.', ''),
+            'priceCurrency' => 'EUR',
+            'availability' => $room->status === 'available'
+                ? 'https://schema.org/InStock'
+                : 'https://schema.org/OutOfStock',
+            'url' => url()->current(),
+        ] : null,
+    ], fn ($v) => $v !== null);
+
+    // JSON-LD: BreadcrumbList
+    $breadcrumbSchema = [
+        '@context' => 'https://schema.org',
+        '@type'    => 'BreadcrumbList',
+        'itemListElement' => array_values(array_filter([
+            ['@type' => 'ListItem', 'position' => 1, 'name' => 'Home', 'item' => route('home')],
+            ['@type' => 'ListItem', 'position' => 2, 'name' => 'Koten', 'item' => route('rooms.index')],
+            $city ? ['@type' => 'ListItem', 'position' => 3, 'name' => $city, 'item' => route('rooms.index', ['q' => $city])] : null,
+            ['@type' => 'ListItem', 'position' => $city ? 4 : 3, 'name' => $room->title ?? 'Kot', 'item' => url()->current()],
+        ])),
+    ];
+@endphp
+
+<x-layout
+    :title="($room->title ?? 'Kot') . ' — KotKompas'"
+    :description="$metaDescription"
+    :og-image="$ogImage"
+    body-class="bg-canvas text-ink">
+
+    <x-slot:head>
+        <script type="application/ld+json">{!! json_encode($apartmentSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
+        <script type="application/ld+json">{!! json_encode($breadcrumbSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
+    </x-slot:head>
 
     <x-public-nav />
 
-    <section class="mx-auto w-full max-w-[88rem] px-5 pb-24 pt-32 sm:px-8">
+    <main class="mx-auto w-full max-w-[88rem] px-5 pb-24 pt-32 sm:px-8">
 
         <a href="{{ route('rooms.index') }}"
            class="mb-10 inline-flex items-center gap-2 text-sm text-ink/55 transition-colors hover:text-ink">
@@ -16,54 +111,32 @@
             Terug naar overzicht
         </a>
 
-        {{-- Alpine wrapper: skeleton tot x-init vuurt --}}
-        <div x-data="{ ready: false }" x-init="$nextTick(() => ready = true)">
+        {{-- Hoofdcontent: server-side gerenderd en altijd zichtbaar (crawlbaar). --}}
+        <div>
+            <x-room.header :room="$room" />
 
-            {{-- Skeleton: zichtbaar zolang ready = false --}}
-            <div x-show="!ready">
-                <x-room.skeleton />
+            <x-room.gallery :room="$room" />
+
+            <div class="mt-10 md:mt-16">
+                <x-room.description :room="$room" />
             </div>
-
-            {{-- Real content: style="display:none" so Alpine manages this itself
-                 (x-cloak requires the CSS rule; an inline style is more reliable) --}}
-            <div style="display:none" x-show="ready"
-                 x-transition:enter="transition ease-out duration-300"
-                 x-transition:enter-start="opacity-0"
-                 x-transition:enter-end="opacity-100">
-
-                <x-room.header :room="$room" />
-
-                <x-room.gallery :room="$room" />
-
-                <div class="mt-10 md:mt-16">
-                    <x-room.description :room="$room" />
-                </div>
-
-            </div>
-
         </div>
 
-        {{-- Verhuurder-kaart bewust BUITEN de Alpine x-data wrapper: Livewire's
-             wire:-directives initialiseren niet binnen een (aparte) Alpine-subtree. --}}
+        {{-- Verhuurder-kaart is een Livewire-component (<livewire:room.landlord-card>). --}}
         <div class="mt-12 md:mt-16">
             <livewire:room.landlord-card :room-id="$room->id" />
         </div>
 
-        <div x-data="{ ready: false }" x-init="$nextTick(() => ready = true)" class="mt-12 md:mt-16">
-            <div style="display:none" x-show="ready"
-                 x-transition:enter="transition ease-out duration-300"
-                 x-transition:enter-start="opacity-0"
-                 x-transition:enter-end="opacity-100">
-                <div class="space-y-12 md:space-y-16">
-                    <x-room.facilities :room="$room" />
-                    <x-room.score :room="$room" :breakdown="$scoreBreakdown" />
-                    <x-room.map :room="$room" />
-                    <x-room.pricing :room="$room" />
-                </div>
+        <div class="mt-12 md:mt-16">
+            <div class="space-y-12 md:space-y-16">
+                <x-room.facilities :room="$room" />
+                <x-room.score :room="$room" :breakdown="$scoreBreakdown" />
+                <x-room.map :room="$room" />
+                <x-room.pricing :room="$room" />
             </div>
         </div>
 
-    </section>
+    </main>
 
     <x-footer />
 
