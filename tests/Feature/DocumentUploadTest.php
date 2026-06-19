@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Enums\DocumentVisibility;
 use App\Filament\Dashboard\Pages\Documents;
 use App\Jobs\ProcessDocumentOcr;
 use App\Models\Document;
@@ -42,7 +43,7 @@ class DocumentUploadTest extends TestCase
                 'name' => 'Inschrijvingsbewijs',
                 'file' => $file,
                 'type' => 'school',
-                'is_public' => false,
+                'visibility' => DocumentVisibility::Private->value,
             ]);
 
         $document = Document::where('user_id', $tenant->id)->latest()->firstOrFail();
