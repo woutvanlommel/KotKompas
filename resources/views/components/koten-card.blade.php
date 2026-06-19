@@ -7,7 +7,12 @@
         'appartement' => 'Appartement',
     ];
     $type = $typeLabels[$room->type] ?? $room->type;
-    $photo = $room->getFirstMediaUrl('rooms') ?: null;
+    $photo = $room->getFirstMediaUrl('cover', 'webp')
+        ?: $room->getFirstMediaUrl('cover')
+        ?: $room->getFirstMediaUrl('gallery', 'webp')
+        ?: $room->getFirstMediaUrl('gallery')
+        ?: $room->getFirstMediaUrl('rooms')
+        ?: null;
     $city = $room->building?->city ?? 'Kot';
     $price = number_format((float) $room->price_per_month, 0, ',', '.');
 
