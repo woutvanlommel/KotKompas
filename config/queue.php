@@ -39,7 +39,14 @@ return [
             'driver' => 'database',
             'connection' => env('DB_QUEUE_CONNECTION'),
             'table' => env('DB_QUEUE_TABLE', 'jobs'),
-            'queue' => env('DB_QUEUE', 'default'),
+            // Defaults to this machine's hostname instead of a fixed 'default' name.
+            // The team shares one remote database, so every developer's local
+            // `queue:listen` would otherwise race on the same queue and could pick
+            // up a job for a file that only exists on someone else's disk (e.g. an
+            // uploaded document for OCR). Tying the queue name to the hostname means
+            // a job dispatched on this machine can only ever be picked up by a
+            // worker running on this same machine.
+            'queue' => env('DB_QUEUE', gethostname() ?: 'default'),
             'retry_after' => (int) env('DB_QUEUE_RETRY_AFTER', 90),
             'after_commit' => false,
         ],
