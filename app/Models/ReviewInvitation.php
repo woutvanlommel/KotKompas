@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Mail\ReviewInvitationMail;
 use Carbon\Carbon;
 use Database\Factories\ReviewInvitationFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -9,6 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
 /**
@@ -78,7 +80,7 @@ class ReviewInvitation extends Model
             return null;
         }
 
-        return DB::transaction(function () use ($room, $tenantId): self {
+        $invitation = DB::transaction(function () use ($room, $tenantId): self {
             // One link per room + tenant: old uncompleted ones expire.
             static::query()
                 ->where('room_id', $room->id)
@@ -94,6 +96,15 @@ class ReviewInvitation extends Model
                 'expires_at' => now()->addDays(self::VALID_DAYS),
             ]);
         });
+
+        // Mail the survey link to the ex-tenant. The mailable is afterCommit,
+        // so a rolled-back unlink never sends. The tenant FK guarantees the
+        // user exists by here; ?-> stays defensive for a deleted-mid-flight row.
+        if ($email = $invitation->tenant?->email) {
+            Mail::to($email)->queue(new ReviewInvitationMail($invitation));
+        }
+
+        return $invitation;
     }
 
     public function isOpen(): bool
