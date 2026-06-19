@@ -101,7 +101,7 @@
 
     <x-public-nav />
 
-    <section class="mx-auto w-full max-w-[88rem] px-5 pb-24 pt-32 sm:px-8">
+    <main class="mx-auto w-full max-w-[88rem] px-5 pb-24 pt-32 sm:px-8">
 
         <a href="{{ route('rooms.index') }}"
            class="mb-10 inline-flex items-center gap-2 text-sm text-ink/55 transition-colors hover:text-ink">
@@ -136,7 +136,7 @@
             </div>
         </div>
 
-    </section>
+    </main>
 
     <x-footer />
 

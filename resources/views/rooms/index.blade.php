@@ -4,7 +4,7 @@
 
     <x-public-nav />
 
-    <section class="mx-auto w-full max-w-352 px-5 pb-24 pt-32 sm:px-8">
+    <main class="mx-auto w-full max-w-352 px-5 pb-24 pt-32 sm:px-8">
 
         <header class="mb-10">
             <p class="mb-4 inline-flex items-center gap-3 text-[0.625rem] font-medium uppercase tracking-[0.18em] text-ink/55">
@@ -115,6 +115,7 @@
         </form>
 
         {{-- Resultaten --}}
+        <h2 class="sr-only">Zoekresultaten</h2>
         <div class="mb-6 flex flex-wrap items-center justify-between gap-4">
             <p class="text-sm text-ink/55">{{ $rooms->total() }} {{ $rooms->total() === 1 ? 'kot' : 'koten' }} gevonden</p>
 
@@ -200,7 +201,7 @@
             </div>
         @endif
 
-    </section>
+    </main>
 
     <x-footer />
 
