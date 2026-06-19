@@ -64,7 +64,7 @@ class ProcessDocumentOcr implements ShouldQueue
             if ($description !== null && $description !== '') {
                 $this->document->update(['description' => $description]);
             } else {
-                Log::warning('ProcessDocumentOcr: Gemini description generation failed', [
+                Log::warning('ProcessDocumentOcr: DeepSeek description generation failed', [
                     'document_id' => $this->document->id,
                 ]);
             }
@@ -96,22 +96,19 @@ class ProcessDocumentOcr implements ShouldQueue
         $prompt = "Beschrijf in 2 a 3 zinnen in het Nederlands wat voor document dit is, op basis van de onderstaande OCR-tekst. Geef enkel de beschrijving terug, zonder inleiding.\n\n"
             .Str::limit($text, 3000, '');
 
-        $model = config('services.gemini.model');
-
-        $response = Http::post(
-            'https://generativelanguage.googleapis.com/v1beta/models/'.$model.':generateContent?key='.config('services.gemini.key'),
-            [
-                'contents' => [
-                    ['parts' => [['text' => $prompt]]],
+        $response = Http::withToken(config('services.deepseek.key'))
+            ->post('https://api.deepseek.com/chat/completions', [
+                'model' => config('services.deepseek.model'),
+                'messages' => [
+                    ['role' => 'user', 'content' => $prompt],
                 ],
-            ]
-        );
+            ]);
 
         if ($response->failed()) {
             return null;
         }
 
-        $description = $response->json('candidates.0.content.parts.0.text');
+        $description = $response->json('choices.0.message.content');
 
         return $description !== null ? trim($description) : null;
     }

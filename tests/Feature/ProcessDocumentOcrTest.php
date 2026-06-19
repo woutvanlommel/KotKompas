@@ -59,15 +59,9 @@ class ProcessDocumentOcrTest extends TestCase
                     ['ParsedText' => 'Some extracted text'],
                 ],
             ]),
-            'generativelanguage.googleapis.com/*' => Http::response([
-                'candidates' => [
-                    [
-                        'content' => [
-                            'parts' => [
-                                ['text' => 'Een Nederlandse beschrijving.'],
-                            ],
-                        ],
-                    ],
+            'api.deepseek.com/*' => Http::response([
+                'choices' => [
+                    ['message' => ['content' => 'Een Nederlandse beschrijving.']],
                 ],
             ]),
         ]);
@@ -96,15 +90,9 @@ class ProcessDocumentOcrTest extends TestCase
                     ['ParsedText' => 'Page three text'],
                 ],
             ]),
-            'generativelanguage.googleapis.com/*' => Http::response([
-                'candidates' => [
-                    [
-                        'content' => [
-                            'parts' => [
-                                ['text' => 'Beschrijving van een meerpagina document.'],
-                            ],
-                        ],
-                    ],
+            'api.deepseek.com/*' => Http::response([
+                'choices' => [
+                    ['message' => ['content' => 'Beschrijving van een meerpagina document.']],
                 ],
             ]),
         ]);
@@ -120,7 +108,7 @@ class ProcessDocumentOcrTest extends TestCase
         $this->assertSame(Document::OCR_DONE, $document->ocr_status);
     }
 
-    public function test_hard_failure_with_no_parsed_text_marks_failed_and_skips_gemini(): void
+    public function test_hard_failure_with_no_parsed_text_marks_failed_and_skips_deepseek(): void
     {
         $document = $this->createDocumentWithMedia();
 
@@ -131,15 +119,9 @@ class ProcessDocumentOcrTest extends TestCase
                 'ErrorMessage' => ['Unable to process the uploaded file.'],
                 'ParsedResults' => [],
             ]),
-            'generativelanguage.googleapis.com/*' => Http::response([
-                'candidates' => [
-                    [
-                        'content' => [
-                            'parts' => [
-                                ['text' => 'Dit zou niet aangeroepen mogen worden.'],
-                            ],
-                        ],
-                    ],
+            'api.deepseek.com/*' => Http::response([
+                'choices' => [
+                    ['message' => ['content' => 'Dit zou niet aangeroepen mogen worden.']],
                 ],
             ]),
         ]);
@@ -152,10 +134,10 @@ class ProcessDocumentOcrTest extends TestCase
         $this->assertNull($document->description);
         $this->assertSame(Document::OCR_FAILED, $document->ocr_status);
 
-        Http::assertNotSent(fn ($request) => str_contains($request->url(), 'generativelanguage.googleapis.com'));
+        Http::assertNotSent(fn ($request) => str_contains($request->url(), 'api.deepseek.com'));
     }
 
-    public function test_gemini_failure_logs_warning_but_keeps_ocr_text_and_done_status(): void
+    public function test_deepseek_failure_logs_warning_but_keeps_ocr_text_and_done_status(): void
     {
         $document = $this->createDocumentWithMedia();
 
@@ -166,9 +148,9 @@ class ProcessDocumentOcrTest extends TestCase
                     ['ParsedText' => 'Some extracted text'],
                 ],
             ]),
-            'generativelanguage.googleapis.com/*' => Http::response([
-                'error' => ['message' => 'PERMISSION_DENIED'],
-            ], 403),
+            'api.deepseek.com/*' => Http::response([
+                'error' => ['message' => 'Authentication Fails'],
+            ], 401),
         ]);
 
         Log::spy();
@@ -183,7 +165,7 @@ class ProcessDocumentOcrTest extends TestCase
 
         Log::shouldHaveReceived('warning')
             ->once()
-            ->withArgs(fn (string $message, array $context) => $message === 'ProcessDocumentOcr: Gemini description generation failed'
+            ->withArgs(fn (string $message, array $context) => $message === 'ProcessDocumentOcr: DeepSeek description generation failed'
                 && $context['document_id'] === $document->id
             );
     }

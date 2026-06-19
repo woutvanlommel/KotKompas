@@ -5,7 +5,7 @@ When a user uploads a document (PDF or image) on the **Mijn documenten** page, t
 1. Stores the file (Spatie Media Library).
 2. Queues `App\Jobs\ProcessDocumentOcr`, which:
    - extracts text with the **OCR.Space** API (`ocr_text`),
-   - asks **Google Gemini** to condense that text into a short Dutch description (`description`),
+   - asks **DeepSeek** to condense that text into a short Dutch description (`description`),
    - tracks progress in `ocr_status` (`pending` → `processing` → `done` / `failed`).
 3. Shows the description (foldable) and an analysis status badge on each document card, and
    renders **page 1 of a PDF** as the card thumbnail.
@@ -19,11 +19,11 @@ For this to work end-to-end on a developer machine, you need three things: **API
 
 | File | Responsibility |
 |------|----------------|
-| `app/Jobs/ProcessDocumentOcr.php` | The core job: calls OCR.Space, keeps partial text on the 3-page free-tier limit, calls Gemini for the description, and sets `ocr_status`. |
+| `app/Jobs/ProcessDocumentOcr.php` | The core job: calls OCR.Space, keeps partial text on the 3-page free-tier limit, calls DeepSeek for the description, and sets `ocr_status`. |
 | `app/Filament/Dashboard/Pages/Documents.php` | Upload action — attaches media, sets `ocr_status = pending`, dispatches the job; also queries the documents shown on the page. |
 | `resources/views/filament/dashboard/pages/documents.blade.php` | UI — renders the foldable description, the "Wordt geanalyseerd…" / "Analyse mislukt" status badges, the `wire:poll` auto-refresh, and the PDF page-1 thumbnail. |
 | `app/Models/Document.php` | `ocr_status`/`ocr_text`/`description` fillable, the `OCR_*` status constants, and the `thumbnail` media conversion. |
-| `config/services.php` | `gemini.key` + `gemini.model`, and `ocr_space.key`. |
+| `config/services.php` | `deepseek.key` + `deepseek.model`, and `ocr_space.key`. |
 | `database/migrations/2026_06_18_154221_add_ocr_status_to_documents_table.php` | Adds the `ocr_status` column. (`ocr_text` and `description` come from the `create_documents` and `add_description_to_documents` migrations.) |
 | `tests/Feature/ProcessDocumentOcrTest.php` | Job tests: happy path, page-limit partial, hard failure, no-media guard. |
 | `tests/Feature/DocumentUploadTest.php` | Upload dispatches the job and sets `ocr_status = pending`. |
@@ -39,25 +39,27 @@ Add these to your `.env` (placeholders are in `.env.example`):
 
 ```dotenv
 OCR_SPACE_API_KEY=...        # https://ocr.space/ocrapi  (free tier is fine)
-GEMINI_API_KEY=...           # https://aistudio.google.com/apikey
-GEMINI_MODEL=gemini-2.5-flash
+DEEPSEEK_API_KEY=...         # https://platform.deepseek.com/api_keys
+DEEPSEEK_MODEL=deepseek-chat
 ```
 
 Notes:
 
-- **Gemini key:** create it in Google AI Studio. Keys created under a brand‑new API project work
-  on the free tier. If a model returns **HTTP 429 "exceeded your current quota"**, that model has
-  no free quota on your project — keep `GEMINI_MODEL=gemini-2.5-flash` (verified to work on the
-  free tier) or enable billing on the project. `gemini-2.0-flash` has **no** free quota.
+- **DeepSeek key:** create it at platform.deepseek.com. `deepseek-chat` is the cheapest
+  general-purpose model and is plenty for a short summary — a couple of euros of credit covers
+  thousands of descriptions.
 - **Config cache:** if you change `.env` and the value doesn't take effect, run
   `php artisan config:clear`.
 - **OS environment variables override `.env`.** Laravel will *not* let `.env` overwrite a variable
-  that already exists in your real shell/OS environment. If `config('services.gemini.key')` shows a
-  different key than your `.env`, you have a stale OS variable:
-  - **Windows (PowerShell):** `[Environment]::SetEnvironmentVariable('GEMINI_API_KEY', $null, 'User')`
+  that already exists in your real shell/OS environment (this includes variables set at the
+  Windows **Process** scope, e.g. inherited from whatever terminal/IDE launched your shell — not
+  just User/Machine scope, so check `[Environment]::GetEnvironmentVariable('DEEPSEEK_API_KEY','Process')`
+  too). If `config('services.deepseek.key')` shows a different key than your `.env`, you have a
+  stale variable:
+  - **Windows (PowerShell):** `[Environment]::SetEnvironmentVariable('DEEPSEEK_API_KEY', $null, 'User')`
     then open a new terminal.
-  - **macOS/Linux:** remove any `export GEMINI_API_KEY=...` from `~/.zshrc` / `~/.bashrc`, then
-    `unset GEMINI_API_KEY` and restart the terminal.
+  - **macOS/Linux:** remove any `export DEEPSEEK_API_KEY=...` from `~/.zshrc` / `~/.bashrc`, then
+    `unset DEEPSEEK_API_KEY` and restart the terminal.
 
 ---
 
@@ -253,9 +255,9 @@ Expected output: `done | <a 2–3 sentence Dutch summary of the document>`.
 | Symptom | Cause | Fix |
 |---------|-------|-----|
 | Badge stuck on "Wordt geanalyseerd…" | No queue worker running | `composer run dev` or `php artisan queue:work` |
-| `ocr_status = done` but `description` empty | Gemini key/quota/model issue | Check key, keep `GEMINI_MODEL=gemini-2.5-flash`, see §1 |
-| Gemini "API key expired/invalid" with a fresh key | Stale OS env var overriding `.env` | Remove the OS variable (see §1) |
-| Gemini HTTP 429 quota | Model has no free quota on the project | Use `gemini-2.5-flash` or enable billing |
+| `ocr_status = done` but `description` empty | DeepSeek key/balance/model issue | Check key and account balance, see §1 and `storage/logs/laravel.log` for the warning |
+| DeepSeek "Authentication Fails" with a key you just created | Stale OS env var overriding `.env` (check Process scope too, not just User/Machine) | Remove the OS variable (see §1) |
+| DeepSeek HTTP 402 | Insufficient balance on the DeepSeek account | Top up credits at platform.deepseek.com |
 | Card shows "PDF" instead of page 1 | Imagick/Ghostscript missing | Install them (§3), then `media-library:regenerate` |
 | Thumbnail renders but is blank/black | Ghostscript not found by Imagick | Ensure `gs`/`gswin64c --version` works on PATH, then regenerate |
 | (Windows) `Unable to load dynamic library 'imagick' … module could not be found` | ImageMagick core DLLs not on PATH, or terminal not restarted | Add the imagick folder to PATH and **fully restart the editor** (§3 gotchas) |
