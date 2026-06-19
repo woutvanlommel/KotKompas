@@ -1,4 +1,6 @@
-<x-layout title="Algemene voorwaarden · KotKompas" body-class="bg-canvas text-ink">
+<x-layout title="Algemene voorwaarden · KotKompas"
+    description="De algemene voorwaarden voor het gebruik van het KotKompas-platform door huurders en verhuurders."
+    body-class="bg-canvas text-ink">
 <x-public-nav />
 
 <section class="mx-auto w-full max-w-3xl px-5 pb-24 pt-32 sm:px-8 sm:pt-36">

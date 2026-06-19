@@ -1,4 +1,6 @@
-<x-layout title="Cookiebeleid · KotKompas" body-class="bg-canvas text-ink">
+<x-layout title="Cookiebeleid · KotKompas"
+    description="Lees welke cookies KotKompas gebruikt, waarvoor ze dienen en hoe je je voorkeuren beheert."
+    body-class="bg-canvas text-ink">
 <x-public-nav />
 
 <section class="mx-auto w-full max-w-3xl px-5 pb-24 pt-32 sm:px-8 sm:pt-36">

@@ -1,4 +1,6 @@
-<x-layout title="Koten zoeken — KotKompas" body-class="bg-canvas text-ink">
+<x-layout title="Koten zoeken — KotKompas"
+    description="Doorzoek alle beschikbare studentenkoten in Vlaanderen. Filter op stad, prijs, type en KotScore en plan rechtstreeks een bezichtiging via KotKompas."
+    body-class="bg-canvas text-ink">
 
     <x-public-nav />
 

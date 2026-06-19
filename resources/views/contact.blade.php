@@ -1,4 +1,6 @@
-<x-layout title="Contact · KotKompas" body-class="bg-primary-900 text-white overflow-x-hidden">
+<x-layout title="Contact · KotKompas"
+    description="Vragen over KotKompas? Neem contact op met ons team — we helpen je graag verder met het zoeken of verhuren van een studentenkot."
+    body-class="bg-primary-900 text-white overflow-x-hidden">
 <div class="kkc-auth relative min-h-dvh">
 
     {{-- Background: same Antwerp hero + navy scrim as the login/register auth pages --}}

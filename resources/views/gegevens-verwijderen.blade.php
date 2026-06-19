@@ -1,4 +1,6 @@
-<x-layout title="Je gegevens verwijderen · KotKompas" body-class="bg-canvas text-ink">
+<x-layout title="Je gegevens verwijderen · KotKompas"
+    description="Vraag de verwijdering van je persoonsgegevens bij KotKompas aan en lees hoe het proces verloopt."
+    body-class="bg-canvas text-ink">
 <x-public-nav />
 
 <section class="mx-auto w-full max-w-3xl px-5 pb-24 pt-32 sm:px-8 sm:pt-36">
