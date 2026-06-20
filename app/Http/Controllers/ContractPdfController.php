@@ -30,6 +30,8 @@ class ContractPdfController extends Controller
 
         abort_unless($document->type === 'contract', 404);
 
+        // Paginamarges worden in de blade via @page gezet (CSS),
+        // dat is de manier waarop DomPDF marges toepast op elke pagina.
         $pdf = Pdf::loadView('pdf.contract', [
             'document' => $document,
             'blocks' => $document->blocks ?? [],

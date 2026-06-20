@@ -197,7 +197,7 @@
 
                                 {{-- Prijs --}}
                                 <div class="flex items-baseline gap-1">
-                                    <span class="text-xl font-medium tracking-[-0.02em] tabular-nums text-[#0f1720]">€ {{ number_format($room->price_per_month, 0, ',', '.') }}</span>
+                                    <span class="text-xl font-medium tracking-[-0.02em] tabular-nums text-[#0f1720]">€ {{ number_format($room->total_monthly_price, 0, ',', '.') }}</span>
                                     <span class="text-xs text-[#9aa6b4]">/ maand</span>
                                 </div>
 

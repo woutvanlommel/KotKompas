@@ -142,6 +142,7 @@ trait HasDocumentActions
                     ],
                     'financieel' => [
                         'huurprijs' => $room->price_per_month,
+                        'totaal_maandelijks' => $room->total_monthly_price,
                         'borgsom' => $room->deposit_amount,
                     ],
                     'bijzondere_voorwaarden' => $data['special_conditions'] ?? null,
