@@ -14,7 +14,7 @@
         ?: $room->getFirstMediaUrl('rooms')
         ?: null;
     $city = $room->building?->city ?? 'Kot';
-    $price = number_format((float) $room->price_per_month, 0, ',', '.');
+    $price = number_format((float) $room->total_monthly_price, 0, ',', '.');
 
     $tags = array_filter([
         $room->surface_m2 ? $room->surface_m2 . ' m²' : null,

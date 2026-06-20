@@ -414,6 +414,25 @@
                 <td class="amount">€ {{ number_format((float)($financieel['huurprijs'] ?? 0), 2, ',', '.') }}</td>
                 <td class="note">maandelijks vooraf</td>
             </tr>
+            @php
+                $totaalMaandelijks = (float)($financieel['totaal_maandelijks'] ?? 0);
+                $huurprijs = (float)($financieel['huurprijs'] ?? 0);
+            @endphp
+            @if ($totaalMaandelijks > $huurprijs)
+            <tr>
+                <td>
+                    Vaste kosten
+                    <div class="note">Maandelijks inbegrepen in totaalprijs</div>
+                </td>
+                <td class="amount">€ {{ number_format($totaalMaandelijks - $huurprijs, 2, ',', '.') }}</td>
+                <td class="note">maandelijks vooraf</td>
+            </tr>
+            <tr>
+                <td><strong>Totaal maandelijks</strong></td>
+                <td class="amount"><strong>€ {{ number_format($totaalMaandelijks, 2, ',', '.') }}</strong></td>
+                <td class="note">maandelijks vooraf</td>
+            </tr>
+            @endif
             <tr>
                 <td>
                     Borgsom
