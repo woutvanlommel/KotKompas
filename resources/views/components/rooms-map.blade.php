@@ -29,6 +29,8 @@
 
 {{-- Leaflet CSS --}}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.Default.css">
 
 <style>
     #kk-map { height: {{ $height }}; width: 100%; background: #f8fafc; }
@@ -42,6 +44,15 @@
     }
     .kk-popup .leaflet-popup-content { margin: 14px 16px; }
     .kk-popup .leaflet-popup-tip-container { margin-top: -1px; }
+    .kk-cluster {
+        display: flex; align-items: center; justify-content: center;
+        width: 36px !important; height: 36px !important;
+        background: #0f172a; color: #fff;
+        font-size: 12px; font-weight: 700; font-family: inherit;
+        border-radius: 50%;
+        box-shadow: 0 2px 8px rgba(0,0,0,.35);
+        transform: translate(-50%, -50%);
+    }
     @keyframes kk-pulse {
         0%, 100% { opacity: 1; }
         50%       { opacity: .45; }
@@ -58,6 +69,7 @@
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/leaflet.markercluster.js"></script>
 
 <script>
 (function () {
@@ -76,9 +88,16 @@
 
     // ── Pill marker ───────────────────────────────────────────────────────────
     function makeIcon(b) {
-        const label = b.rooms.length === 1
+        const featured = b.rooms.some(r => r.featured);
+        const label    = b.rooms.length === 1
             ? `€${b.rooms[0].price_per_month.toLocaleString('nl-BE')}/maand`
             : `${b.rooms.length} koten`;
+
+        const bg     = featured ? '#f97316' : '#0f172a'; // oranje = uitgelicht
+        const tip    = featured ? '#f97316' : '#0f172a';
+        const prefix = featured
+            ? `<svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor" style="flex-shrink:0;margin-right:4px" aria-hidden="true"><path d="M5 0l1.12 3.44H10L7.19 5.56l1.12 3.44L5 7 1.69 9l1.12-3.44L0 3.44h3.88z"/></svg>`
+            : '';
 
         return L.divIcon({
             className: '',
@@ -87,16 +106,16 @@
             html: `<div style="display:flex;flex-direction:column;align-items:center;transform:translateX(-50%);cursor:pointer;">
                 <div style="
                     display:inline-flex;align-items:center;
-                    background:#0f172a;color:#fff;
+                    background:${bg};color:#fff;
                     font-size:12px;font-weight:700;font-family:inherit;
                     padding:5px 10px;border-radius:999px;white-space:nowrap;
                     box-shadow:0 2px 8px rgba(0,0,0,.3);
-                ">${label}</div>
+                ">${prefix}${label}</div>
                 <div style="
                     width:0;height:0;
                     border-left:5px solid transparent;
                     border-right:5px solid transparent;
-                    border-top:6px solid #0f172a;
+                    border-top:6px solid ${tip};
                 "></div>
             </div>`,
         });
@@ -106,8 +125,15 @@
     function buildPopup(b) {
         if (b.rooms.length === 1) {
             const r = b.rooms[0];
+            const featuredBadge = r.featured
+                ? `<span style="display:inline-flex;align-items:center;gap:4px;font-size:.65rem;font-weight:700;color:#f97316;margin-bottom:6px;">
+                    <svg width="9" height="9" viewBox="0 0 10 10" fill="currentColor" aria-hidden="true"><path d="M5 0l1.12 3.44H10L7.19 5.56l1.12 3.44L5 7 1.69 9l1.12-3.44L0 3.44h3.88z"/></svg>
+                    Uitgelicht
+                   </span><br>`
+                : '';
             return `<div style="min-width:180px;font-family:inherit;">
                 <p style="font-size:.75rem;color:#64748b;margin:0 0 2px">${b.address}</p>
+                ${featuredBadge}
                 <p style="font-size:1rem;font-weight:600;margin:0 0 6px;color:#0f172a">${r.title}</p>
                 <p style="font-size:.9rem;color:#0f172a;margin:0 0 10px">€${r.price_per_month.toLocaleString('nl-BE')}<span style="font-size:.65rem;color:#94a3b8">/maand</span></p>
                 <a href="${r.url}" style="display:inline-flex;align-items:center;gap:6px;font-size:.78rem;font-weight:600;color:#fff;background:#0f172a;padding:6px 14px;border-radius:8px;text-decoration:none;">Bekijk kot →</a>
@@ -116,7 +142,10 @@
 
         const items = b.rooms.map(r => `
             <li style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px solid #f1f5f9;">
-                <span style="font-size:.82rem;font-weight:500;color:#0f172a;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.title}</span>
+                <span style="display:flex;align-items:center;gap:5px;font-size:.82rem;font-weight:500;color:#0f172a;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+                    ${r.featured ? `<svg width="9" height="9" viewBox="0 0 10 10" fill="#f97316" style="flex-shrink:0" aria-hidden="true"><path d="M5 0l1.12 3.44H10L7.19 5.56l1.12 3.44L5 7 1.69 9l1.12-3.44L0 3.44h3.88z"/></svg>` : ''}
+                    ${r.title}
+                </span>
                 <span style="font-size:.82rem;color:#0f172a;white-space:nowrap">€${r.price_per_month.toLocaleString('nl-BE')}/maand</span>
                 <a href="${r.url}" style="font-size:.75rem;font-weight:600;color:#0f172a;text-decoration:underline;white-space:nowrap">Bekijk →</a>
             </li>`).join('');
@@ -128,13 +157,31 @@
         </div>`;
     }
 
-    // ── Markers ───────────────────────────────────────────────────────────────
+    // ── Markers & clustering ──────────────────────────────────────────────────
+    const clusterGroup = L.markerClusterGroup({
+        showCoverageOnHover: false,
+        zoomToBoundsOnClick: true,
+        spiderfyOnMaxZoom: true,
+        disableClusteringAtZoom: 16,
+        maxClusterRadius: 60,
+        iconCreateFunction: function (cluster) {
+            return L.divIcon({
+                className: 'kk-cluster',
+                html: `<span>${cluster.getChildCount()}</span>`,
+                iconSize: [36, 36],
+                iconAnchor: [18, 18],
+            });
+        },
+    });
+
     const markers = BUILDINGS.map(b => {
         const m = L.marker([b.lat, b.lng], { icon: makeIcon(b), title: b.name });
         m.bindPopup(buildPopup(b), { maxWidth: 320, className: 'kk-popup' });
-        m.addTo(map);
         return m;
     });
+
+    clusterGroup.addLayers(markers);
+    map.addLayer(clusterGroup);
 
     // ── Viewport filtering met debounce ───────────────────────────────────────
     let debounceTimer = null;
@@ -149,6 +196,7 @@
                 el.classList.toggle('kk-pin-out', !inView);
                 el.classList.toggle('kk-pin-in', inView);
             }
+            // Alleen zichtbare (niet-geclusterde) markers hebben een element.
         });
     }
 
@@ -246,8 +294,7 @@
     });
 
     if (markers.length > 0) {
-        const group = L.featureGroup(markers);
-        map.fitBounds(group.getBounds().pad(0.15), { maxZoom: 14 });
+        map.fitBounds(clusterGroup.getBounds().pad(0.15), { maxZoom: 14 });
     } else {
         map.setView([DEFAULT.lat, DEFAULT.lng], DEFAULT.zoom);
     }

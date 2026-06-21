@@ -53,6 +53,7 @@ class RoomController extends Controller
                         'title' => $r->title ?? '',
                         'price_per_month' => (float) $r->total_monthly_price,
                         'url' => route('rooms.show', $r),
+                        'featured' => $r->isFeatured(),
                     ])->values(),
                 ];
             })
@@ -258,9 +259,11 @@ class RoomController extends Controller
             // Filtering uses the displayed score; rooms without reviews
             // (score null) drop out automatically.
             ->when($filters['score_min'], fn ($query, $min) => $query->where('score', '>=', $min))
-            ->when($filters['bounds'], fn ($query, $b) => $query->whereHas('building', fn ($bq) => $bq
-                ->whereBetween('latitude', [$b['sw_lat'], $b['ne_lat']])
-                ->whereBetween('longitude', [$b['sw_lng'], $b['ne_lng']])))
+            ->when($filters['bounds'], fn ($query, $b) => $query
+                ->join('buildings as _bnd', 'rooms.building_id', '=', '_bnd.id')
+                ->whereBetween('_bnd.latitude', [$b['sw_lat'], $b['ne_lat']])
+                ->whereBetween('_bnd.longitude', [$b['sw_lng'], $b['ne_lng']])
+                ->select('rooms.*'))
             // "Uitgelicht" always wins: featured rooms rank first whatever the
             // chosen sort, ordered among themselves by kotscore (reviewed
             // before unreviewed). A room is featured only when flagged AND still
