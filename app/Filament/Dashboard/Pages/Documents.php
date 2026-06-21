@@ -9,7 +9,7 @@ use App\Models\RentalPeriod;
 use App\Models\Room;
 use BackedEnum;
 use Filament\Actions\Action;
-use Filament\Forms\Components\Component;
+use Filament\Schemas\Components\Component;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Select;
