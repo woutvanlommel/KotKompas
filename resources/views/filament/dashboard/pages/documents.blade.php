@@ -199,6 +199,21 @@
                             <p class="text-xs font-medium text-[#0f1720] truncate" title="{{ $document->name }}">
                                 {{ $document->name }}
                             </p>
+                            @if ($document->visibility === \App\Enums\DocumentVisibility::Landlord)
+                                <p class="flex items-center gap-1 text-xs text-[#586573]">
+                                    <x-heroicon-o-eye class="w-3 h-3 shrink-0" /> Gedeeld met verhuurder
+                                </p>
+                            @elseif ($document->visibility === \App\Enums\DocumentVisibility::Building)
+                                <p class="flex items-start gap-1 text-xs text-[#586573]">
+                                    <x-heroicon-o-building-office class="w-3 h-3 shrink-0 mt-0.5" />
+                                    <span class="min-w-0 break-words">Gedeeld met gebouw{{ $document->building ? ' ' . $document->building->name : '' }}</span>
+                                </p>
+                            @elseif ($document->visibility === \App\Enums\DocumentVisibility::User && $document->sharedWithUser)
+                                <p class="flex items-start gap-1 text-xs text-[#586573]">
+                                    <x-heroicon-o-user class="w-3 h-3 shrink-0 mt-0.5" />
+                                    <span class="min-w-0 break-words">Gedeeld met {{ $document->sharedWithUser->full_name }}</span>
+                                </p>
+                            @endif
                             @if ($ocrStatus === \App\Models\Document::OCR_PENDING || $ocrStatus === \App\Models\Document::OCR_PROCESSING)
                                 <span class="inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 w-fit">
                                     <span class="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse inline-block"></span>
@@ -231,17 +246,10 @@
                             @endif
                             <div class="flex items-center gap-1 mt-1">
                                 <button
-                                    wire:click="toggleVisibility({{ $document->id }})"
-                                    class="flex-1 text-xs py-1 px-2 rounded-[4px] border transition-colors
-                                        {{ $document->visibility === \App\Enums\DocumentVisibility::Landlord
-                                            ? 'border-emerald-200 text-emerald-700 bg-emerald-50 hover:bg-emerald-100'
-                                            : 'border-[#0f17201f] text-[#586573] bg-[#edf0f4] hover:bg-[#e1e6ed]' }}"
+                                    wire:click="mountAction('editDocument', { documentId: {{ $document->id }} })"
+                                    class="p-1.5 rounded-[4px] border border-[#0f17201f] text-[#9aa6b4] hover:text-[#0f1720] hover:border-[#0f17201f] hover:bg-[#edf0f4] transition-colors"
                                 >
-                                    @if ($document->visibility === \App\Enums\DocumentVisibility::Landlord)
-                                        <x-heroicon-o-eye class="w-3 h-3 inline" /> Gedeeld
-                                    @else
-                                        <x-heroicon-o-eye-slash class="w-3 h-3 inline" /> Privé
-                                    @endif
+                                    <x-heroicon-o-pencil-square class="w-3 h-3" />
                                 </button>
                                 <button
                                     wire:click="deleteDocument({{ $document->id }})"
@@ -313,6 +321,21 @@
                                     {{ $document->created_at->format('d/m/Y') }}
                                 </span>
                             </div>
+                            @if ($document->visibility === \App\Enums\DocumentVisibility::Landlord)
+                                <p class="flex items-center gap-1 text-xs text-[#586573] mt-1">
+                                    <x-heroicon-o-eye class="w-3 h-3 shrink-0" /> Gedeeld met verhuurder
+                                </p>
+                            @elseif ($document->visibility === \App\Enums\DocumentVisibility::Building)
+                                <p class="flex items-start gap-1 text-xs text-[#586573] mt-1">
+                                    <x-heroicon-o-building-office class="w-3 h-3 shrink-0 mt-0.5" />
+                                    <span class="min-w-0 break-words">Gedeeld met gebouw{{ $document->building ? ' ' . $document->building->name : '' }}</span>
+                                </p>
+                            @elseif ($document->visibility === \App\Enums\DocumentVisibility::User && $document->sharedWithUser)
+                                <p class="flex items-start gap-1 text-xs text-[#586573] mt-1">
+                                    <x-heroicon-o-user class="w-3 h-3 shrink-0 mt-0.5" />
+                                    <span class="min-w-0 break-words">Gedeeld met {{ $document->sharedWithUser->full_name }}</span>
+                                </p>
+                            @endif
                             @if ($ocrStatus === \App\Models\Document::OCR_PENDING || $ocrStatus === \App\Models\Document::OCR_PROCESSING)
                                 <span class="inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 mt-1 w-fit">
                                     <span class="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse inline-block"></span>
@@ -342,17 +365,9 @@
 
                         <div class="flex items-center gap-2 flex-shrink-0">
                             <button
-                                wire:click="toggleVisibility({{ $document->id }})"
-                                class="text-xs py-1 px-2.5 rounded-[4px] border transition-colors
-                                    {{ $document->visibility === \App\Enums\DocumentVisibility::Landlord
-                                        ? 'border-emerald-200 text-emerald-700 bg-emerald-50 hover:bg-emerald-100'
-                                        : 'border-[#0f17201f] text-[#586573] bg-[#edf0f4] hover:bg-[#e1e6ed]' }}"
-                            >
-                                @if ($document->visibility === \App\Enums\DocumentVisibility::Landlord)
-                                    <x-heroicon-o-eye class="w-3 h-3 inline" /> Gedeeld
-                                @else
-                                    <x-heroicon-o-eye-slash class="w-3 h-3 inline" /> Privé
-                                @endif
+                                wire:click="mountAction('editDocument', { documentId: {{ $document->id }} })"
+                                class="p-1.5 rounded-[4px] border border-[#0f17201f] text-[#9aa6b4] hover:text-[#0f1720] hover:border-[#0f17201f] hover:bg-[#edf0f4] transition-colors">
+                                <x-heroicon-o-pencil-square class="w-4 h-4" />
                             </button>
                             <a href="{{ $url }}" target="_blank"
                                 class="p-1.5 rounded-[4px] border border-[#0f17201f] text-[#9aa6b4] hover:text-[#0f1720] hover:border-[#0f17201f] hover:bg-[#edf0f4] transition-colors">
@@ -388,7 +403,7 @@
             </h2>
             <div class="bg-white rounded-xl border border-[#0f17201f] overflow-hidden divide-y divide-[#0f17201f]">
                 @foreach ($sharedWithMe as $doc)
-                    <div class="flex items-center gap-4 px-4 py-3">
+                    <div class="flex items-start gap-4 px-4 py-3">
                         <div class="flex-1 min-w-0">
                             <p class="text-sm font-medium text-[#0f1720] truncate">{{ $doc->name }}</p>
                             <p class="text-xs text-[#9aa6b4]">
@@ -396,6 +411,21 @@
                                 van {{ $doc->user->full_name }} ·
                                 {{ $doc->created_at->format('d/m/Y') }}
                             </p>
+                            @if ($doc->description)
+                                <div class="mt-1"
+                                    x-data="{ open: false, overflowing: false }"
+                                    x-init="$nextTick(() => overflowing = $refs.desc.scrollHeight > $refs.desc.clientHeight + 2)"
+                                >
+                                    <p x-ref="desc" :class="{ 'line-clamp-3': ! open }"
+                                        class="text-xs italic text-gray-400 dark:text-gray-500">
+                                        {{ $doc->description }}
+                                    </p>
+                                    <button type="button" x-show="overflowing" x-on:click="open = ! open"
+                                        class="mt-0.5 text-[11px] font-medium text-primary-600 dark:text-primary-400 hover:underline">
+                                        <span x-text="open ? 'Minder tonen' : 'Zie meer'"></span>
+                                    </button>
+                                </div>
+                            @endif
                         </div>
                         <a href="{{ route('documents.download', $doc) }}" target="_blank"
                             class="p-1.5 rounded-[4px] border border-[#0f17201f] text-[#9aa6b4] hover:text-[#0f1720] hover:bg-[#edf0f4] transition-colors">

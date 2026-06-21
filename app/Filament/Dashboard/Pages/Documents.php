@@ -15,6 +15,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
+use Filament\Schemas\Components\Component;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -48,7 +49,7 @@ class Documents extends Page
         return auth()->user()
             ->documents()
             ->where('type', '!=', 'contract')
-            ->with(['media', 'rentalPeriod.room.building'])
+            ->with(['media', 'rentalPeriod.room.building', 'sharedWithUser', 'building'])
             ->latest()
             ->paginate(12);
     }
@@ -153,83 +154,7 @@ class Documents extends Page
                 ->label('Document uploaden')
                 ->icon('heroicon-o-arrow-up-tray')
                 ->slideOver()
-                ->form([
-                    TextInput::make('name')
-                        ->label('Naam')
-                        ->placeholder('bv. Inschrijvingsbewijs KU Leuven')
-                        ->maxLength(255)
-                        ->required(),
-
-                    FileUpload::make('file')
-                        ->label('Bestand')
-                        ->required()
-                        ->acceptedFileTypes(['application/pdf', 'image/jpeg', 'image/png', 'image/webp'])
-                        ->maxSize(10240)
-                        ->disk('public')
-                        ->directory('temp-uploads')
-                        ->helperText('PDF of afbeelding, max. 10 MB'),
-
-                    Select::make('type')
-                        ->label('Type')
-                        ->options([
-                            'school' => 'Schooldocument',
-                            'identity' => 'Identiteitsbewijs',
-                            'other' => 'Andere',
-                        ])
-                        ->default('other')
-                        ->required(),
-
-                    Radio::make('visibility')
-                        ->label('Zichtbaarheid')
-                        ->options(function () {
-                            if (auth()->user()->hasRole('verhuurder')) {
-                                return [
-                                    DocumentVisibility::Private->value => 'Privé (enkel ikzelf)',
-                                    DocumentVisibility::Building->value => 'Hele gebouw (alle huidige huurders)',
-                                    DocumentVisibility::User->value => 'Specifieke student',
-                                ];
-                            }
-
-                            return [
-                                DocumentVisibility::Private->value => 'Privé (enkel ikzelf)',
-                                DocumentVisibility::Landlord->value => 'Delen met mijn verhuurder',
-                            ];
-                        })
-                        ->default(DocumentVisibility::Private->value)
-                        ->required()
-                        ->live(),
-
-                    Select::make('building_id')
-                        ->label('Gebouw')
-                        ->options(fn () => auth()->user()->buildings()->pluck('name', 'id'))
-                        ->visible(fn (Get $get) => in_array($get('visibility'), [
-                            DocumentVisibility::Building->value,
-                            DocumentVisibility::User->value,
-                        ], true))
-                        ->required(fn (Get $get) => in_array($get('visibility'), [
-                            DocumentVisibility::Building->value,
-                            DocumentVisibility::User->value,
-                        ], true))
-                        ->live(),
-
-                    Select::make('shared_with_user_id')
-                        ->label('Student')
-                        ->options(function (Get $get) {
-                            $buildingId = $get('building_id');
-                            if (! $buildingId) {
-                                return [];
-                            }
-
-                            return Room::query()
-                                ->where('building_id', $buildingId)
-                                ->get()
-                                ->flatMap(fn (Room $room) => $room->activeTenants())
-                                ->unique('id')
-                                ->pluck('full_name', 'id');
-                        })
-                        ->visible(fn (Get $get) => $get('visibility') === DocumentVisibility::User->value)
-                        ->required(fn (Get $get) => $get('visibility') === DocumentVisibility::User->value),
-                ])
+                ->form($this->documentFormFields(withFile: true))
                 ->action(function (array $data): void {
                     $user = auth()->user();
 
@@ -268,29 +193,136 @@ class Documents extends Page
         $this->resetPage();
     }
 
-    public function toggleVisibility(int $documentId): void
+    /**
+     * Gedeelde formuliervelden voor het uploaden én bewerken van een document.
+     * Het bewerkformulier is identiek aan het uploadformulier, maar zonder bestand.
+     *
+     * @return array<int, Component>
+     */
+    private function documentFormFields(bool $withFile = false): array
     {
-        $document = auth()->user()->documents()->findOrFail($documentId);
+        return [
+            TextInput::make('name')
+                ->label('Naam')
+                ->placeholder('bv. Inschrijvingsbewijs KU Leuven')
+                ->maxLength(255)
+                ->required(),
 
-        $newVisibility = $document->visibility === DocumentVisibility::Landlord
-            ? DocumentVisibility::Private
-            : DocumentVisibility::Landlord;
+            ...($withFile ? [
+                FileUpload::make('file')
+                    ->label('Bestand')
+                    ->required()
+                    ->acceptedFileTypes(['application/pdf', 'image/jpeg', 'image/png', 'image/webp'])
+                    ->maxSize(10240)
+                    ->disk('public')
+                    ->directory('temp-uploads')
+                    ->helperText('PDF of afbeelding, max. 10 MB'),
+            ] : []),
 
-        $document->update(['visibility' => $newVisibility]);
+            Select::make('type')
+                ->label('Type')
+                ->options([
+                    'school' => 'Schooldocument',
+                    'identity' => 'Identiteitsbewijs',
+                    'other' => 'Andere',
+                ])
+                ->default('other')
+                ->required(),
 
-        Notification::make()
-            ->title($newVisibility === DocumentVisibility::Landlord
-                ? 'Document nu gedeeld met verhuurder'
-                : 'Document nu privé')
-            ->success()
-            ->send();
+            Radio::make('visibility')
+                ->label('Zichtbaarheid')
+                ->options(function () {
+                    if (auth()->user()->hasRole('verhuurder')) {
+                        return [
+                            DocumentVisibility::Private->value => 'Privé (enkel ikzelf)',
+                            DocumentVisibility::Building->value => 'Hele gebouw (alle huidige huurders)',
+                            DocumentVisibility::User->value => 'Specifieke student',
+                        ];
+                    }
+
+                    return [
+                        DocumentVisibility::Private->value => 'Privé (enkel ikzelf)',
+                        DocumentVisibility::Landlord->value => 'Delen met mijn verhuurder',
+                    ];
+                })
+                ->default(DocumentVisibility::Private->value)
+                ->required()
+                ->live(),
+
+            Select::make('building_id')
+                ->label('Gebouw')
+                ->options(fn () => auth()->user()->buildings()->pluck('name', 'id'))
+                ->visible(fn (Get $get) => in_array($get('visibility'), [
+                    DocumentVisibility::Building->value,
+                    DocumentVisibility::User->value,
+                ], true))
+                ->required(fn (Get $get) => in_array($get('visibility'), [
+                    DocumentVisibility::Building->value,
+                    DocumentVisibility::User->value,
+                ], true))
+                ->live(),
+
+            Select::make('shared_with_user_id')
+                ->label('Student')
+                ->options(function (Get $get) {
+                    $buildingId = $get('building_id');
+                    if (! $buildingId) {
+                        return [];
+                    }
+
+                    return Room::query()
+                        ->where('building_id', $buildingId)
+                        ->get()
+                        ->flatMap(fn (Room $room) => $room->activeTenants())
+                        ->unique('id')
+                        ->pluck('full_name', 'id');
+                })
+                ->visible(fn (Get $get) => $get('visibility') === DocumentVisibility::User->value)
+                ->required(fn (Get $get) => $get('visibility') === DocumentVisibility::User->value),
+        ];
+    }
+
+    public function editDocumentAction(): Action
+    {
+        return Action::make('editDocument')
+            ->label('Bewerken')
+            ->modalHeading('Document bewerken')
+            ->slideOver()
+            ->fillForm(function (array $arguments): array {
+                $document = auth()->user()->documents()->findOrFail($arguments['documentId']);
+
+                return [
+                    'name' => $document->name,
+                    'type' => $document->type,
+                    'visibility' => $document->visibility->value,
+                    'building_id' => $document->building_id,
+                    'shared_with_user_id' => $document->shared_with_user_id,
+                ];
+            })
+            ->form($this->documentFormFields())
+            ->action(function (array $data, array $arguments): void {
+                $document = auth()->user()->documents()->findOrFail($arguments['documentId']);
+
+                $document->update([
+                    'name' => $data['name'],
+                    'type' => $data['type'],
+                    'visibility' => $data['visibility'],
+                    'building_id' => $data['building_id'] ?? null,
+                    'shared_with_user_id' => $data['shared_with_user_id'] ?? null,
+                ]);
+
+                Notification::make()
+                    ->title('Document bijgewerkt')
+                    ->success()
+                    ->send();
+            });
     }
 
     /** Documenten die anderen met mij hebben gedeeld (alleen-lezen). */
     public function getSharedWithMe(): Collection
     {
         return Document::sharedWith(auth()->user())
-            ->with('user')
+            ->with(['user', 'sharedWithUser'])
             ->latest()
             ->get();
     }
