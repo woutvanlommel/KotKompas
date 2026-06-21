@@ -89,6 +89,16 @@ class ChatWindow extends Component
             return;
         }
 
+        // A landlord message to a grace-expired tenant (re)opens a temporary
+        // reply window, refreshed on every message so the tenant isn't locked
+        // out mid-conversation.
+        if (auth()->id() === $this->conversation->landlord_id
+            && $this->conversation->tenantGracePeriodExpired()) {
+            $this->conversation->update([
+                'tenant_unlocked_until' => now()->addHours(config('chat.tenant_reply_window_hours')),
+            ]);
+        }
+
         $message = Message::create([
             'conversation_id' => $this->conversation->id,
             'sender_id' => auth()->id(),
@@ -217,10 +227,16 @@ class ChatWindow extends Component
             ? Building::where('landlord_id', auth()->id())->get()
             : collect();
 
-        $isLocked = $this->conversation
-            && auth()->id() === $this->conversation->tenant_id
-            && $this->conversation->isTenantMessagingLocked();
+        $isTenant = $this->conversation && auth()->id() === $this->conversation->tenant_id;
 
-        return view('livewire.chat.chat-window', compact('buildings', 'isLocked'));
+        $isLocked = $isTenant && $this->conversation->isTenantMessagingLocked();
+
+        // Tenant is past their grace window but within a landlord-granted pass.
+        $inReplyWindow = $isTenant
+            && $this->conversation->tenant_unlocked_until
+            && $this->conversation->tenant_unlocked_until->isFuture()
+            && $this->conversation->tenantGracePeriodExpired();
+
+        return view('livewire.chat.chat-window', compact('buildings', 'isLocked', 'inReplyWindow'));
     }
 }

@@ -17,6 +17,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Tenant Reply Window (landlord-granted pass)
+    |--------------------------------------------------------------------------
+    |
+    | When a landlord messages a tenant whose grace window has already
+    | expired, the tenant gets a temporary pass to reply for this many hours.
+    | Each landlord message refreshes the window.
+    |
+    */
+
+    'tenant_reply_window_hours' => 48,
+
+    /*
+    |--------------------------------------------------------------------------
     | Chat Message Blacklist
     |--------------------------------------------------------------------------
     |

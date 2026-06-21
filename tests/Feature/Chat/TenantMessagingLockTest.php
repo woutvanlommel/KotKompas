@@ -22,11 +22,12 @@ class TenantMessagingLockTest extends TestCase
         parent::setUp();
         $this->seed(RoleSeeder::class);
         config(['chat.tenant_messaging_window_days' => 30]);
+        config(['chat.tenant_reply_window_hours' => 48]);
     }
 
     /**
      * @return array{0: Conversation, 1: User, 2: User, 3: Building}
-     *                landlord, tenant, conversation, building
+     *                                                               landlord, tenant, conversation, building
      */
     private function setupConversation(): array
     {
@@ -143,5 +144,97 @@ class TenantMessagingLockTest extends TestCase
             'conversation_id' => $conversation->id,
             'sender_id' => $tenant->id,
         ]);
+    }
+
+    public function test_not_locked_when_reply_window_is_active(): void
+    {
+        [$conversation, , $tenant, $building] = $this->setupConversation();
+        $this->addPeriod($building, $tenant, endDate: now()->subDays(60)->toDateString());
+        $conversation->update(['tenant_unlocked_until' => now()->addHour()]);
+
+        $this->assertFalse($conversation->isTenantMessagingLocked());
+    }
+
+    public function test_locked_again_after_reply_window_expires(): void
+    {
+        [$conversation, , $tenant, $building] = $this->setupConversation();
+        $this->addPeriod($building, $tenant, endDate: now()->subDays(60)->toDateString());
+        $conversation->update(['tenant_unlocked_until' => now()->subHour()]);
+
+        $this->assertTrue($conversation->isTenantMessagingLocked());
+    }
+
+    public function test_landlord_message_grants_reply_window_to_locked_tenant(): void
+    {
+        [$conversation, $landlord, $tenant, $building] = $this->setupConversation();
+        $this->addPeriod($building, $tenant, endDate: now()->subDays(60)->toDateString());
+
+        $this->assertNull($conversation->tenant_unlocked_until);
+
+        Livewire::actingAs($landlord)
+            ->test(ChatWindow::class, ['conversationId' => $conversation->id])
+            ->set('newMessage', 'Ik heb een vraag over je waarborg')
+            ->call('sendMessage');
+
+        $conversation->refresh();
+        $this->assertNotNull($conversation->tenant_unlocked_until);
+        $this->assertTrue($conversation->tenant_unlocked_until->isFuture());
+        $this->assertEqualsWithDelta(
+            now()->addHours(48)->timestamp,
+            $conversation->tenant_unlocked_until->timestamp,
+            60
+        );
+    }
+
+    public function test_landlord_message_does_not_grant_window_when_tenant_within_grace(): void
+    {
+        [$conversation, $landlord, $tenant, $building] = $this->setupConversation();
+        $this->addPeriod($building, $tenant, endDate: now()->subDays(10)->toDateString());
+
+        Livewire::actingAs($landlord)
+            ->test(ChatWindow::class, ['conversationId' => $conversation->id])
+            ->set('newMessage', 'Alles goed?')
+            ->call('sendMessage');
+
+        $this->assertNull($conversation->refresh()->tenant_unlocked_until);
+    }
+
+    public function test_tenant_can_reply_during_reply_window(): void
+    {
+        [$conversation, , $tenant, $building] = $this->setupConversation();
+        $this->addPeriod($building, $tenant, endDate: now()->subDays(60)->toDateString());
+        $conversation->update(['tenant_unlocked_until' => now()->addDay()]);
+
+        Livewire::actingAs($tenant)
+            ->test(ChatWindow::class, ['conversationId' => $conversation->id])
+            ->set('newMessage', 'Bedankt, hier is mijn antwoord')
+            ->call('sendMessage');
+
+        $this->assertDatabaseHas('messages', [
+            'conversation_id' => $conversation->id,
+            'sender_id' => $tenant->id,
+        ]);
+    }
+
+    public function test_each_landlord_message_extends_the_reply_window(): void
+    {
+        [$conversation, $landlord, $tenant, $building] = $this->setupConversation();
+        $this->addPeriod($building, $tenant, endDate: now()->subDays(60)->toDateString());
+
+        Livewire::actingAs($landlord)
+            ->test(ChatWindow::class, ['conversationId' => $conversation->id])
+            ->set('newMessage', 'Eerste bericht')
+            ->call('sendMessage');
+        $first = $conversation->refresh()->tenant_unlocked_until;
+
+        $this->travel(2)->hours();
+
+        Livewire::actingAs($landlord)
+            ->test(ChatWindow::class, ['conversationId' => $conversation->id])
+            ->set('newMessage', 'Tweede bericht')
+            ->call('sendMessage');
+        $second = $conversation->refresh()->tenant_unlocked_until;
+
+        $this->assertTrue($second->greaterThan($first));
     }
 }

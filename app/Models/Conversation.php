@@ -23,12 +23,13 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property-read Building $building
  * @property-read Collection<int, Message> $messages
  */
-#[Fillable(['tenant_id', 'landlord_id', 'building_id', 'last_message_at', 'notification_sent_at'])]
+#[Fillable(['tenant_id', 'landlord_id', 'building_id', 'last_message_at', 'notification_sent_at', 'tenant_unlocked_until'])]
 class Conversation extends Model
 {
     protected $casts = [
         'last_message_at' => 'datetime',
         'notification_sent_at' => 'datetime',
+        'tenant_unlocked_until' => 'datetime',
     ];
 
     public function tenant(): BelongsTo
@@ -67,12 +68,27 @@ class Conversation extends Model
     /**
      * Whether the tenant may no longer send messages in this conversation.
      *
-     * The lock is derived in real time from the tenant's rental periods in
-     * this building: an active period (no end date, or end date in the
-     * future) never locks — even if older ended periods exist — and an ended
-     * period only locks once the grace window has elapsed.
+     * The lock is derived in real time from the tenant's rental periods. A
+     * temporary reply window (granted when the landlord messages a locked
+     * tenant) keeps the conversation open until it expires; otherwise the
+     * lock follows the rental grace window.
      */
     public function isTenantMessagingLocked(): bool
+    {
+        // Active reply window granted by a landlord message.
+        if ($this->tenant_unlocked_until && $this->tenant_unlocked_until->isFuture()) {
+            return false;
+        }
+
+        return $this->tenantGracePeriodExpired();
+    }
+
+    /**
+     * Whether the tenant's rental grace window has elapsed, ignoring any
+     * temporary reply window. An active (or renewed) rental period in this
+     * building never counts as expired, even alongside older ended periods.
+     */
+    public function tenantGracePeriodExpired(): bool
     {
         $periods = RentalPeriod::whereHas('room', fn ($q) => $q->where('building_id', $this->building_id))
             ->whereHas('tenants', fn ($q) => $q->where('users.id', $this->tenant_id))
@@ -82,8 +98,6 @@ class Conversation extends Model
             return false;
         }
 
-        // A current rental relationship is never locked, regardless of any
-        // older ended periods in the same building.
         if ($periods->contains(fn (RentalPeriod $period) => $period->isActive())) {
             return false;
         }
