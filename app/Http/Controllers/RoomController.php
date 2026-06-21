@@ -53,6 +53,7 @@ class RoomController extends Controller
                         'title' => $r->title ?? '',
                         'price_per_month' => (float) $r->total_monthly_price,
                         'url' => route('rooms.show', $r),
+                        'featured' => $r->isFeatured(),
                     ])->values(),
                 ];
             })
@@ -176,6 +177,22 @@ class RoomController extends Controller
     }
 
     /**
+     * Partial used by the map component to refresh the room list when the
+     * viewport changes. Returns only the card grid + pagination, no layout.
+     */
+    public function mapRooms(Request $request): View
+    {
+        $filters = $this->filters($request);
+
+        $rooms = $this->query($filters)
+            ->paginate(12)
+            ->withQueryString()
+            ->withPath(route('rooms.map-rooms'));
+
+        return view('rooms._map-rooms', compact('rooms', 'filters'));
+    }
+
+    /**
      * @return array<string, mixed>
      */
     private function filters(Request $request): array
@@ -192,6 +209,27 @@ class RoomController extends Controller
                 : null,
             'sort' => in_array($request->input('sort'), self::SORTS, true) ? $request->input('sort') : 'newest',
             'view' => in_array($request->input('view'), self::VIEWS, true) ? $request->input('view') : 'grid',
+            'bounds' => $this->parseBounds($request),
+        ];
+    }
+
+    /**
+     * Parse map viewport bounds from the request.
+     * Returns null when any coordinate is missing (bounds filter inactive).
+     *
+     * @return array{sw_lat: float, sw_lng: float, ne_lat: float, ne_lng: float}|null
+     */
+    private function parseBounds(Request $request): ?array
+    {
+        if (! $request->has(['bounds_sw_lat', 'bounds_sw_lng', 'bounds_ne_lat', 'bounds_ne_lng'])) {
+            return null;
+        }
+
+        return [
+            'sw_lat' => (float) $request->input('bounds_sw_lat'),
+            'sw_lng' => (float) $request->input('bounds_sw_lng'),
+            'ne_lat' => (float) $request->input('bounds_ne_lat'),
+            'ne_lng' => (float) $request->input('bounds_ne_lng'),
         ];
     }
 
@@ -205,7 +243,7 @@ class RoomController extends Controller
 
         return Room::query()
             ->where('status', 'available')
-            ->with(['building', 'media'])
+            ->with(['building', 'media', 'costTypes'])
             ->when($filters['q'], fn ($query, $q) => $query
                 ->where(fn ($sub) => $sub
                     ->where('title', 'like', "%{$q}%")
@@ -221,6 +259,11 @@ class RoomController extends Controller
             // Filtering uses the displayed score; rooms without reviews
             // (score null) drop out automatically.
             ->when($filters['score_min'], fn ($query, $min) => $query->where('score', '>=', $min))
+            ->when($filters['bounds'], fn ($query, $b) => $query
+                ->join('buildings as _bnd', 'rooms.building_id', '=', '_bnd.id')
+                ->whereBetween('_bnd.latitude', [$b['sw_lat'], $b['ne_lat']])
+                ->whereBetween('_bnd.longitude', [$b['sw_lng'], $b['ne_lng']])
+                ->select('rooms.*'))
             // "Uitgelicht" always wins: featured rooms rank first whatever the
             // chosen sort, ordered among themselves by kotscore (reviewed
             // before unreviewed). A room is featured only when flagged AND still

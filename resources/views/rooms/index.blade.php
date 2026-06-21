@@ -66,11 +66,11 @@
             <label>
                 <span class="mb-2 block text-[0.625rem] font-medium uppercase tracking-[0.14em] text-ink-soft">Sorteer</span>
                 <select name="sort" class="kk-field">
+                    <option value="score" @selected($filters['sort'] === 'score')>Best beoordeeld</option>
                     <option value="newest" @selected($filters['sort'] === 'newest')>Nieuwste eerst</option>
                     <option value="price_asc" @selected($filters['sort'] === 'price_asc')>Prijs laag → hoog</option>
                     <option value="price_desc" @selected($filters['sort'] === 'price_desc')>Prijs hoog → laag</option>
                     <option value="surface_desc" @selected($filters['sort'] === 'surface_desc')>Grootste eerst</option>
-                    <option value="score" @selected($filters['sort'] === 'score')>Best beoordeeld</option>
                 </select>
             </label>
 
@@ -104,6 +104,7 @@
                     <input type="checkbox" name="furnished" value="1" @checked($filters['furnished']) class="kk-check">
                     Gemeubeld
                 </label>
+                <input type="hidden" name="view" value="{{ $filters['view'] }}">
                 <button type="submit" data-magnetic="0.2" class="kk-cta kk-cta--ink">
                     Zoek
                     <span class="kk-cta-chip" aria-hidden="true">
@@ -144,12 +145,20 @@
             <div class="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
                 <div class="lg:sticky lg:top-24 lg:self-start">
                     <div class="overflow-hidden rounded-2xl border border-ink/10">
-                        <x-rooms-map :buildings="$mapBuildings" default-city="hasselt" height="clamp(24rem, calc(100vh - 9rem), 56rem)" />
+                        <x-rooms-map
+                            :buildings="$mapBuildings"
+                            default-city="hasselt"
+                            height="clamp(24rem, calc(100vh - 9rem), 56rem)"
+                            :partial-url="route('rooms.map-rooms')"
+                        />
                     </div>
                 </div>
 
-                <div>
+                <div id="kk-map-rooms">
                     @if ($rooms->isNotEmpty())
+                        <p class="mb-4 text-sm text-ink/55">
+                            {{ $rooms->total() }} {{ $rooms->total() === 1 ? 'kot' : 'koten' }} gevonden
+                        </p>
                         <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
                             @foreach ($rooms as $room)
                                 <x-koten-card :room="$room" />
@@ -167,25 +176,27 @@
                 </div>
             </div>
         @elseif ($rooms->isNotEmpty())
-            @if ($filters['view'] === 'list')
-                <div>
-                    @foreach ($rooms as $room)
-                        <x-koten-row :room="$room" />
-                    @endforeach
-                </div>
-            @else
-                <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                    @foreach ($rooms as $room)
-                        <x-koten-card :room="$room" />
-                    @endforeach
-                </div>
-            @endif
+            <div id="kk-map-rooms">
+                @if ($filters['view'] === 'list')
+                    <div>
+                        @foreach ($rooms as $room)
+                            <x-koten-row :room="$room" />
+                        @endforeach
+                    </div>
+                @else
+                    <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                        @foreach ($rooms as $room)
+                            <x-koten-card :room="$room" />
+                        @endforeach
+                    </div>
+                @endif
 
-            <div class="mt-12">
-                {{ $rooms->links('components.kk-pagination') }}
+                <div class="mt-12">
+                    {{ $rooms->links('components.kk-pagination') }}
+                </div>
             </div>
         @else
-            <div class="rounded-2xl border border-dashed border-ink/15 py-20 text-center">
+            <div id="kk-map-rooms" class="rounded-2xl border border-dashed border-ink/15 py-20 text-center">
                 <p class="text-lg font-medium">Geen koten gevonden</p>
                 <p class="mt-2 text-sm text-ink/55">Pas je filters aan of zoek in een andere stad.</p>
             </div>
@@ -197,7 +208,11 @@
                 <p class="mb-4 inline-flex items-center gap-3 text-[0.625rem] font-medium uppercase tracking-[0.18em] text-ink/55">
                     <span class="inline-block h-px w-9 bg-accent-500"></span> Op de kaart
                 </p>
-                <x-rooms-map :buildings="$mapBuildings" default-city="hasselt" />
+                <x-rooms-map
+                    :buildings="$mapBuildings"
+                    default-city="hasselt"
+                    :partial-url="route('rooms.map-rooms')"
+                />
             </div>
         @endif
 
