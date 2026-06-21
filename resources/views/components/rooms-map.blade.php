@@ -5,7 +5,7 @@
      - Popup: 1 room → name, price, link; multiple rooms → list.
      Usage: <x-rooms-map :buildings="$mapBuildings" default-city="hasselt" /> --}}
 
-@props(['buildings', 'defaultCity' => 'belgie', 'height' => '500px'])
+@props(['buildings', 'defaultCity' => 'belgie', 'height' => '500px', 'partialUrl' => null])
 
 @php
     // Default locations for Belgian cities — adjustable via the defaultCity prop.
@@ -42,6 +42,15 @@
     }
     .kk-popup .leaflet-popup-content { margin: 14px 16px; }
     .kk-popup .leaflet-popup-tip-container { margin-top: -1px; }
+    @keyframes kk-pulse {
+        0%, 100% { opacity: 1; }
+        50%       { opacity: .45; }
+    }
+    .kk-skeleton {
+        background: #e2e8f0;
+        border-radius: 1.25rem;
+        animation: kk-pulse 1.6s ease-in-out infinite;
+    }
 </style>
 
 <div class="relative overflow-hidden rounded-2xl border border-ink/10">
@@ -52,8 +61,9 @@
 
 <script>
 (function () {
-    const BUILDINGS = @json($buildings);
-    const DEFAULT   = { lat: {{ $center['lat'] }}, lng: {{ $center['lng'] }}, zoom: {{ $center['zoom'] }} };
+    const BUILDINGS   = @json($buildings);
+    const DEFAULT     = { lat: {{ $center['lat'] }}, lng: {{ $center['lng'] }}, zoom: {{ $center['zoom'] }} };
+    const PARTIAL_URL = @json($partialUrl);
 
     // ── Map init ──────────────────────────────────────────────────────────────
     const map = L.map('kk-map', { scrollWheelZoom: true });
@@ -126,16 +136,9 @@
         return m;
     });
 
-    // ── Initiële view ─────────────────────────────────────────────────────────
-    if (markers.length > 0) {
-        const group = L.featureGroup(markers);
-        map.fitBounds(group.getBounds().pad(0.15), { maxZoom: 14 });
-    } else {
-        map.setView([DEFAULT.lat, DEFAULT.lng], DEFAULT.zoom);
-    }
-
     // ── Viewport filtering met debounce ───────────────────────────────────────
     let debounceTimer = null;
+    let fetchController = null;
 
     function updateMarkerVisibility() {
         const bounds = map.getBounds();
@@ -149,9 +152,91 @@
         });
     }
 
+    // ── Lijst updaten op basis van kaartgrenzen ───────────────────────────────
+    const SKELETON_HTML = `<div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+        ${'<div class="kk-skeleton aspect-square"></div>'.repeat(12)}
+    </div>`;
+
+    function setLoading(on) {
+        const target = document.getElementById('kk-map-rooms');
+        if (!target) return;
+        if (on) target.innerHTML = SKELETON_HTML;
+    }
+
+    function fetchRoomsInBounds() {
+        // Lazy lookup: #kk-map-rooms staat in de tweede kolom en bestaat pas
+        // nadat het volledige document geparsed is.
+        const target = document.getElementById('kk-map-rooms');
+        if (! PARTIAL_URL || ! target) return;
+
+        const b = map.getBounds();
+        const params = new URLSearchParams(window.location.search);
+        params.set('bounds_sw_lat', b.getSouth().toFixed(6));
+        params.set('bounds_sw_lng', b.getWest().toFixed(6));
+        params.set('bounds_ne_lat', b.getNorth().toFixed(6));
+        params.set('bounds_ne_lng', b.getEast().toFixed(6));
+
+        if (fetchController) fetchController.abort();
+        fetchController = new AbortController();
+
+        setLoading(true);
+
+        fetch(PARTIAL_URL + '?' + params.toString(), { signal: fetchController.signal })
+            .then(r => r.text())
+            .then(html => {
+                target.innerHTML = html;
+                setLoading(false);
+                bindPaginationLinks(target);
+            })
+            .catch(err => {
+                if (err.name !== 'AbortError') setLoading(false);
+            });
+    }
+
+    function bindPaginationLinks(target) {
+        target = target || document.getElementById('kk-map-rooms');
+        if (! target) return;
+        target.querySelectorAll('a[href*="kaart-koten"]').forEach(a => {
+            a.addEventListener('click', function (e) {
+                e.preventDefault();
+                if (fetchController) fetchController.abort();
+                fetchController = new AbortController();
+                const t = document.getElementById('kk-map-rooms');
+                setLoading(true);
+                fetch(this.href, { signal: fetchController.signal })
+                    .then(r => r.text())
+                    .then(html => {
+                        t.innerHTML = html;
+                        setLoading(false);
+                        bindPaginationLinks(t);
+                    })
+                    .catch(err => {
+                        if (err.name !== 'AbortError') setLoading(false);
+                    });
+            });
+        });
+    }
+
     map.on('moveend', function () {
         clearTimeout(debounceTimer);
-        debounceTimer = setTimeout(updateMarkerVisibility, 300);
+        debounceTimer = setTimeout(function () {
+            updateMarkerVisibility();
+            fetchRoomsInBounds();
+        }, 400);
     });
+
+    // ── Initiële view ─────────────────────────────────────────────────────────
+    // Listener eerst koppelen zodat fitBounds zijn moveend ook opvangt.
+    // map.whenReady zorgt dat de bounds al beschikbaar zijn voor de eerste fetch.
+    map.whenReady(function () {
+        fetchRoomsInBounds();
+    });
+
+    if (markers.length > 0) {
+        const group = L.featureGroup(markers);
+        map.fitBounds(group.getBounds().pad(0.15), { maxZoom: 14 });
+    } else {
+        map.setView([DEFAULT.lat, DEFAULT.lng], DEFAULT.zoom);
+    }
 })();
 </script>

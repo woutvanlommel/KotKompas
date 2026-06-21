@@ -66,11 +66,11 @@
             <label>
                 <span class="mb-2 block text-[0.625rem] font-medium uppercase tracking-[0.14em] text-ink-soft">Sorteer</span>
                 <select name="sort" class="kk-field">
+                    <option value="score" @selected($filters['sort'] === 'score')>Best beoordeeld</option>
                     <option value="newest" @selected($filters['sort'] === 'newest')>Nieuwste eerst</option>
                     <option value="price_asc" @selected($filters['sort'] === 'price_asc')>Prijs laag → hoog</option>
                     <option value="price_desc" @selected($filters['sort'] === 'price_desc')>Prijs hoog → laag</option>
                     <option value="surface_desc" @selected($filters['sort'] === 'surface_desc')>Grootste eerst</option>
-                    <option value="score" @selected($filters['sort'] === 'score')>Best beoordeeld</option>
                 </select>
             </label>
 
@@ -144,12 +144,20 @@
             <div class="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
                 <div class="lg:sticky lg:top-24 lg:self-start">
                     <div class="overflow-hidden rounded-2xl border border-ink/10">
-                        <x-rooms-map :buildings="$mapBuildings" default-city="hasselt" height="clamp(24rem, calc(100vh - 9rem), 56rem)" />
+                        <x-rooms-map
+                            :buildings="$mapBuildings"
+                            default-city="hasselt"
+                            height="clamp(24rem, calc(100vh - 9rem), 56rem)"
+                            :partial-url="route('rooms.map-rooms')"
+                        />
                     </div>
                 </div>
 
-                <div>
+                <div id="kk-map-rooms">
                     @if ($rooms->isNotEmpty())
+                        <p class="mb-4 text-sm text-ink/55">
+                            {{ $rooms->total() }} {{ $rooms->total() === 1 ? 'kot' : 'koten' }} gevonden
+                        </p>
                         <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
                             @foreach ($rooms as $room)
                                 <x-koten-card :room="$room" />

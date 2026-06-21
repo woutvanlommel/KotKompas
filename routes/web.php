@@ -25,6 +25,7 @@ Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap')
 Route::get('/koten', [RoomController::class, 'index'])->name('rooms.index');
 // Stateless JSON lookup: skipping session/cookies saves remote DB roundtrips
 // (sessions and cache live in the database) — suggestions should be snappy.
+Route::get('/koten/kaart-koten', [RoomController::class, 'mapRooms'])->name('rooms.map-rooms');
 Route::get('/koten/suggesties', [RoomController::class, 'suggestions'])
     ->withoutMiddleware([
         StartSession::class,

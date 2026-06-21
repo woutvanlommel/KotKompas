@@ -1,0 +1,24 @@
+{{-- Partial: kaartlijst — enkel de kamerkaarten + paginering.
+     Wordt geladen via fetch() vanuit de rooms-map component wanneer de
+     kaartgrenzen veranderen. Geen layout wrapper hier. --}}
+
+@if ($rooms->isNotEmpty())
+    <p class="mb-4 text-sm text-ink/55">
+        {{ $rooms->total() }} {{ $rooms->total() === 1 ? 'kot' : 'koten' }} in dit gebied
+    </p>
+
+    <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+        @foreach ($rooms as $room)
+            <x-koten-card :room="$room" />
+        @endforeach
+    </div>
+
+    <div class="mt-10">
+        {{ $rooms->links('components.kk-pagination') }}
+    </div>
+@else
+    <div class="rounded-2xl border border-dashed border-ink/15 py-20 text-center">
+        <p class="text-lg font-medium">Geen koten in dit gebied</p>
+        <p class="mt-2 text-sm text-ink/55">Verplaats of vergroot de kaart om meer koten te zien.</p>
+    </div>
+@endif
