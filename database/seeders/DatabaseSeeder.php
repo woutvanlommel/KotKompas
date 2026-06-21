@@ -21,7 +21,9 @@ class DatabaseSeeder extends Seeder
         $this->call(FaqSeeder::class);
         $this->call(FacilitySeeder::class);
         $this->call(CostTypeSeeder::class);
+        $this->call(RoomCostSeeder::class);
         $this->call(PlanSeeder::class);
         $this->call(SubscriptionSeeder::class);
+        $this->call(ScoreSeeder::class);
     }
 }
