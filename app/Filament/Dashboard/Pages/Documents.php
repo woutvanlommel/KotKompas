@@ -321,7 +321,7 @@ class Documents extends Page
     public function getSharedWithMe(): Collection
     {
         return Document::sharedWith(auth()->user())
-            ->with('user')
+            ->with(['user', 'sharedWithUser'])
             ->latest()
             ->get();
     }

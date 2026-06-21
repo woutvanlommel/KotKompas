@@ -109,13 +109,16 @@ class DocumentSharingPageTest extends TestCase
         $shared = $landlord->documents()->create([
             'name' => 'Huisregels', 'type' => 'other',
             'visibility' => DocumentVisibility::Building, 'building_id' => $building->id,
+            'description' => 'Een samenvatting van de huisregels.',
         ]);
 
         $component = Livewire::actingAs($tenant)->test(Documents::class);
         $ids = $component->instance()->getSharedWithMe()->pluck('id');
         $this->assertTrue($ids->contains($shared->id));
 
-        $component->assertSuccessful();
+        $component->assertSuccessful()
+            ->assertSee('Een samenvatting van de huisregels.')
+            ->assertSee('Zie meer');
     }
 
     public function test_document_cards_show_shared_with_info_per_visibility(): void

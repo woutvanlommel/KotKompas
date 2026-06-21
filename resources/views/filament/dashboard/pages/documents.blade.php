@@ -403,7 +403,7 @@
             </h2>
             <div class="bg-white rounded-xl border border-[#0f17201f] overflow-hidden divide-y divide-[#0f17201f]">
                 @foreach ($sharedWithMe as $doc)
-                    <div class="flex items-center gap-4 px-4 py-3">
+                    <div class="flex items-start gap-4 px-4 py-3">
                         <div class="flex-1 min-w-0">
                             <p class="text-sm font-medium text-[#0f1720] truncate">{{ $doc->name }}</p>
                             <p class="text-xs text-[#9aa6b4]">
@@ -411,6 +411,21 @@
                                 van {{ $doc->user->full_name }} ·
                                 {{ $doc->created_at->format('d/m/Y') }}
                             </p>
+                            @if ($doc->description)
+                                <div class="mt-1"
+                                    x-data="{ open: false, overflowing: false }"
+                                    x-init="$nextTick(() => overflowing = $refs.desc.scrollHeight > $refs.desc.clientHeight + 2)"
+                                >
+                                    <p x-ref="desc" :class="{ 'line-clamp-3': ! open }"
+                                        class="text-xs italic text-gray-400 dark:text-gray-500">
+                                        {{ $doc->description }}
+                                    </p>
+                                    <button type="button" x-show="overflowing" x-on:click="open = ! open"
+                                        class="mt-0.5 text-[11px] font-medium text-primary-600 dark:text-primary-400 hover:underline">
+                                        <span x-text="open ? 'Minder tonen' : 'Zie meer'"></span>
+                                    </button>
+                                </div>
+                            @endif
                         </div>
                         <a href="{{ route('documents.download', $doc) }}" target="_blank"
                             class="p-1.5 rounded-[4px] border border-[#0f17201f] text-[#9aa6b4] hover:text-[#0f1720] hover:bg-[#edf0f4] transition-colors">
