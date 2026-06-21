@@ -22,6 +22,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
 /**
  * @property bool $is_featured
  * @property Carbon|null $featured_until
+ * @property-read float $total_monthly_price
  */
 #[Fillable(['building_id', 'tenant_id', 'bus', 'room_number', 'type', 'title', 'description', 'price_per_month', 'deposit_amount', 'costs_included', 'surface_m2', 'is_furnished', 'available_from', 'status'])]
 #[ObservedBy(RoomObserver::class)]
