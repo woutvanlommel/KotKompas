@@ -6,12 +6,13 @@ use App\Enums\Plan as PlanEnum;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 
-#[Fillable(['slug', 'name', 'description', 'features', 'is_active', 'sort_order'])]
+#[Fillable(['slug', 'name', 'description', 'monthly_price', 'features', 'is_active', 'sort_order'])]
 class Plan extends Model
 {
     protected $casts = [
         'features' => 'array',
         'is_active' => 'boolean',
+        'monthly_price' => 'decimal:2',
     ];
 
     public function planEnum(): ?PlanEnum

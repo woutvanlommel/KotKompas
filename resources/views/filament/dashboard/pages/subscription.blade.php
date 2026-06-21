@@ -90,6 +90,13 @@
                         <p class="mt-2 text-sm tracking-[-0.01em] text-[#586573]">{{ $plan->description }}</p>
                     @endif
 
+                    @if ($plan->monthly_price !== null)
+                        <p class="mt-4 flex items-baseline gap-1.5">
+                            <span class="text-[1.75rem] font-medium leading-none tracking-[-0.02em] tabular-nums text-[#0f1720]">€ {{ number_format($plan->monthly_price, 2, ',', '.') }}</span>
+                            <span class="text-sm tracking-[-0.01em] text-[#586573]">/ maand</span>
+                        </p>
+                    @endif
+
                     <ul class="mt-5 flex-1 space-y-2.5 text-sm tracking-[-0.01em] text-[#0f1720]">
                         @foreach (($plan->features ?? []) as $feature)
                             <li class="flex items-start gap-2.5">
