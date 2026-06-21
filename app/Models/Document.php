@@ -11,6 +11,9 @@ use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
+/**
+ * @property DocumentVisibility $visibility
+ */
 #[Fillable(['user_id', 'name', 'rental_period_id', 'type', 'is_public', 'blocks', 'status', 'ocr_text', 'description', 'ocr_status', 'visibility', 'building_id', 'shared_with_user_id'])]
 class Document extends Model implements HasMedia
 {
