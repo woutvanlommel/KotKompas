@@ -204,12 +204,14 @@
                                     <x-heroicon-o-eye class="w-3 h-3 shrink-0" /> Gedeeld met verhuurder
                                 </p>
                             @elseif ($document->visibility === \App\Enums\DocumentVisibility::Building)
-                                <p class="flex items-center gap-1 text-xs text-[#586573]">
-                                    <x-heroicon-o-building-office class="w-3 h-3 shrink-0" /> Gedeeld met gebouw
+                                <p class="flex items-start gap-1 text-xs text-[#586573]">
+                                    <x-heroicon-o-building-office class="w-3 h-3 shrink-0 mt-0.5" />
+                                    <span class="min-w-0 break-words">Gedeeld met gebouw{{ $document->building ? ' ' . $document->building->name : '' }}</span>
                                 </p>
                             @elseif ($document->visibility === \App\Enums\DocumentVisibility::User && $document->sharedWithUser)
-                                <p class="flex items-center gap-1 text-xs text-[#586573] truncate">
-                                    <x-heroicon-o-user class="w-3 h-3 shrink-0" /> Gedeeld met {{ $document->sharedWithUser->full_name }}
+                                <p class="flex items-start gap-1 text-xs text-[#586573]">
+                                    <x-heroicon-o-user class="w-3 h-3 shrink-0 mt-0.5" />
+                                    <span class="min-w-0 break-words">Gedeeld met {{ $document->sharedWithUser->full_name }}</span>
                                 </p>
                             @endif
                             @if ($ocrStatus === \App\Models\Document::OCR_PENDING || $ocrStatus === \App\Models\Document::OCR_PROCESSING)
@@ -324,12 +326,14 @@
                                     <x-heroicon-o-eye class="w-3 h-3 shrink-0" /> Gedeeld met verhuurder
                                 </p>
                             @elseif ($document->visibility === \App\Enums\DocumentVisibility::Building)
-                                <p class="flex items-center gap-1 text-xs text-[#586573] mt-1">
-                                    <x-heroicon-o-building-office class="w-3 h-3 shrink-0" /> Gedeeld met gebouw
+                                <p class="flex items-start gap-1 text-xs text-[#586573] mt-1">
+                                    <x-heroicon-o-building-office class="w-3 h-3 shrink-0 mt-0.5" />
+                                    <span class="min-w-0 break-words">Gedeeld met gebouw{{ $document->building ? ' ' . $document->building->name : '' }}</span>
                                 </p>
                             @elseif ($document->visibility === \App\Enums\DocumentVisibility::User && $document->sharedWithUser)
-                                <p class="flex items-center gap-1 text-xs text-[#586573] mt-1 truncate">
-                                    <x-heroicon-o-user class="w-3 h-3 shrink-0" /> Gedeeld met {{ $document->sharedWithUser->full_name }}
+                                <p class="flex items-start gap-1 text-xs text-[#586573] mt-1">
+                                    <x-heroicon-o-user class="w-3 h-3 shrink-0 mt-0.5" />
+                                    <span class="min-w-0 break-words">Gedeeld met {{ $document->sharedWithUser->full_name }}</span>
                                 </p>
                             @endif
                             @if ($ocrStatus === \App\Models\Document::OCR_PENDING || $ocrStatus === \App\Models\Document::OCR_PROCESSING)

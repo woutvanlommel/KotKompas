@@ -48,7 +48,7 @@ class Documents extends Page
         return auth()->user()
             ->documents()
             ->where('type', '!=', 'contract')
-            ->with(['media', 'rentalPeriod.room.building', 'sharedWithUser'])
+            ->with(['media', 'rentalPeriod.room.building', 'sharedWithUser', 'building'])
             ->latest()
             ->paginate(12);
     }

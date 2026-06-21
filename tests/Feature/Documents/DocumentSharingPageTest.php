@@ -122,7 +122,7 @@ class DocumentSharingPageTest extends TestCase
     {
         $landlord = User::factory()->create();
         $landlord->assignRole('verhuurder');
-        $building = Building::factory()->create(['landlord_id' => $landlord->id]);
+        $building = Building::factory()->create(['landlord_id' => $landlord->id, 'name' => 'Residentie Klokke']);
         $room = Room::factory()->create(['building_id' => $building->id]);
         $student = User::factory()->create();
         $student->assignRole('huurder');
@@ -144,7 +144,7 @@ class DocumentSharingPageTest extends TestCase
 
         Livewire::actingAs($landlord)->test(Documents::class)
             ->assertSuccessful()
-            ->assertSee('Gedeeld met gebouw')
+            ->assertSee('Gedeeld met gebouw Residentie Klokke')
             ->assertSee('Gedeeld met '.$student->full_name);
     }
 
