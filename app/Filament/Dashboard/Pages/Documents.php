@@ -272,14 +272,14 @@ class Documents extends Page
     {
         $document = auth()->user()->documents()->findOrFail($documentId);
 
-        $document->update([
-            'visibility' => $document->visibility === DocumentVisibility::Landlord
-                ? DocumentVisibility::Private
-                : DocumentVisibility::Landlord,
-        ]);
+        $newVisibility = $document->visibility === DocumentVisibility::Landlord
+            ? DocumentVisibility::Private
+            : DocumentVisibility::Landlord;
+
+        $document->update(['visibility' => $newVisibility]);
 
         Notification::make()
-            ->title($document->visibility === DocumentVisibility::Landlord
+            ->title($newVisibility === DocumentVisibility::Landlord
                 ? 'Document nu gedeeld met verhuurder'
                 : 'Document nu privé')
             ->success()
