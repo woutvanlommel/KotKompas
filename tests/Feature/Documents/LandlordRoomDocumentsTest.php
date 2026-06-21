@@ -3,8 +3,8 @@
 namespace Tests\Feature\Documents;
 
 use App\Enums\DocumentVisibility;
+use App\Filament\Dashboard\Resources\Rooms\Concerns\HasDocumentActions;
 use App\Models\Building;
-use App\Models\Document;
 use App\Models\RentalPeriod;
 use App\Models\Room;
 use App\Models\User;
@@ -34,7 +34,7 @@ class LandlordRoomDocumentsTest extends TestCase
 
         $page = new class($room)
         {
-            use \App\Filament\Dashboard\Resources\Rooms\Concerns\HasDocumentActions;
+            use HasDocumentActions;
 
             public function __construct(public $record) {}
         };

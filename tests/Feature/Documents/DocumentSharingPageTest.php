@@ -5,7 +5,6 @@ namespace Tests\Feature\Documents;
 use App\Enums\DocumentVisibility;
 use App\Filament\Dashboard\Pages\Documents;
 use App\Models\Building;
-use App\Models\Document;
 use App\Models\RentalPeriod;
 use App\Models\Room;
 use App\Models\User;

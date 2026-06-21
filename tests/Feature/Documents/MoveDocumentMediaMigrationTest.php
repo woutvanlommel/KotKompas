@@ -2,7 +2,6 @@
 
 namespace Tests\Feature\Documents;
 
-use App\Models\Document;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;

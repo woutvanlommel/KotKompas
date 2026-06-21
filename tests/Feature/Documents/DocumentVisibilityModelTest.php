@@ -4,7 +4,6 @@ namespace Tests\Feature\Documents;
 
 use App\Enums\DocumentVisibility;
 use App\Models\Building;
-use App\Models\Document;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
