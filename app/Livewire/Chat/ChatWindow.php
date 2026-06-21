@@ -62,6 +62,17 @@ class ChatWindow extends Component
 
     public function sendMessage(): void
     {
+        if ($this->conversation && auth()->id() === $this->conversation->tenant_id
+            && $this->conversation->isTenantMessagingLocked()) {
+            Notification::make()
+                ->title('Berichten geblokkeerd')
+                ->body('Je kunt geen berichten meer sturen omdat je huurperiode meer dan '.config('chat.tenant_messaging_window_days').' dagen geleden is afgelopen.')
+                ->danger()
+                ->send();
+
+            return;
+        }
+
         $this->validate(['newMessage' => 'required|string|max:5000']);
 
         if (! $this->conversation) {
@@ -206,6 +217,10 @@ class ChatWindow extends Component
             ? Building::where('landlord_id', auth()->id())->get()
             : collect();
 
-        return view('livewire.chat.chat-window', compact('buildings'));
+        $isLocked = $this->conversation
+            && auth()->id() === $this->conversation->tenant_id
+            && $this->conversation->isTenantMessagingLocked();
+
+        return view('livewire.chat.chat-window', compact('buildings', 'isLocked'));
     }
 }

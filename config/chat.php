@@ -4,6 +4,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Tenant Messaging Window (grace period)
+    |--------------------------------------------------------------------------
+    |
+    | After a tenant's rental period ends, they keep this many days to still
+    | message their landlord. Once the window expires the conversation becomes
+    | read-only for the tenant. The landlord is never restricted.
+    |
+    */
+
+    'tenant_messaging_window_days' => 30,
+
+    /*
+    |--------------------------------------------------------------------------
     | Chat Message Blacklist
     |--------------------------------------------------------------------------
     |

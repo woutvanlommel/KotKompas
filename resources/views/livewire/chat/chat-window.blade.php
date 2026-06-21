@@ -111,6 +111,14 @@
 
         {{-- Input --}}
         <div class="border-t border-[#0f17201f] shrink-0">
+            @if($isLocked)
+                <div class="max-w-3xl mx-auto w-full flex items-start gap-3 px-4 sm:px-6 py-4 text-[#586573]">
+                    <x-heroicon-o-lock-closed class="w-5 h-5 shrink-0 mt-0.5 text-[#9aa6b4]" />
+                    <p class="text-sm leading-relaxed">
+                        Je huurperiode is afgelopen. Je kunt de chatgeschiedenis nog bekijken, maar niet meer reageren.
+                    </p>
+                </div>
+            @else
             <form wire:submit="sendMessage" class="max-w-3xl mx-auto w-full flex items-end gap-3 px-4 sm:px-6 py-4">
                 <div
                     class="chat-input-wrapper flex-1 rounded-2xl border border-[#0f17201f] bg-white focus-within:ring-2 focus-within:ring-[#9aa6b4] focus-within:border-[#9aa6b4]"
@@ -135,6 +143,7 @@
                     <x-heroicon-s-paper-airplane class="w-5 h-5" />
                 </button>
             </form>
+            @endif
         </div>
 
     @else

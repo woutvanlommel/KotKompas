@@ -63,4 +63,35 @@ class Conversation extends Model
             ->where('sender_id', '!=', $userId)
             ->count();
     }
+
+    /**
+     * Whether the tenant may no longer send messages in this conversation.
+     *
+     * The lock is derived in real time from the tenant's rental periods in
+     * this building: an active period (no end date, or end date in the
+     * future) never locks — even if older ended periods exist — and an ended
+     * period only locks once the grace window has elapsed.
+     */
+    public function isTenantMessagingLocked(): bool
+    {
+        $periods = RentalPeriod::whereHas('room', fn ($q) => $q->where('building_id', $this->building_id))
+            ->whereHas('tenants', fn ($q) => $q->where('users.id', $this->tenant_id))
+            ->get();
+
+        if ($periods->isEmpty()) {
+            return false;
+        }
+
+        // A current rental relationship is never locked, regardless of any
+        // older ended periods in the same building.
+        if ($periods->contains(fn (RentalPeriod $period) => $period->isActive())) {
+            return false;
+        }
+
+        $latestEnded = $periods->sortByDesc('end_date')->first();
+
+        return $latestEnded->end_date
+            ->addDays(config('chat.tenant_messaging_window_days'))
+            ->isPast();
+    }
 }
