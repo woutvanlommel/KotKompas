@@ -153,14 +153,27 @@
     }
 
     // ── Lijst updaten op basis van kaartgrenzen ───────────────────────────────
-    const SKELETON_HTML = `<div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+    // Grid-klassen matchen de view: kaart = 2 cols, grid = 4 cols, lijst = 1 col.
+    const view = new URLSearchParams(window.location.search).get('view') || 'grid';
+    const skeletonGrid = view === 'map'
+        ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2'
+        : view === 'list'
+            ? 'grid-cols-1'
+            : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4';
+    const SKELETON_HTML = `<div class="grid ${skeletonGrid} gap-5">
         ${'<div class="kk-skeleton aspect-square"></div>'.repeat(12)}
     </div>`;
 
     function setLoading(on) {
         const target = document.getElementById('kk-map-rooms');
         if (!target) return;
-        if (on) target.innerHTML = SKELETON_HTML;
+        if (on) {
+            target.innerHTML = SKELETON_HTML;
+            if (view === 'map') {
+                const offset = target.getBoundingClientRect().top + window.scrollY - 96;
+                window.scrollTo({ top: Math.max(0, offset), behavior: 'smooth' });
+            }
+        }
     }
 
     function fetchRoomsInBounds() {

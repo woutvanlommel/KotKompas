@@ -188,7 +188,7 @@ class RoomController extends Controller
             ->withQueryString()
             ->withPath(route('rooms.map-rooms'));
 
-        return view('rooms._map-rooms', compact('rooms'));
+        return view('rooms._map-rooms', compact('rooms', 'filters'));
     }
 
     /**
