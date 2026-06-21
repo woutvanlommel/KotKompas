@@ -2,14 +2,19 @@
 
 namespace App\Models;
 
+use App\Enums\DocumentVisibility;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
-#[Fillable(['user_id', 'name', 'rental_period_id', 'type', 'is_public', 'blocks', 'status', 'ocr_text', 'description', 'ocr_status'])]
+/**
+ * @property DocumentVisibility $visibility
+ */
+#[Fillable(['user_id', 'name', 'rental_period_id', 'type', 'is_public', 'blocks', 'status', 'ocr_text', 'description', 'ocr_status', 'visibility', 'building_id', 'shared_with_user_id'])]
 class Document extends Model implements HasMedia
 {
     use InteractsWithMedia;
@@ -34,9 +39,22 @@ class Document extends Model implements HasMedia
         return $this->belongsTo(RentalPeriod::class);
     }
 
+    /** @return BelongsTo<Building, $this> */
+    public function building(): BelongsTo
+    {
+        return $this->belongsTo(Building::class);
+    }
+
+    /** @return BelongsTo<User, $this> */
+    public function sharedWithUser(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'shared_with_user_id');
+    }
+
     public function registerMediaCollections(): void
     {
         $this->addMediaCollection('document')
+            ->useDisk('local')
             ->acceptsMimeTypes([
                 'application/pdf',
                 'image/jpeg',
@@ -62,11 +80,58 @@ class Document extends Model implements HasMedia
         return $this->type === 'contract';
     }
 
+    /**
+     * @param  Builder<Document>  $query
+     * @return Builder<Document>
+     */
+    public function scopeVisibleTo(Builder $query, User $viewer): Builder
+    {
+        $buildingIds = $viewer->activeRentalBuildingIds();
+        $ownerIds = $viewer->activeTenantUserIds();
+
+        return $query->where(function (Builder $q) use ($viewer, $buildingIds, $ownerIds) {
+            $q->where('user_id', $viewer->id)
+                ->orWhere(fn (Builder $q) => $q
+                    ->where('visibility', DocumentVisibility::User->value)
+                    ->where('shared_with_user_id', $viewer->id))
+                ->orWhere(fn (Builder $q) => $q
+                    ->where('visibility', DocumentVisibility::Building->value)
+                    ->whereIn('building_id', $buildingIds))
+                ->orWhere(fn (Builder $q) => $q
+                    ->where('visibility', DocumentVisibility::Landlord->value)
+                    ->whereIn('user_id', $ownerIds));
+        });
+    }
+
+    /**
+     * @param  Builder<Document>  $query
+     * @return Builder<Document>
+     */
+    public function scopeSharedWith(Builder $query, User $viewer): Builder
+    {
+        $buildingIds = $viewer->activeRentalBuildingIds();
+        $ownerIds = $viewer->activeTenantUserIds();
+
+        return $query->where('user_id', '!=', $viewer->id)
+            ->where(function (Builder $q) use ($viewer, $buildingIds, $ownerIds) {
+                $q->where(fn (Builder $q) => $q
+                    ->where('visibility', DocumentVisibility::User->value)
+                    ->where('shared_with_user_id', $viewer->id))
+                    ->orWhere(fn (Builder $q) => $q
+                        ->where('visibility', DocumentVisibility::Building->value)
+                        ->whereIn('building_id', $buildingIds))
+                    ->orWhere(fn (Builder $q) => $q
+                        ->where('visibility', DocumentVisibility::Landlord->value)
+                        ->whereIn('user_id', $ownerIds));
+            });
+    }
+
     protected function casts(): array
     {
         return [
             'is_public' => 'boolean',
             'blocks' => 'array',
+            'visibility' => DocumentVisibility::class,
         ];
     }
 }

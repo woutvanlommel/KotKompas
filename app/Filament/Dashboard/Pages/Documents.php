@@ -2,17 +2,20 @@
 
 namespace App\Filament\Dashboard\Pages;
 
+use App\Enums\DocumentVisibility;
 use App\Jobs\ProcessDocumentOcr;
 use App\Models\Document;
 use App\Models\RentalPeriod;
+use App\Models\Room;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
@@ -176,10 +179,56 @@ class Documents extends Page
                         ->default('other')
                         ->required(),
 
-                    Toggle::make('is_public')
-                        ->label('Zichtbaar voor verhuurder')
-                        ->helperText('Zet aan om dit document te delen met de verhuurder van de gekoppelde kamer')
-                        ->default(false),
+                    Radio::make('visibility')
+                        ->label('Zichtbaarheid')
+                        ->options(function () {
+                            if (auth()->user()->hasRole('verhuurder')) {
+                                return [
+                                    DocumentVisibility::Private->value => 'Privé (enkel ikzelf)',
+                                    DocumentVisibility::Building->value => 'Hele gebouw (alle huidige huurders)',
+                                    DocumentVisibility::User->value => 'Specifieke student',
+                                ];
+                            }
+
+                            return [
+                                DocumentVisibility::Private->value => 'Privé (enkel ikzelf)',
+                                DocumentVisibility::Landlord->value => 'Delen met mijn verhuurder',
+                            ];
+                        })
+                        ->default(DocumentVisibility::Private->value)
+                        ->required()
+                        ->live(),
+
+                    Select::make('building_id')
+                        ->label('Gebouw')
+                        ->options(fn () => auth()->user()->buildings()->pluck('name', 'id'))
+                        ->visible(fn (Get $get) => in_array($get('visibility'), [
+                            DocumentVisibility::Building->value,
+                            DocumentVisibility::User->value,
+                        ], true))
+                        ->required(fn (Get $get) => in_array($get('visibility'), [
+                            DocumentVisibility::Building->value,
+                            DocumentVisibility::User->value,
+                        ], true))
+                        ->live(),
+
+                    Select::make('shared_with_user_id')
+                        ->label('Student')
+                        ->options(function (Get $get) {
+                            $buildingId = $get('building_id');
+                            if (! $buildingId) {
+                                return [];
+                            }
+
+                            return Room::query()
+                                ->where('building_id', $buildingId)
+                                ->get()
+                                ->flatMap(fn (Room $room) => $room->activeTenants())
+                                ->unique('id')
+                                ->pluck('full_name', 'id');
+                        })
+                        ->visible(fn (Get $get) => $get('visibility') === DocumentVisibility::User->value)
+                        ->required(fn (Get $get) => $get('visibility') === DocumentVisibility::User->value),
                 ])
                 ->action(function (array $data): void {
                     $user = auth()->user();
@@ -190,7 +239,9 @@ class Documents extends Page
                     $document = $user->documents()->create([
                         'name' => $data['name'],
                         'type' => $data['type'],
-                        'is_public' => $data['is_public'],
+                        'visibility' => $data['visibility'],
+                        'building_id' => $data['building_id'] ?? null,
+                        'shared_with_user_id' => $data['shared_with_user_id'] ?? null,
                         'rental_period_id' => $activePeriod?->id,
                     ]);
 
@@ -217,15 +268,31 @@ class Documents extends Page
         $this->resetPage();
     }
 
-    public function togglePublic(int $documentId): void
+    public function toggleVisibility(int $documentId): void
     {
         $document = auth()->user()->documents()->findOrFail($documentId);
-        $document->update(['is_public' => ! $document->is_public]);
+
+        $newVisibility = $document->visibility === DocumentVisibility::Landlord
+            ? DocumentVisibility::Private
+            : DocumentVisibility::Landlord;
+
+        $document->update(['visibility' => $newVisibility]);
 
         Notification::make()
-            ->title($document->is_public ? 'Document nu zichtbaar voor verhuurder' : 'Document nu privé')
+            ->title($newVisibility === DocumentVisibility::Landlord
+                ? 'Document nu gedeeld met verhuurder'
+                : 'Document nu privé')
             ->success()
             ->send();
+    }
+
+    /** Documenten die anderen met mij hebben gedeeld (alleen-lezen). */
+    public function getSharedWithMe(): Collection
+    {
+        return Document::sharedWith(auth()->user())
+            ->with('user')
+            ->latest()
+            ->get();
     }
 
     public function deleteContractAction(): Action
