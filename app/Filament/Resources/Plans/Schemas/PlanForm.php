@@ -35,6 +35,14 @@ class PlanForm
                     ->rows(3)
                     ->columnSpanFull(),
 
+                TextInput::make('monthly_price')
+                    ->label('Prijs per maand')
+                    ->numeric()
+                    ->minValue(0)
+                    ->step(0.01)
+                    ->prefix('€')
+                    ->helperText('Enkel ter weergave — werk dezelfde prijs ook bij in Stripe, anders wijkt het af van wat afgerekend wordt.'),
+
                 TagsInput::make('features')
                     ->label('Features')
                     ->placeholder('Voeg een feature toe')

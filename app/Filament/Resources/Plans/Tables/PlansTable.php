@@ -19,6 +19,11 @@ class PlansTable
                     ->searchable(),
                 TextColumn::make('name')
                     ->searchable(),
+                TextColumn::make('monthly_price')
+                    ->label('Prijs / maand')
+                    ->money('eur')
+                    ->placeholder('—')
+                    ->sortable(),
                 IconColumn::make('is_active')
                     ->boolean(),
                 TextColumn::make('sort_order')
