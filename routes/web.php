@@ -88,4 +88,3 @@ Route::get('/mail-preview', function () {
         body: 'Dit is een testbericht.',
     );
 });
-

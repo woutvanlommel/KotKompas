@@ -9,6 +9,7 @@ use App\Models\RentalPeriod;
 use App\Models\Room;
 use BackedEnum;
 use Filament\Actions\Action;
+use Filament\Forms\Components\Component;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Select;
@@ -196,7 +197,7 @@ class Documents extends Page
      * Gedeelde formuliervelden voor het uploaden én bewerken van een document.
      * Het bewerkformulier is identiek aan het uploadformulier, maar zonder bestand.
      *
-     * @return array<int, \Filament\Forms\Components\Component>
+     * @return array<int, Component>
      */
     private function documentFormFields(bool $withFile = false): array
     {
