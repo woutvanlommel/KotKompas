@@ -199,6 +199,19 @@
                             <p class="text-xs font-medium text-[#0f1720] truncate" title="{{ $document->name }}">
                                 {{ $document->name }}
                             </p>
+                            @if ($document->visibility === \App\Enums\DocumentVisibility::Landlord)
+                                <p class="flex items-center gap-1 text-xs text-[#586573]">
+                                    <x-heroicon-o-eye class="w-3 h-3 shrink-0" /> Gedeeld met verhuurder
+                                </p>
+                            @elseif ($document->visibility === \App\Enums\DocumentVisibility::Building)
+                                <p class="flex items-center gap-1 text-xs text-[#586573]">
+                                    <x-heroicon-o-building-office class="w-3 h-3 shrink-0" /> Gedeeld met gebouw
+                                </p>
+                            @elseif ($document->visibility === \App\Enums\DocumentVisibility::User && $document->sharedWithUser)
+                                <p class="flex items-center gap-1 text-xs text-[#586573] truncate">
+                                    <x-heroicon-o-user class="w-3 h-3 shrink-0" /> Gedeeld met {{ $document->sharedWithUser->full_name }}
+                                </p>
+                            @endif
                             @if ($ocrStatus === \App\Models\Document::OCR_PENDING || $ocrStatus === \App\Models\Document::OCR_PROCESSING)
                                 <span class="inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 w-fit">
                                     <span class="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse inline-block"></span>
@@ -306,6 +319,19 @@
                                     {{ $document->created_at->format('d/m/Y') }}
                                 </span>
                             </div>
+                            @if ($document->visibility === \App\Enums\DocumentVisibility::Landlord)
+                                <p class="flex items-center gap-1 text-xs text-[#586573] mt-1">
+                                    <x-heroicon-o-eye class="w-3 h-3 shrink-0" /> Gedeeld met verhuurder
+                                </p>
+                            @elseif ($document->visibility === \App\Enums\DocumentVisibility::Building)
+                                <p class="flex items-center gap-1 text-xs text-[#586573] mt-1">
+                                    <x-heroicon-o-building-office class="w-3 h-3 shrink-0" /> Gedeeld met gebouw
+                                </p>
+                            @elseif ($document->visibility === \App\Enums\DocumentVisibility::User && $document->sharedWithUser)
+                                <p class="flex items-center gap-1 text-xs text-[#586573] mt-1 truncate">
+                                    <x-heroicon-o-user class="w-3 h-3 shrink-0" /> Gedeeld met {{ $document->sharedWithUser->full_name }}
+                                </p>
+                            @endif
                             @if ($ocrStatus === \App\Models\Document::OCR_PENDING || $ocrStatus === \App\Models\Document::OCR_PROCESSING)
                                 <span class="inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 mt-1 w-fit">
                                     <span class="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse inline-block"></span>

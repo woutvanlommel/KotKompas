@@ -117,4 +117,47 @@ class DocumentSharingPageTest extends TestCase
 
         $component->assertSuccessful();
     }
+
+    public function test_document_cards_show_shared_with_info_per_visibility(): void
+    {
+        $landlord = User::factory()->create();
+        $landlord->assignRole('verhuurder');
+        $building = Building::factory()->create(['landlord_id' => $landlord->id]);
+        $room = Room::factory()->create(['building_id' => $building->id]);
+        $student = User::factory()->create();
+        $student->assignRole('huurder');
+        $period = RentalPeriod::create(['room_id' => $room->id, 'start_date' => now()->subMonth()]);
+        $period->tenants()->attach($student->id, ['is_primary' => true]);
+
+        $landlord->documents()->create([
+            'name' => 'Huisregels', 'type' => 'other',
+            'visibility' => DocumentVisibility::Building, 'building_id' => $building->id,
+        ]);
+        $landlord->documents()->create([
+            'name' => 'Voor student', 'type' => 'other',
+            'visibility' => DocumentVisibility::User,
+            'building_id' => $building->id, 'shared_with_user_id' => $student->id,
+        ]);
+        $landlord->documents()->create([
+            'name' => 'Geheim', 'type' => 'other', 'visibility' => DocumentVisibility::Private,
+        ]);
+
+        Livewire::actingAs($landlord)->test(Documents::class)
+            ->assertSuccessful()
+            ->assertSee('Gedeeld met gebouw')
+            ->assertSee('Gedeeld met '.$student->full_name);
+    }
+
+    public function test_private_document_shows_no_shared_with_info(): void
+    {
+        $tenant = User::factory()->create();
+        $tenant->assignRole('huurder');
+        $tenant->documents()->create([
+            'name' => 'Enkel ikzelf', 'type' => 'other', 'visibility' => DocumentVisibility::Private,
+        ]);
+
+        Livewire::actingAs($tenant)->test(Documents::class)
+            ->assertSuccessful()
+            ->assertDontSee('Gedeeld met');
+    }
 }
