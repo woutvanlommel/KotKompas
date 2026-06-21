@@ -231,17 +231,10 @@
                             @endif
                             <div class="flex items-center gap-1 mt-1">
                                 <button
-                                    wire:click="toggleVisibility({{ $document->id }})"
-                                    class="flex-1 text-xs py-1 px-2 rounded-[4px] border transition-colors
-                                        {{ $document->visibility === \App\Enums\DocumentVisibility::Landlord
-                                            ? 'border-emerald-200 text-emerald-700 bg-emerald-50 hover:bg-emerald-100'
-                                            : 'border-[#0f17201f] text-[#586573] bg-[#edf0f4] hover:bg-[#e1e6ed]' }}"
+                                    wire:click="mountAction('editDocument', { documentId: {{ $document->id }} })"
+                                    class="p-1.5 rounded-[4px] border border-[#0f17201f] text-[#9aa6b4] hover:text-[#0f1720] hover:border-[#0f17201f] hover:bg-[#edf0f4] transition-colors"
                                 >
-                                    @if ($document->visibility === \App\Enums\DocumentVisibility::Landlord)
-                                        <x-heroicon-o-eye class="w-3 h-3 inline" /> Gedeeld
-                                    @else
-                                        <x-heroicon-o-eye-slash class="w-3 h-3 inline" /> Privé
-                                    @endif
+                                    <x-heroicon-o-pencil-square class="w-3 h-3" />
                                 </button>
                                 <button
                                     wire:click="deleteDocument({{ $document->id }})"
@@ -342,17 +335,9 @@
 
                         <div class="flex items-center gap-2 flex-shrink-0">
                             <button
-                                wire:click="toggleVisibility({{ $document->id }})"
-                                class="text-xs py-1 px-2.5 rounded-[4px] border transition-colors
-                                    {{ $document->visibility === \App\Enums\DocumentVisibility::Landlord
-                                        ? 'border-emerald-200 text-emerald-700 bg-emerald-50 hover:bg-emerald-100'
-                                        : 'border-[#0f17201f] text-[#586573] bg-[#edf0f4] hover:bg-[#e1e6ed]' }}"
-                            >
-                                @if ($document->visibility === \App\Enums\DocumentVisibility::Landlord)
-                                    <x-heroicon-o-eye class="w-3 h-3 inline" /> Gedeeld
-                                @else
-                                    <x-heroicon-o-eye-slash class="w-3 h-3 inline" /> Privé
-                                @endif
+                                wire:click="mountAction('editDocument', { documentId: {{ $document->id }} })"
+                                class="p-1.5 rounded-[4px] border border-[#0f17201f] text-[#9aa6b4] hover:text-[#0f1720] hover:border-[#0f17201f] hover:bg-[#edf0f4] transition-colors">
+                                <x-heroicon-o-pencil-square class="w-4 h-4" />
                             </button>
                             <a href="{{ $url }}" target="_blank"
                                 class="p-1.5 rounded-[4px] border border-[#0f17201f] text-[#9aa6b4] hover:text-[#0f1720] hover:border-[#0f17201f] hover:bg-[#edf0f4] transition-colors">
