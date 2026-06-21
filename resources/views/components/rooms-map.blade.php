@@ -67,7 +67,7 @@
     // ── Pill marker ───────────────────────────────────────────────────────────
     function makeIcon(b) {
         const label = b.rooms.length === 1
-            ? `€${b.rooms[0].price.toLocaleString('nl-BE')}`
+            ? `€${b.rooms[0].price_per_month.toLocaleString('nl-BE')}/maand`
             : `${b.rooms.length} koten`;
 
         return L.divIcon({
@@ -99,7 +99,7 @@
             return `<div style="min-width:180px;font-family:inherit;">
                 <p style="font-size:.75rem;color:#64748b;margin:0 0 2px">${b.address}</p>
                 <p style="font-size:1rem;font-weight:600;margin:0 0 6px;color:#0f172a">${r.title}</p>
-                <p style="font-size:.9rem;color:#0f172a;margin:0 0 10px">€${r.price.toLocaleString('nl-BE')}<span style="font-size:.65rem;color:#94a3b8">/m</span></p>
+                <p style="font-size:.9rem;color:#0f172a;margin:0 0 10px">€${r.price_per_month.toLocaleString('nl-BE')}<span style="font-size:.65rem;color:#94a3b8">/maand</span></p>
                 <a href="${r.url}" style="display:inline-flex;align-items:center;gap:6px;font-size:.78rem;font-weight:600;color:#fff;background:#0f172a;padding:6px 14px;border-radius:8px;text-decoration:none;">Bekijk kot →</a>
             </div>`;
         }
@@ -107,7 +107,7 @@
         const items = b.rooms.map(r => `
             <li style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px solid #f1f5f9;">
                 <span style="font-size:.82rem;font-weight:500;color:#0f172a;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.title}</span>
-                <span style="font-size:.82rem;color:#0f172a;white-space:nowrap">€${r.price.toLocaleString('nl-BE')}/m</span>
+                <span style="font-size:.82rem;color:#0f172a;white-space:nowrap">€${r.price_per_month.toLocaleString('nl-BE')}/maand</span>
                 <a href="${r.url}" style="font-size:.75rem;font-weight:600;color:#0f172a;text-decoration:underline;white-space:nowrap">Bekijk →</a>
             </li>`).join('');
 

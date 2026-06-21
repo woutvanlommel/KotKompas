@@ -34,7 +34,7 @@ class RoomController extends Controller
         // Map data: same filters as the room list, but without pagination.
         // Group per building so the popup can show multiple rooms.
         $filteredRooms = $this->query($filters)
-            ->with(['building' => fn ($q) => $q->whereNotNull('latitude')->whereNotNull('longitude')])
+            ->with(['building' => fn ($q) => $q->whereNotNull('latitude')->whereNotNull('longitude'), 'costTypes'])
             ->get()
             ->filter(fn (Room $r) => $r->building && $r->building->latitude && $r->building->longitude);
 
@@ -51,7 +51,7 @@ class RoomController extends Controller
                     'rooms' => $rooms->map(fn (Room $r) => [
                         'id' => $r->id,
                         'title' => $r->title ?? '',
-                        'price' => (float) $r->price_per_month,
+                        'price_per_month' => (float) $r->total_monthly_price,
                         'url' => route('rooms.show', $r),
                     ])->values(),
                 ];
