@@ -45,6 +45,7 @@ class ContactController extends Controller
                 senderEmail: $validated['email'],
                 subjectLine: $validated['subject'],
                 body: $validated['message'],
+                channel: 'website',
             ));
         } catch (\Throwable $e) {
             report($e);

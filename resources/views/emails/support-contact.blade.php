@@ -16,7 +16,11 @@
             <td style="padding:28px;">
                 <h1 style="margin:0 0 16px;font-size:20px;">Nieuw contactbericht</h1>
                 <p style="margin:0 0 20px;font-size:14px;line-height:1.5;color:#5e5e5e;">
-                    Een verhuurder heeft een bericht gestuurd via het dashboard.
+                    @if (($channel ?? 'dashboard') === 'website')
+                        Iemand heeft een bericht gestuurd via het contactformulier op de website.
+                    @else
+                        Een verhuurder heeft een bericht gestuurd via het dashboard.
+                    @endif
                 </p>
 
                 <p style="margin:0 0 6px;font-size:14px;"><strong>Van:</strong> {{ $senderName }} ({{ $senderEmail }})</p>
@@ -33,7 +37,11 @@
         </tr>
         <tr>
             <td style="padding:18px 28px;background:#f7f7f7;font-size:12px;color:#8d8d8d;">
-                Verstuurd via het KotKompas-dashboard.
+                @if (($channel ?? 'dashboard') === 'website')
+                    Verstuurd via het contactformulier op KotKompas.
+                @else
+                    Verstuurd via het KotKompas-dashboard.
+                @endif
             </td>
         </tr>
     </table>
