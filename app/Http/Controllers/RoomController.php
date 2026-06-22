@@ -247,7 +247,7 @@ class RoomController extends Controller
             ->when($filters['q'], fn ($query, $q) => $query
                 ->where(fn ($sub) => $sub
                     ->where('title', 'like', "%{$q}%")
-                    ->orWhere('description', 'like', "%{$q}%")
+                    ->orWhere('rooms.description', 'like', "%{$q}%")
                     ->orWhereHas('building', fn ($b) => $b
                         ->where('city', 'like', "%{$q}%")
                         ->orWhere('postal_code', 'like', "%{$q}%"))))
