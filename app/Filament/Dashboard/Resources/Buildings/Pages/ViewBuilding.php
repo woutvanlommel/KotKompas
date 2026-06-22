@@ -5,6 +5,7 @@ namespace App\Filament\Dashboard\Resources\Buildings\Pages;
 use App\Filament\Dashboard\Resources\Buildings\BuildingResource;
 use App\Filament\Dashboard\Resources\Rooms\Schemas\RoomWizard;
 use App\Filament\Dashboard\Support\FeatureRoomToggle;
+use App\Jobs\RefreshBuildingPoiCache;
 use App\Models\Building;
 use App\Models\Room;
 use App\Services\FilamentNotificationService;
@@ -116,6 +117,8 @@ class ViewBuilding extends ViewRecord
                             'latitude' => $coordinates['latitude'],
                             'longitude' => $coordinates['longitude'],
                         ]);
+
+                        RefreshBuildingPoiCache::dispatch($this->record);
 
                         FilamentNotificationService::success(
                             'Locatie bijgewerkt',
