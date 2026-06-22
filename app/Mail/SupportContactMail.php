@@ -15,9 +15,9 @@ class SupportContactMail extends Mailable
 
     /**
      * @param  string  $channel  Where the message originates: 'dashboard' (a
-     *                            logged-in landlord via the dashboard) or
-     *                            'website' (the public /contact form). Drives
-     *                            the subject and body wording.
+     *                           logged-in landlord via the dashboard) or
+     *                           'website' (the public /contact form). Drives
+     *                           the subject and body wording.
      */
     public function __construct(
         public string $senderName,
