@@ -23,12 +23,13 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property-read Building $building
  * @property-read Collection<int, Message> $messages
  */
-#[Fillable(['tenant_id', 'landlord_id', 'building_id', 'last_message_at', 'notification_sent_at'])]
+#[Fillable(['tenant_id', 'landlord_id', 'building_id', 'last_message_at', 'notification_sent_at', 'tenant_unlocked_until'])]
 class Conversation extends Model
 {
     protected $casts = [
         'last_message_at' => 'datetime',
         'notification_sent_at' => 'datetime',
+        'tenant_unlocked_until' => 'datetime',
     ];
 
     public function tenant(): BelongsTo
@@ -62,5 +63,49 @@ class Conversation extends Model
             ->whereNull('read_at')
             ->where('sender_id', '!=', $userId)
             ->count();
+    }
+
+    /**
+     * Whether the tenant may no longer send messages in this conversation.
+     *
+     * The lock is derived in real time from the tenant's rental periods. A
+     * temporary reply window (granted when the landlord messages a locked
+     * tenant) keeps the conversation open until it expires; otherwise the
+     * lock follows the rental grace window.
+     */
+    public function isTenantMessagingLocked(): bool
+    {
+        // Active reply window granted by a landlord message.
+        if ($this->tenant_unlocked_until && $this->tenant_unlocked_until->isFuture()) {
+            return false;
+        }
+
+        return $this->tenantGracePeriodExpired();
+    }
+
+    /**
+     * Whether the tenant's rental grace window has elapsed, ignoring any
+     * temporary reply window. An active (or renewed) rental period in this
+     * building never counts as expired, even alongside older ended periods.
+     */
+    public function tenantGracePeriodExpired(): bool
+    {
+        $periods = RentalPeriod::whereHas('room', fn ($q) => $q->where('building_id', $this->building_id))
+            ->whereHas('tenants', fn ($q) => $q->where('users.id', $this->tenant_id))
+            ->get();
+
+        if ($periods->isEmpty()) {
+            return false;
+        }
+
+        if ($periods->contains(fn (RentalPeriod $period) => $period->isActive())) {
+            return false;
+        }
+
+        $latestEnded = $periods->sortByDesc('end_date')->first();
+
+        return $latestEnded->end_date
+            ->addDays(config('chat.tenant_messaging_window_days'))
+            ->isPast();
     }
 }
