@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\SupportContactMail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\View\View;
 
 class ContactController extends Controller
@@ -17,15 +19,10 @@ class ContactController extends Controller
     }
 
     /**
-     * Handle a contact form submission.
-     *
-     * BACKEND DEV — this is the wiring target. The page already POSTs here
-     * with: name, email, subject, message, consent, website (honeypot), _token.
-     *
-     * TODO:
-     *   - Send the mail (Mailable + Mail::to(...)) and/or persist the message.
-     *   - Configure MAIL_* env + a recipient address.
-     *   - Optionally throttle this route (->middleware('throttle:5,1') in web.php).
+     * Handle a contact form submission. Delivers the message to the support
+     * inbox via SupportContactMail (reply-to the sender), mirroring the
+     * dashboard support-contact flow. Sent synchronously — not queued — so a
+     * delivery failure surfaces immediately to the visitor.
      */
     public function store(Request $request): RedirectResponse
     {
@@ -42,7 +39,21 @@ class ContactController extends Controller
             'consent' => ['accepted'],
         ]);
 
-        // TODO(backend): deliver $validated (mail and/or DB). Set session('error') on failure.
+        try {
+            Mail::to(config('mail.support_address'))->send(new SupportContactMail(
+                senderName: $validated['name'],
+                senderEmail: $validated['email'],
+                subjectLine: $validated['subject'],
+                body: $validated['message'],
+                channel: 'website',
+            ));
+        } catch (\Throwable $e) {
+            report($e);
+
+            return back()
+                ->withInput()
+                ->with('error', 'Er ging iets mis bij het versturen. Probeer het later opnieuw.');
+        }
 
         return back()->with('success', 'Bedankt! Je bericht is verstuurd — we antwoorden binnen 24 uur.');
     }
