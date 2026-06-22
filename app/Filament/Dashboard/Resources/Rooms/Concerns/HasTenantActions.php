@@ -44,27 +44,45 @@ trait HasTenantActions
     {
         return Action::make('linkTenant')
             ->label(fn () => $this->record->tenant ? 'Hoofdhuurder wijzigen' : 'Huurder koppelen')
-            ->form([
-                Select::make('tenant_id')
-                    ->label('Huurder')
-                    ->placeholder('Zoek op naam of e-mail…')
-                    ->searchable()
-                    ->getSearchResultsUsing(
-                        fn (string $search): array => User::role('huurder')
-                            ->where(fn ($q) => $q
-                                ->where('name', 'like', "%{$search}%")
-                                ->orWhere('lastname', 'like', "%{$search}%")
-                                ->orWhere('email', 'like', "%{$search}%")
-                            )
-                            ->limit(20)
-                            ->get()
-                            ->mapWithKeys(fn (User $u) => [$u->id => "{$u->full_name} ({$u->email})"])
-                            ->all()
+            ->form(function () {
+                // Huurders die al als hoofdhuurder aan een actieve periode van
+                // een ANDERE kamer gekoppeld zijn, mogen niet gekozen worden.
+                $currentRoomId = $this->record->id;
+
+                $alreadyLinked = DB::table('rental_period_user')
+                    ->join('rental_periods', 'rental_periods.id', '=', 'rental_period_user.rental_period_id')
+                    ->where('rental_period_user.is_primary', true)
+                    ->where(fn ($q) => $q
+                        ->whereNull('rental_periods.end_date')
+                        ->orWhere('rental_periods.end_date', '>=', now())
                     )
-                    ->getOptionLabelUsing(fn ($value): ?string => User::role('huurder')->find($value)?->full_name)
-                    ->default(fn () => $this->record->tenant_id)
-                    ->required(),
-            ])
+                    ->where('rental_periods.room_id', '!=', $currentRoomId)
+                    ->pluck('rental_period_user.user_id')
+                    ->toArray();
+
+                return [
+                    Select::make('tenant_id')
+                        ->label('Huurder')
+                        ->placeholder('Zoek op naam of e-mail…')
+                        ->searchable()
+                        ->getSearchResultsUsing(
+                            fn (string $search): array => User::role('huurder')
+                                ->whereNotIn('id', $alreadyLinked)
+                                ->where(fn ($q) => $q
+                                    ->where('name', 'like', "%{$search}%")
+                                    ->orWhere('lastname', 'like', "%{$search}%")
+                                    ->orWhere('email', 'like', "%{$search}%")
+                                )
+                                ->limit(20)
+                                ->get()
+                                ->mapWithKeys(fn (User $u) => [$u->id => "{$u->full_name} ({$u->email})"])
+                                ->all()
+                        )
+                        ->getOptionLabelUsing(fn ($value): ?string => User::role('huurder')->find($value)?->full_name)
+                        ->default(fn () => $this->record->tenant_id)
+                        ->required(),
+                ];
+            })
             ->action(function (array $data): void {
                 LinkRoomTenant::handle($this->record, (int) $data['tenant_id']);
 
