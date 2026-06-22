@@ -13,7 +13,7 @@
         'train_station' => ['emoji' => '🚂', 'label' => 'Treinstation'],
         'tram_stop'     => ['emoji' => '🚊', 'label' => 'Tramhalte'],
         'cafe'          => ['emoji' => '☕', 'label' => 'Café'],
-        'restaurant'    => ['emoji' => '🍽️', 'label' => 'Restaurant'],
+        'fast_food'     => ['emoji' => '🍔', 'label' => 'Fast food'],
     ];
 
     $poisData = ($building->poiCache ?? collect())->map(fn ($p) => [

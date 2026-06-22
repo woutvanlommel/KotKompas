@@ -16,18 +16,17 @@ class OverpassService
 
     // Overpass tag values → onze interne categorienaam
     private const AMENITY_MAP = [
-        'pharmacy' => 'Apotheker',
-        'hospital' => 'Ziekenhuis',
-        'cafe' => 'Café',
-        'restaurant' => 'Restaurant',
-        'fast_food' => 'Fast Food',
-        'bar' => 'Café',
+        'pharmacy' => 'pharmacy',
+        'hospital' => 'hospital',
+        'cafe' => 'cafe',
+        'fast_food' => 'fast_food',
+        'bar' => 'cafe',
     ];
 
     private const SHOP_MAP = [
-        'supermarket' => 'supermarkt',
+        'supermarket' => 'supermarket',
         'convenience' => 'convenience',
-        'bakery' => 'bakker',
+        'bakery' => 'convenience',
     ];
 
     /**
@@ -78,7 +77,7 @@ class OverpassService
         [out:json][timeout:15];
         (
           nwr["shop"~"^(supermarket|convenience|bakery)$"](around:{$r},{$lat},{$lng});
-          nwr["amenity"~"^(pharmacy|hospital|cafe|restaurant|fast_food|bar)$"](around:{$r},{$lat},{$lng});
+          nwr["amenity"~"^(pharmacy|hospital|cafe|fast_food|bar)$"](around:{$r},{$lat},{$lng});
           node["highway"="bus_stop"](around:{$r},{$lat},{$lng});
           nwr["public_transport"="stop_position"](around:{$r},{$lat},{$lng});
           nwr["railway"~"^(station|halt|tram_stop)$"](around:{$r},{$lat},{$lng});
@@ -144,17 +143,17 @@ class OverpassService
         }
 
         if (($tags['highway'] ?? null) === 'bus_stop') {
-            return 'bus_halte';
+            return 'bus_stop';
         }
 
         if (isset($tags['public_transport'])) {
-            return 'bus_halte';
+            return 'bus_stop';
         }
 
         if (isset($tags['railway'])) {
             return match ($tags['railway']) {
-                'station', 'halt' => 'trein_station',
-                'tram_stop' => 'tram_halte',
+                'station', 'halt' => 'train_station',
+                'tram_stop' => 'tram_stop',
                 default => null,
             };
         }

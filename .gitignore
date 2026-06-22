@@ -1,4 +1,5 @@
 *.log
+/presentation-snippets.md
 .DS_Store
 .env
 .env.backup
