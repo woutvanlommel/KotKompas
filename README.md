@@ -1,5 +1,77 @@
 > **"De redding voor de 'huisjesmelker' die alles nog in Excel doet."**
 
+---
+
+## 🚀 Installatie
+
+### Vereisten
+
+- PHP ≥ 8.3 met extensies: `pdo_sqlite`, `gd`, `zip`, `curl`, `mbstring`, `xml`, `bcmath`, `intl`
+- Composer ≥ 2
+- Node.js ≥ 20 + npm
+- [Mailpit](https://github.com/axllent/mailpit) (lokale mail)
+- Optioneel: Stripe CLI (voor webhooks lokaal), Imagick + Ghostscript (voor PDF-thumbnails in OCR)
+
+### 1. Repository klonen & dependencies installeren
+
+```bash
+git clone <repo-url> kotkompas
+cd kotkompas
+
+composer install
+npm install
+```
+
+### 2. Omgeving configureren
+
+```bash
+cp .env.example .env
+php artisan key:generate
+```
+
+Open `.env` en vul minstens deze waarden in:
+
+| Variabele                      | Waarde / uitleg                                                                           |
+| ------------------------------ | ----------------------------------------------------------------------------------------- |
+| `APP_URL`                      | `http://localhost:8000`                                                                   |
+| `DB_CONNECTION`                | `sqlite` (standaard, geen extra setup)                                                    |
+| `MAIL_MAILER`                  | `smtp` + Mailpit op poort `1025`                                                          |
+| `REVERB_APP_ID / KEY / SECRET` | Zelf te kiezen strings voor lokale dev                                                    |
+| `STRIPE_KEY / STRIPE_SECRET`   | Test-keys van [dashboard.stripe.com](https://dashboard.stripe.com)                        |
+| `STRIPE_WEBHOOK_SECRET`        | Gegenereerd door `stripe listen` (zie `docs/stripe-local-setup.md`)                       |
+| `GOOGLE_CLIENT_ID / SECRET`    | Optioneel — Google OAuth via [console.cloud.google.com](https://console.cloud.google.com) |
+| `OCR_SPACE_API_KEY`            | Optioneel — gratis sleutel via [ocr.space](https://ocr.space/ocrapi)                      |
+| `DEEPSEEK_API_KEY`             | Optioneel — sleutel via [platform.deepseek.com](https://platform.deepseek.com/api_keys)   |
+
+### 3. Database & storage klaarmaken
+
+```bash
+php artisan migrate --seed
+php artisan storage:link
+```
+
+### 4. Applicatie starten
+
+```bash
+composer run dev
+```
+
+> Voor Stripe webhooks lokaal: zie **[docs/stripe-local-setup.md](docs/stripe-local-setup.md)**  
+> Voor OCR + PDF-thumbnails: zie **[docs/document-ocr.md](docs/document-ocr.md)**
+
+### 6. Eerste login
+
+Na `--seed` bestaat er een admin-account:
+
+| Veld       | Waarde               |
+| ---------- | -------------------- |
+| E-mail     | `admin@kotkompas.be` |
+| Wachtwoord | `password`           |
+
+Het Filament-dashboard is bereikbaar op `/admin`.
+
+---
+
 ## 📖 Het Project: KotCompass
 
 Veel verhuurders van studentenkamers (kotbazen) werken nog met rommelige Excel-lijsten en WhatsApp. Contracten raken kwijt en eindafrekeningen zijn een rekenkundige nachtmerrie.
